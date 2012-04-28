@@ -607,9 +607,13 @@
 
         public ClipBuffer GetClipBuffer(Rectangle region, Bitmap bitmap)
         {
-            var realRegion = this.CalculateRect(region);
             var gr = Graphics.FromImage(bitmap);
+            var realRegion = this.CalculateRect(region);
+#if WINCE
             gr.DrawImage(this.canvasImage, 0, 0, realRegion, GraphicsUnit.Pixel);
+#else
+            bitmap.Clear();
+#endif
             return new ClipBuffer(bitmap, gr, realRegion, this.Graphics);
         }
 
