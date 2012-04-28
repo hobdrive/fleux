@@ -105,15 +105,7 @@
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
-            if (!this.resizing)
-            {
-                lock (this)
-                {
-                    this.resizing = true;
-                    this.ReleaseGraphicBuffers();
-                    this.resizing = false;
-                }
-            }
+            ReleaseGraphicBuffers();
         }
 
         Int32[] rgbValues = new Int32[1];
