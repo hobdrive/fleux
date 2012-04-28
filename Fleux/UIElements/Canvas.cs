@@ -46,12 +46,20 @@
             element.Updated = null;
         }
 
+        //Rectangle lastVisibleRect;
+        public static int drawtime;
+
         public override void Draw(IDrawingGraphics drawingGraphics)
         {
-            this.Children
-                .Where(i => i.Bounds.IntersectsWith(drawingGraphics.VisibleRect))
-                .ToList()
-                .ForEach(e => e.Draw(drawingGraphics.CreateChild(e.Location, e.TransformationScaling, e.TransformationCenter)));
+            //if (lastVisibleRect != drawingGraphics.VisibleRect
+            int ctime = System.Environment.TickCount;
+            var visible = this.Children.Where(i => i.Bounds.IntersectsWith(drawingGraphics.VisibleRect)).ToList();
+            ctime = System.Environment.TickCount-ctime;
+            drawtime += ctime;
+            foreach(var e in visible)
+            {
+                e.Draw(drawingGraphics.CreateChild(e.Location, e.TransformationScaling, e.TransformationCenter));
+            };
         }
 
         public virtual void AddElementAfter(UIElement element, UIElement sibling)
