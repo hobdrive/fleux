@@ -37,11 +37,6 @@
 
             set
             {
-                // TODO: Review if we should check this.
-                ////if (FleuxApplication.targetDesignDpi != 0)
-                ////{
-                ////    throw new InvalidOperationException("FleuxApplication.TargetDesignDpi is already set.");
-                ////}
                 if (value <= 0)
                 {
                     throw new ArgumentException("FleuxApplication.TargetDesignDpi should be higher than 0.");
@@ -116,6 +111,18 @@
                 }
                 return FleuxApplication.deviceDpi;
             }
+            set{
+                if (FleuxApplication.deviceDpi != 0)
+                {
+                    throw new InvalidOperationException("deviceDpi was already settled up.");
+                }
+                FleuxApplication.deviceDpi = value;
+                if (FleuxApplication.targetDesignDpi == 0)
+                {
+                    FleuxApplication.targetDesignDpi = (int)FleuxApplication.deviceDpi;
+                }
+                FleuxApplication.dpiFactor = ((double)FleuxApplication.deviceDpi) / ((double)FleuxApplication.targetDesignDpi);
+            }
         }
 
         public static void Run(FleuxPage mainPage)
@@ -135,12 +142,7 @@
 
         public static void Initialize(System.Drawing.Graphics graphics)
         {
-            FleuxApplication.deviceDpi = graphics.DpiX;
-            if (FleuxApplication.targetDesignDpi == 0)
-            {
-                FleuxApplication.targetDesignDpi = (int)FleuxApplication.deviceDpi;
-            }
-            FleuxApplication.dpiFactor = ((double)graphics.DpiX) / ((double)FleuxApplication.targetDesignDpi);
+            FleuxApplication.DeviceDpi = graphics.DpiX;
         }
 
         public static int FromPointsToPixels(int points)
