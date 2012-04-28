@@ -1,0 +1,181 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">WINCE</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8526293A-9C66-48F6-A90D-FB2B7128BF08}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Fleux</RootNamespace>
+    <AssemblyName>Fleux</AssemblyName>
+    <ProjectTypeGuids>{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PlatformFamilyName>PocketPC</PlatformFamilyName>
+    <PlatformID>b2c48bd2-963d-4549-9169-1fa021dce484</PlatformID>
+    <OSVersion>5.2</OSVersion>
+    <DeployDirSuffix>Fleux</DeployDirSuffix>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <NativePlatformName>Windows Mobile 6 Professional SDK</NativePlatformName>
+    <FormFactorID>
+    </FormFactorID>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;$(PlatformFamilyName)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|WINCE' ">
+    <OutputPath>bin\Debug_ce\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;$(PlatformFamilyName);WINCE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|WINCE' ">
+    <OutputPath>bin\Release_ce\</OutputPath>
+    <DefineConstants>WINCE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(Platform)' == 'WINCE' ">
+    <Reference Include="Microsoft.Windowsce.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Animations\AnimationGroup.cs" />
+    <Compile Include="Animations\CommitStoryboardAnimation.cs" />
+    <Compile Include="Animations\DefaultAnimations.cs" />
+    <Compile Include="Animations\ForwarderAnimation.cs" />
+    <Compile Include="Animations\FunctionBasedAnimation.cs" />
+    <Compile Include="Animations\DeceleratedAnimation.cs" />
+    <Compile Include="Animations\Animation.cs" />
+    <Compile Include="Animations\IAnimation.cs" />
+    <Compile Include="Animations\NullAnimation.cs" />
+    <Compile Include="Controls\FleuxControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\FleuxControlPage.cs" />
+    <Compile Include="Controls\Gestures\GestureExtensions.cs" />
+    <Compile Include="Controls\Gestures\GesturesEngine.cs" />
+    <Compile Include="Controls\Gestures\GestureDetectionParameters.cs" />
+    <Compile Include="Controls\Scrolling\GestureInertiaBehavior.cs" />
+    <Compile Include="Controls\Scrolling\IGestureScrollingBehavior.cs" />
+    <Compile Include="Core\Dim\RectangleExtensions.cs" />
+    <Compile Include="Core\ExtensionUtils.cs" />
+    <Compile Include="Core\FleuxSettings.cs" />
+    <Compile Include="Core\NativeHelpers\Led.cs" />
+    <Compile Include="Core\NativeHelpers\StringHelpers.cs" />
+    <Compile Include="Core\NativeHelpers\Win32ImagingFactory.cs" />
+    <Compile Include="Core\Scaling\PointExtensions.cs" />
+    <Compile Include="Core\Scaling\RectExtensions.cs" />
+    <Compile Include="Templates\TitledGroup.cs" />
+    <Compile Include="Templates\WindowsPhone7Page.cs" />
+    <Compile Include="UIElements\Canvas.cs" />
+    <Compile Include="Core\GraphicsHelpers\ClipBuffer.cs" />
+    <Compile Include="UIElements\DelegateUIElement.cs" />
+    <Compile Include="UIElements\Pivot\FleuxSettingsPivotItem.cs" />
+    <Compile Include="UIElements\StackPanel.cs" />
+    <Compile Include="UIElements\Events\SizeChangedEventArgs.cs" />
+    <Compile Include="UIElements\Grid\Grid.cs" />
+    <Compile Include="UIElements\Grid\GridCell.cs" />
+    <Compile Include="UIElements\Grid\MeasureDefinition.cs" />
+    <Compile Include="UIElements\ImageElement.cs" />
+    <Compile Include="Animations\StoryBoard.cs" />
+    <Compile Include="Animations\TimeBoxedAnimation.cs" />
+    <Compile Include="UIElements\ListElement.cs" />
+    <Compile Include="UIElements\Pivot\Pivot.cs" />
+    <Compile Include="UIElements\Pivot\PivotItem.cs" />
+    <Compile Include="UIElements\TextElement.cs" />
+    <Compile Include="UIElements\Panorama\PanoramaElement.cs" />
+    <Compile Include="UIElements\Panorama\PanoramaSection.cs" />
+    <Compile Include="UIElements\ScrollViewer.cs" />
+    <Compile Include="Core\Dim\IntExtensions.cs" />
+    <Compile Include="Core\Dim\Length.cs" />
+    <Compile Include="Controls\DoubleBufferedControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Core\Dim\PointExtensions.cs" />
+    <Compile Include="Core\GraphicsHelpers\DrawingGraphics.cs" />
+    <Compile Include="Core\FleuxApplication.cs" />
+    <Compile Include="Core\FleuxPage.cs" />
+    <Compile Include="Core\GraphicsHelpers\DrawingHelperState.cs" />
+    <Compile Include="Core\GraphicsHelpers\GraphicsExtensions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Core\MenuHandler.cs" />
+    <Compile Include="Core\GraphicsHelpers\IDrawingGraphics.cs" />
+    <Compile Include="Core\NativeHelpers\IImageWrapper.cs" />
+    <Compile Include="Core\NativeHelpers\IImagingFactory.cs" />
+    <Compile Include="Core\ResourceManager.cs" />
+    <Compile Include="Core\Scaling\ImagingExtensions.cs" />
+    <Compile Include="Core\Scaling\IntExtensions.cs" />
+    <Compile Include="Core\Scaling\ScaledPoint.cs" />
+    <Compile Include="Core\Scaling\ScaledRectangle.cs" />
+    <Compile Include="Core\Scaling\ScaledInt.cs" />
+    <Compile Include="Core\Threading\Dispatcher.cs" />
+    <Compile Include="Core\Threading\RealTimeDispatcher.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Styles\Style.cs" />
+    <Compile Include="Styles\MetroTheme.cs" />
+    <Compile Include="Styles\TextStyle.cs" />
+    <Compile Include="Styles\ThicknessStyle.cs" />
+    <Compile Include="UIElements\TransparentImageElement.cs" />
+    <Compile Include="UIElements\UIElement.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Images\top.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Images\bottom.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Images\verticalscrollbar.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Images\righttransition.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" Condition=" '$(Platform)' == 'WINCE' " />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" Condition=" '$(Platform)' == 'AnyCPU' " />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}">
+        <HostingProcess disable="1" />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
