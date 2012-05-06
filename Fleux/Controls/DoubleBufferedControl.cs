@@ -72,6 +72,7 @@
 
                     this.offBmp = new Bitmap(Width, Height);
                     this.offGr = Graphics.FromImage(this.offBmp);
+                    FleuxApplication.ApplyGraphicsSettings(this.offGr);
                     this.offUpdated = false;
                 }
             }

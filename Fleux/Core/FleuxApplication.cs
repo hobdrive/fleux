@@ -20,6 +20,8 @@
             VerticalMirror = false;
         }
 
+
+
         /// <summary>
         /// Dpi used for logical drawing. This property should be set only once.
         /// Otherwise an InvalidOperationException will be thrown.
@@ -65,6 +67,15 @@
                 }
                 return FleuxApplication.dummyGraphics;
             }
+        }
+
+        public static void ApplyGraphicsSettings(Graphics gr)
+        {
+#if WIN32
+            gr.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            // SingleBitPerPixelGridFit AntiAlias AntiAliasGridFit ClearTypeGridFit
+            gr.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+#endif
         }
 
         public static IDrawingGraphics DummyDrawingGraphics
