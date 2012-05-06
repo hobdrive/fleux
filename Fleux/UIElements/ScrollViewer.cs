@@ -127,7 +127,7 @@
             var dg = drawingGraphics;
             if (this.clipBitmap == null)
             {
-                this.clipBitmap = new Bitmap(this.Size.Width.ToPixels(), this.Size.Height.ToPixels()-1);
+                this.clipBitmap = new Bitmap(this.Size.Width.ToPixels(), this.Size.Height.ToPixels()-1); // TODO roundup errors!
             }
             if (CachePanning && panInProgress && this.clipBitmap != null)
             {
@@ -152,7 +152,7 @@
                     if (this.VerticalOffset > Math.Min(0, -this.Content.Size.Height + this.Size.Height))
                     {
                         var gr1 = Graphics.FromImage(BottomShadow);
-                        gr1.DrawImage(this.clipBitmap, 0, 0, new Rectangle(0, this.clipBitmap.Height - BottomShadow.Height,
+                        gr1.DrawImage(this.clipBitmap, 0, 0, new Rectangle(0, this.clipBitmap.Height + 1 - BottomShadow.Height,
                                                              this.clipBitmap.Width, BottomShadow.Height), GraphicsUnit.Pixel);
                     }
                 }
