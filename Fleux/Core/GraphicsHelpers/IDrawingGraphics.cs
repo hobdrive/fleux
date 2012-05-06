@@ -155,6 +155,10 @@
 
         Size CalculateTextSize(string text);
 
+        int CalculateWidth(int x);
+
+        int CalculateHeight(int y);
+
         int CalculateX(int x);
 
         int CalculateY(int y);

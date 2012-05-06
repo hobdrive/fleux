@@ -609,20 +609,21 @@
         {
             var gr = Graphics.FromImage(bitmap);
             var realRegion = this.CalculateRect(region);
-#if WINCE
+#if WINCE || WIN32
             gr.DrawImage(this.canvasImage, 0, 0, realRegion, GraphicsUnit.Pixel);
 #else
-            bitmap.Clear();
+            gr.Clear(System.Drawing.Color.Transparent);
 #endif
+            FleuxApplication.ApplyGraphicsSettings(gr);
             return new ClipBuffer(bitmap, gr, realRegion, this.Graphics);
         }
 
-        protected int CalculateWidth(int logicalWidth)
+        public int CalculateWidth(int logicalWidth)
         {
             return (int)(Math.Abs(logicalWidth).ToPixels() * this.scalingFactorFromParent * this.scalingFactor);
         }
 
-        protected int CalculateHeight(int logicalHeight)
+        public int CalculateHeight(int logicalHeight)
         {
             return (int)(Math.Abs(logicalHeight).ToPixels() * this.scalingFactorFromParent * this.scalingFactor);
         }
