@@ -61,6 +61,7 @@
         }
 
         public bool DrawShadows { get; set; }
+        Bitmap TopShadow, BottomShadow;
 
         public int HorizontalOffset
         {
@@ -117,12 +118,16 @@
                 return base.Bounds;
             }
         }
+        
+        int ShadowHeight = 15;
+        int ShadowSteps = 3;
 
         public override void Draw(IDrawingGraphics drawingGraphics)
         {
+            var dg = drawingGraphics;
             if (this.clipBitmap == null)
             {
-                this.clipBitmap = new Bitmap(this.Size.Width.ToPixels(), this.Size.Height.ToPixels());
+                this.clipBitmap = new Bitmap(this.Size.Width.ToPixels(), this.Size.Height.ToPixels()-1);
             }
             if (CachePanning && panInProgress && this.clipBitmap != null)
             {
@@ -131,7 +136,29 @@
             {
             using (var clipBitmap = drawingGraphics.GetClipBuffer(new Rectangle(0, 0, this.Size.Width, this.Size.Height), this.clipBitmap))
             {
-                this.Content.Draw(clipBitmap.DrawingGr.CreateChild(new Point(this.HorizontalOffset, this.VerticalOffset), this.content.TransformationScaling, this.content.TransformationCenter));
+                /** */
+                if (this.DrawShadows)
+                {
+                    if (TopShadow == null)
+                    {
+                        TopShadow = new Bitmap(this.Size.Width.ToPixels(), drawingGraphics.CalculateHeight(ShadowHeight));
+                        BottomShadow = new Bitmap(this.Size.Width.ToPixels(), drawingGraphics.CalculateHeight(ShadowHeight));
+                    }
+                    if (this.VerticalOffset < 0)
+                    {
+                        var gr = Graphics.FromImage(TopShadow);
+                        gr.DrawImage(this.clipBitmap, 0,0);
+                    }
+                    if (this.VerticalOffset > Math.Min(0, -this.Content.Size.Height + this.Size.Height))
+                    {
+                        var gr1 = Graphics.FromImage(BottomShadow);
+                        gr1.DrawImage(this.clipBitmap, 0, 0, new Rectangle(0, this.clipBitmap.Height - BottomShadow.Height,
+                                                             this.clipBitmap.Width, BottomShadow.Height), GraphicsUnit.Pixel);
+                    }
+                }
+                
+                this.Content.Draw(clipBitmap.DrawingGr.CreateChild(new Point(this.HorizontalOffset, this.VerticalOffset),
+                                                                   this.content.TransformationScaling, this.content.TransformationCenter));
                 if (this.ShowScrollbars)
                 {
                     this.DrawScrollBar(clipBitmap.DrawingGr);
@@ -143,13 +170,25 @@
             {
                 if (this.VerticalOffset < 0)
                 {
-                    drawingGraphics.DrawAlphaImage("top.png",
-                                  new Rectangle(0, 0, this.Size.Width, 15));
+                    int cheight = 0;
+                    for(int s = 0; s < ShadowSteps; s++)
+                    {
+                        drawingGraphics.Graphics.AlphaBlend(TopShadow,
+                          new Rectangle(dg.CalculateX(0), dg.CalculateY(0)+cheight, TopShadow.Width, TopShadow.Height/ShadowSteps),
+                          new Rectangle(0, cheight, TopShadow.Width, TopShadow.Height/ShadowSteps), 0.95f - 1f/(ShadowSteps+2)*s);
+                        cheight += TopShadow.Height/ShadowSteps;
+                    }
                 }
                 if (this.VerticalOffset > Math.Min(0, -this.Content.Size.Height + this.Size.Height))
                 {
-                    drawingGraphics.DrawAlphaImage("bottom.png",
-                                  new Rectangle(0, this.Size.Height - 15, this.Size.Width, 15));
+                    int cheight = 0;
+                    for(int s = 0; s < ShadowSteps; s++)
+                    {
+                        drawingGraphics.Graphics.AlphaBlend(BottomShadow,
+                          new Rectangle(dg.CalculateX(0), dg.CalculateY(this.Size.Height-ShadowHeight)+cheight, BottomShadow.Width, BottomShadow.Height/ShadowSteps),
+                          new Rectangle(0, cheight, BottomShadow.Width, BottomShadow.Height/ShadowSteps), 1f/(ShadowSteps+2)*(s+2));
+                        cheight += BottomShadow.Height/ShadowSteps;
+                    }
                 }
             }
         }
