@@ -1,9 +1,11 @@
 ﻿using Fleux.Core.NativeHelpers;
 namespace Fleux.Core.GraphicsHelpers
 {
+    using System;
     using System.Drawing;
     using System.Drawing.Imaging;
     using System.Reflection;
+    using System.Runtime.InteropServices;
     using Core.NativeHelpers;
 
     public static class GraphicsExtensions
@@ -45,7 +47,7 @@ namespace Fleux.Core.GraphicsHelpers
         public static Graphics AlphaBlend(this Graphics gr, Bitmap b, Rectangle to, Rectangle from, float opacity)
         {
 #if WINCE
-            byte bopacity = unchecked((byte)255 * opacity);
+            byte bopacity = unchecked((byte)(255 * opacity));
 
             using (Graphics gxSrc = Graphics.FromImage(b))
             {
@@ -54,10 +56,10 @@ namespace Fleux.Core.GraphicsHelpers
               BlendFunction blendFunction = new BlendFunction();
               blendFunction.BlendOp = (byte)BlendOperation.AC_SRC_OVER;
               blendFunction.BlendFlags = (byte)BlendFlags.Zero;
-              blendFunction.SourceConstantAlpha = opacity;
+              blendFunction.SourceConstantAlpha = bopacity;
               blendFunction.AlphaFormat = (byte)0;
               PlatformAPI.AlphaBlend(hdcDst, to.X, to.Y, to.Width, to.Height, hdcSrc, from.X, from.Y, from.Width, from.Height, blendFunction);
-              g.ReleaseHdc(hdcDst);
+              gr.ReleaseHdc(hdcDst);
               gxSrc.ReleaseHdc(hdcSrc);
             }
 #else
