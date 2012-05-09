@@ -612,8 +612,18 @@
 #if WINCE || WIN32
             gr.DrawImage(this.canvasImage, 0, 0, realRegion, GraphicsUnit.Pixel);
 #else
-            gr.Clear(System.Drawing.Color.Transparent);
+            gr.Clear(System.Drawing.Color.Transparent); // win32 gdi draws text badly on transparent images ;(
 #endif
+            FleuxApplication.ApplyGraphicsSettings(gr);
+            return new ClipBuffer(bitmap, gr, realRegion, this.Graphics);
+        }
+
+        
+        public ClipBuffer GetOpaqueClipBuffer(Rectangle region, Bitmap bitmap)
+        {
+            var gr = Graphics.FromImage(bitmap);
+            var realRegion = this.CalculateRect(region);
+            gr.DrawImage(this.canvasImage, 0, 0, realRegion, GraphicsUnit.Pixel);
             FleuxApplication.ApplyGraphicsSettings(gr);
             return new ClipBuffer(bitmap, gr, realRegion, this.Graphics);
         }

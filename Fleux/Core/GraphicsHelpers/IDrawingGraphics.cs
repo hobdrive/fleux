@@ -28,7 +28,17 @@
 
         Rectangle VisibleRect { get; } // Logical visible rect
 
+        /**
+         * Retrieves current offscreen buffer content into the bitmap.
+         * If platform allows, it'll just use a transparent fill into bitmap (to improve performance)
+         */
         ClipBuffer GetClipBuffer(Rectangle rectangle, Bitmap bitmap);
+
+        /**
+         * Retrieves current offscreen buffer content into the bitmap.
+         * This'll always return opaque bitmap filled with current offscreen content
+         */
+        ClipBuffer GetOpaqueClipBuffer(Rectangle rectangle, Bitmap bitmap);
 
         IDrawingGraphics Color(Color color); // Color for Text, Lines, Rectangles, etc.
         

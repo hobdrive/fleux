@@ -19,6 +19,11 @@
         private int panV = 0;
         private int panH = 0;
 
+        public bool DrawShadows { get; set; }
+        Bitmap TopShadow, BottomShadow;
+        public int ShadowHeight = 30;
+        public int ShadowSteps = 3;
+
         public ScrollViewer()
         {
             this.EntranceAnimation = new ForwarderAnimation(() => this.content.EntranceAnimation);
@@ -59,9 +64,6 @@
                 this.verticalInertia = null;
             }
         }
-
-        public bool DrawShadows { get; set; }
-        Bitmap TopShadow, BottomShadow;
 
         public int HorizontalOffset
         {
@@ -118,9 +120,6 @@
                 return base.Bounds;
             }
         }
-        
-        int ShadowHeight = 15;
-        int ShadowSteps = 3;
 
         public override void Draw(IDrawingGraphics drawingGraphics)
         {
@@ -136,7 +135,7 @@
             {
             using (var clipBitmap = drawingGraphics.GetClipBuffer(new Rectangle(0, 0, this.Size.Width, this.Size.Height), this.clipBitmap))
             {
-                /** */
+                /* Do shadows */
                 if (this.DrawShadows)
                 {
                     if (TopShadow == null)
@@ -146,14 +145,12 @@
                     }
                     if (this.VerticalOffset < 0)
                     {
-                        var gr = Graphics.FromImage(TopShadow);
-                        gr.DrawImage(this.clipBitmap, 0,0);
+                        drawingGraphics.GetOpaqueClipBuffer(new Rectangle(0, 0, this.Size.Width, this.ShadowHeight), TopShadow).Dispose();
                     }
                     if (this.VerticalOffset > Math.Min(0, -this.Content.Size.Height + this.Size.Height))
                     {
-                        var gr1 = Graphics.FromImage(BottomShadow);
-                        gr1.DrawImage(this.clipBitmap, 0, 0, new Rectangle(0, this.clipBitmap.Height + 1 - BottomShadow.Height,
-                                                             this.clipBitmap.Width, BottomShadow.Height), GraphicsUnit.Pixel);
+                        drawingGraphics.GetOpaqueClipBuffer(new Rectangle(0, this.Size.Height + 1 - ShadowHeight,
+                                                                          this.Size.Width, ShadowHeight), BottomShadow).Dispose();
                     }
                 }
                 
