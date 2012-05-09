@@ -1,6 +1,7 @@
 ﻿namespace Fleux.Core.GraphicsHelpers
 {
     using System.Drawing;
+    using System.Collections.Generic;
     using Core.NativeHelpers;
     using Styles;
     using UIElements;
@@ -82,6 +83,8 @@
         
         IDrawingGraphics FillRectangle(Rectangle r);
         
+        IDrawingGraphics FillPolygon(Point[] points);
+
         // Ellipses
         IDrawingGraphics DrawEllipse(int x1, int y1, int x2, int y2);
         

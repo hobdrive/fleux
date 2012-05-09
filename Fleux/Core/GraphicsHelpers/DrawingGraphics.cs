@@ -2,6 +2,8 @@
 {
     using System;
     using System.Drawing;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Reflection;
     using System.Windows.Forms;
     using Core.NativeHelpers;
@@ -278,6 +280,12 @@
                                         this.CalculateWidth(x2 - x1),
                                         this.CalculateHeight(y2 - y1));
             this.ValidateExtends(this.CalculateX(x2), this.CalculateY(y2));
+            return this;
+        }
+
+        public IDrawingGraphics FillPolygon(Point[] points)
+        {
+            this.Graphics.FillPolygon(this.state.CurrentBrush, points.Select((p) => new Point(CalculateX(p.X), CalculateY(p.Y))).ToArray());
             return this;
         }
 
