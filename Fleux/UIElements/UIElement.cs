@@ -28,6 +28,11 @@
 
         public event EventHandler<SizeChangedEventArgs> SizeChanged;
 
+        /**
+         * If true, the element will receive its own TapHandler _before_ all its children (prioritizing it)
+         */
+        public bool PreTap = false;
+
         private Point location;
 
         public Point Location
@@ -188,9 +193,15 @@
 
         public virtual bool Tap(Point p)
         {
-            bool handled = this.TraverseHandle(this.ApplyTransformation(p),
+            bool handled = false;
+            if (PreTap && this.TapHandler != null)
+            {
+                handled = this.TapHandler(this.ApplyTransformation(p));
+                if (handled) return handled;
+            }
+            handled = this.TraverseHandle(this.ApplyTransformation(p),
                                                 el => el.Tap(this.ApplyTransformation(p).ClientTo(this.ApplyTransformation(el.Location))));
-            if (!handled && this.TapHandler != null)
+            if (!handled && !PreTap && this.TapHandler != null)
             {
                 handled = this.TapHandler(this.ApplyTransformation(p));
             }
