@@ -26,6 +26,17 @@
             sb.AnimateSync();
         }
 
+        public static void CancelAnimations()
+        {
+            if (sb != null)
+                sb.CancelAsyncAnimate();
+        }
+
+        public static void BeginPlay(IAnimation animation)
+        {
+            BeginPlay(new IAnimation[]{ animation });
+        }
+
         public static void BeginPlay(params IAnimation[] animations)
         {
             bool processed = false;

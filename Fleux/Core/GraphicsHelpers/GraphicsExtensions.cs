@@ -58,7 +58,9 @@ namespace Fleux.Core.GraphicsHelpers
               blendFunction.BlendFlags = (byte)BlendFlags.Zero;
               blendFunction.SourceConstantAlpha = bopacity;
               blendFunction.AlphaFormat = (byte)0;
-              PlatformAPI.AlphaBlend(hdcDst, to.X, to.Y, to.Width, to.Height, hdcSrc, from.X, from.Y, from.Width, from.Height, blendFunction);
+              try{
+                  PlatformAPI.AlphaBlend(hdcDst, to.X, to.Y, to.Width, to.Height, hdcSrc, from.X, from.Y, from.Width, from.Height, blendFunction);
+              }catch(Exception e){}
               gr.ReleaseHdc(hdcDst);
               gxSrc.ReleaseHdc(hdcSrc);
             }
