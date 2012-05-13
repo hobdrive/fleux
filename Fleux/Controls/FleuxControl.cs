@@ -207,7 +207,13 @@
             {
                 e.Graphics.Clear(this.SafeBackColor);
                 var gr = DrawingGraphics.FromGraphicsAndRect(this.offGr, this.offBmp, new Rectangle(0, 0, this.offBmp.Width, this.offBmp.Height));
-                this.elements.ForEach(element => element.Draw(gr.CreateChild(element.Location, element.TransformationScaling, element.TransformationCenter)));
+                try{
+                    this.elements.ForEach(element => element.Draw(gr.CreateChild(element.Location, element.TransformationScaling, element.TransformationCenter)));
+                }catch(Exception){
+                  // TODO drawing exception because of
+                  //     System.InvalidOperationException: Collection was modified;
+                  // on elements
+                }
                 if (this.ShadowedAnimationMode != ShadowedAnimationOptions.None
                     && this.shadowImageX < this.offBmp.Width
                     && this.shadowImageX > -this.offBmp.Width * 3)
