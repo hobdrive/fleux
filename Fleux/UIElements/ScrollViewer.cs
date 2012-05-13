@@ -141,7 +141,7 @@
                     if (TopShadow == null)
                     {
                         TopShadow = new Bitmap(this.Size.Width.ToPixels(), drawingGraphics.CalculateHeight(ShadowHeight));
-                        BottomShadow = new Bitmap(this.Size.Width.ToPixels(), drawingGraphics.CalculateHeight(ShadowHeight));
+                        BottomShadow = new Bitmap(this.Size.Width.ToPixels(), drawingGraphics.CalculateHeight(ShadowHeight+1));
                     }
                     if (this.VerticalOffset < 0)
                     {
@@ -149,8 +149,8 @@
                     }
                     if (this.VerticalOffset > Math.Min(0, -this.Content.Size.Height + this.Size.Height))
                     {
-                        drawingGraphics.GetOpaqueClipBuffer(new Rectangle(0, this.Size.Height + 1 - ShadowHeight,
-                                                                          this.Size.Width, ShadowHeight), BottomShadow).Dispose();
+                        drawingGraphics.GetOpaqueClipBuffer(new Rectangle(0, this.Size.Height - ShadowHeight,
+                                                                          this.Size.Width, ShadowHeight+1), BottomShadow).Dispose();
                     }
                 }
                 
