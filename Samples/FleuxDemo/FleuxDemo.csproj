@@ -1,7 +1,7 @@
 ﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">WINCE</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCpu</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{82525C1C-D18C-49C3-AD2A-C3484654D749}</ProjectGuid>
@@ -100,7 +100,8 @@
   <ItemGroup>
     <None Include="fleuxicon.ico" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" Condition=" '$(Platform)' == 'WINCE' " />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" Condition=" '$(Platform)' == 'AnyCPU' " />
   <ProjectExtensions>
     <VisualStudio>
       <FlavorProperties GUID="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}">
