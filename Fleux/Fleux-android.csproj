@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform>AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{64840E96-92D7-42FC-9C56-285D6525269F}</ProjectGuid>
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Fleux</RootNamespace>
+    <AndroidApplication>True</AndroidApplication>
+    <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
+    <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
+    <AssemblyName>Fleux</AssemblyName>
+    <MonoAndroidVersion>v2.1</MonoAndroidVersion>
+    <TargetFrameworkVersion>v2.1</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Env)' == 'alone' ">
+    <MSBuildExtensionsPath>D:\projects\MonoAndroid</MSBuildExtensionsPath>
+    <AndroidSdkDirectory>D:\android-sdk-windows</AndroidSdkDirectory>
+    <JavaSdkDirectory>D:\programs\jdk</JavaSdkDirectory>
+    <MonoAndroidToolsDirectory>$(MSBuildExtensionsPath)\Novell</MonoAndroidToolsDirectory>
+    <TargetFrameworkDirectory>$(MSBuildExtensionsPath)\Reference Assemblies\v2.2</TargetFrameworkDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;__ANDROID__</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <AndroidLinkMode>None</AndroidLinkMode>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <DefineConstants>__ANDROID__</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
+    <ConsolePause>false</ConsolePause>
+    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+  </PropertyGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core">
+    </Reference>
+    <Reference Include="Mono.Android">
+      <HintPath>$(TargetFrameworkDirectory)\Mono.Android.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Animations\Animation.cs">
+      <Link>Animations\Animation.cs</Link>
+    </Compile>
+    <Compile Include="Animations\AnimationGroup.cs">
+      <Link>Animations\AnimationGroup.cs</Link>
+    </Compile>
+    <Compile Include="Animations\CommitStoryboardAnimation.cs">
+      <Link>Animations\CommitStoryboardAnimation.cs</Link>
+    </Compile>
+    <Compile Include="Animations\DeceleratedAnimation.cs">
+      <Link>Animations\DeceleratedAnimation.cs</Link>
+    </Compile>
+    <Compile Include="Animations\DefaultAnimations.cs">
+      <Link>Animations\DefaultAnimations.cs</Link>
+    </Compile>
+    <Compile Include="Animations\ForwarderAnimation.cs">
+      <Link>Animations\ForwarderAnimation.cs</Link>
+    </Compile>
+    <Compile Include="Animations\FunctionBasedAnimation.cs">
+      <Link>Animations\FunctionBasedAnimation.cs</Link>
+    </Compile>
+    <Compile Include="Animations\IAnimation.cs">
+      <Link>Animations\IAnimation.cs</Link>
+    </Compile>
+    <Compile Include="Animations\NullAnimation.cs">
+      <Link>Animations\NullAnimation.cs</Link>
+    </Compile>
+    <Compile Include="Animations\StoryBoard.cs">
+      <Link>Animations\StoryBoard.cs</Link>
+    </Compile>
+    <Compile Include="Animations\TimeBoxedAnimation.cs">
+      <Link>Animations\TimeBoxedAnimation.cs</Link>
+    </Compile>
+    <Compile Include="Controls\Gestures\GestureDetectionParameters.cs">
+      <Link>Controls\Gestures\GestureDetectionParameters.cs</Link>
+    </Compile>
+    <Compile Include="Controls\Gestures\GestureExtensions.cs">
+      <Link>Controls\Gestures\GestureExtensions.cs</Link>
+    </Compile>
+    <Compile Include="Controls\Gestures\GesturesEngine.cs">
+      <Link>Controls\Gestures\GesturesEngine.cs</Link>
+    </Compile>
+    <Compile Include="Controls\Scrolling\GestureInertiaBehavior.cs">
+      <Link>Controls\Scrolling\GestureInertiaBehavior.cs</Link>
+    </Compile>
+    <Compile Include="Controls\Scrolling\IGestureScrollingBehavior.cs">
+      <Link>Controls\Scrolling\IGestureScrollingBehavior.cs</Link>
+    </Compile>
+    <Compile Include="Core\ExtensionUtils.cs">
+      <Link>Core\ExtensionUtils.cs</Link>
+    </Compile>
+    <Compile Include="Core\FleuxApplication.cs">
+      <Link>Core\FleuxApplication.cs</Link>
+    </Compile>
+    <Compile Include="Core\FleuxSettings.cs">
+      <Link>Core\FleuxSettings.cs</Link>
+    </Compile>
+    <Compile Include="Core\MenuHandler.cs">
+      <Link>Core\MenuHandler.cs</Link>
+    </Compile>
+    <Compile Include="Core\ResourceManager.cs">
+      <Link>Core\ResourceManager.cs</Link>
+    </Compile>
+    <Compile Include="Core\Dim\IntExtensions.cs">
+      <Link>Core\Dim\IntExtensions.cs</Link>
+    </Compile>
+    <Compile Include="Core\Dim\Length.cs">
+      <Link>Core\Dim\Length.cs</Link>
+    </Compile>
+    <Compile Include="Core\Dim\PointExtensions.cs">
+      <Link>Core\Dim\PointExtensions.cs</Link>
+    </Compile>
+    <Compile Include="Core\Dim\RectangleExtensions.cs">
+      <Link>Core\Dim\RectangleExtensions.cs</Link>
+    </Compile>
+    <Compile Include="Core\GraphicsHelpers\ClipBuffer.cs">
+      <Link>Core\GraphicsHelpers\ClipBuffer.cs</Link>
+    </Compile>
+    <Compile Include="Core\GraphicsHelpers\DrawingHelperState.cs">
+      <Link>Core\GraphicsHelpers\DrawingHelperState.cs</Link>
+    </Compile>
+    <Compile Include="Core\GraphicsHelpers\GraphicsExtensions.cs">
+      <Link>Core\GraphicsHelpers\GraphicsExtensions.cs</Link>
+    </Compile>
+    <Compile Include="Core\GraphicsHelpers\IDrawingGraphics.cs">
+      <Link>Core\GraphicsHelpers\IDrawingGraphics.cs</Link>
+    </Compile>
+    <Compile Include="Core\GraphicsHelpers\DrawingGraphics.cs">
+      <Link>Core\GraphicsHelpers\DrawingGraphics.cs</Link>
+    </Compile>
+    <Compile Include="Core\NativeHelpers\IImageWrapper.cs">
+      <Link>Core\NativeHelpers\IImageWrapper.cs</Link>
+    </Compile>
+    <Compile Include="Core\NativeHelpers\IImagingFactory.cs">
+      <Link>Core\NativeHelpers\IImagingFactory.cs</Link>
+    </Compile>
+    <Compile Include="Core\NativeHelpers\Led.cs">
+      <Link>Core\NativeHelpers\Led.cs</Link>
+    </Compile>
+    <Compile Include="Core\NativeHelpers\Win32ImagingFactory.cs">
+      <Link>Core\NativeHelpers\Win32ImagingFactory.cs</Link>
+    </Compile>
+    <Compile Include="Core\Scaling\ImagingExtensions.cs">
+      <Link>Core\Scaling\ImagingExtensions.cs</Link>
+    </Compile>
+    <Compile Include="Core\Scaling\IntExtensions.cs">
+      <Link>Core\Scaling\IntExtensions.cs</Link>
+    </Compile>
+    <Compile Include="Core\Scaling\PointExtensions.cs">
+      <Link>Core\Scaling\PointExtensions.cs</Link>
+    </Compile>
+    <Compile Include="Core\Scaling\RectExtensions.cs">
+      <Link>Core\Scaling\RectExtensions.cs</Link>
+    </Compile>
+    <Compile Include="Core\Scaling\ScaledInt.cs">
+      <Link>Core\Scaling\ScaledInt.cs</Link>
+    </Compile>
+    <Compile Include="Core\Scaling\ScaledPoint.cs">
+      <Link>Core\Scaling\ScaledPoint.cs</Link>
+    </Compile>
+    <Compile Include="Core\Scaling\ScaledRectangle.cs">
+      <Link>Core\Scaling\ScaledRectangle.cs</Link>
+    </Compile>
+    <Compile Include="Core\Threading\Dispatcher.cs">
+      <Link>Core\Threading\Dispatcher.cs</Link>
+    </Compile>
+    <Compile Include="Core\Threading\RealTimeDispatcher.cs">
+      <Link>Core\Threading\RealTimeDispatcher.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Styles\MetroTheme.cs">
+      <Link>Styles\MetroTheme.cs</Link>
+    </Compile>
+    <Compile Include="Styles\Style.cs">
+      <Link>Styles\Style.cs</Link>
+    </Compile>
+    <Compile Include="Styles\TextStyle.cs">
+      <Link>Styles\TextStyle.cs</Link>
+    </Compile>
+    <Compile Include="Styles\ThicknessStyle.cs">
+      <Link>Styles\ThicknessStyle.cs</Link>
+    </Compile>
+    <Compile Include="Templates\TitledGroup.cs">
+      <Link>Templates\TitledGroup.cs</Link>
+    </Compile>
+    <Compile Include="UIElements\DelegateUIElement.cs">
+      <Link>UIElements\DelegateUIElement.cs</Link>
+    </Compile>
+    <Compile Include="UIElements\ImageElement.cs">
+      <Link>UIElements\ImageElement.cs</Link>
+    </Compile>
+    <Compile Include="UIElements\ListElement.cs">
+      <Link>UIElements\ListElement.cs</Link>
+    </Compile>
+    <Compile Include="UIElements\ScrollViewer.cs">
+      <Link>UIElements\ScrollViewer.cs</Link>
+    </Compile>
+    <Compile Include="UIElements\StackPanel.cs">
+      <Link>UIElements\StackPanel.cs</Link>
+    </Compile>
+    <Compile Include="UIElements\TextElement.cs">
+      <Link>UIElements\TextElement.cs</Link>
+    </Compile>
+    <Compile Include="UIElements\TransparentImageElement.cs">
+      <Link>UIElements\TransparentImageElement.cs</Link>
+    </Compile>
+    <Compile Include="UIElements\Canvas.cs">
+      <Link>UIElements\Canvas.cs</Link>
+    </Compile>
+    <Compile Include="UIElements\UIElement.cs">
+      <Link>UIElements\UIElement.cs</Link>
+    </Compile>
+    <Compile Include="UIElements\Events\SizeChangedEventArgs.cs">
+      <Link>UIElements\Events\SizeChangedEventArgs.cs</Link>
+    </Compile>
+    <Compile Include="UIElements\Grid\Grid.cs">
+      <Link>UIElements\Grid\Grid.cs</Link>
+    </Compile>
+    <Compile Include="UIElements\Grid\GridCell.cs">
+      <Link>UIElements\Grid\GridCell.cs</Link>
+    </Compile>
+    <Compile Include="UIElements\Grid\MeasureDefinition.cs">
+      <Link>UIElements\Grid\MeasureDefinition.cs</Link>
+    </Compile>
+    <Compile Include="UIElements\Panorama\PanoramaSection.cs">
+      <Link>UIElements\Panorama\PanoramaSection.cs</Link>
+    </Compile>
+    <Compile Include="UIElements\Panorama\PanoramaElement.cs">
+      <Link>UIElements\Panorama\PanoramaElement.cs</Link>
+    </Compile>
+    <Compile Include="UIElements\Pivot\FleuxSettingsPivotItem.cs">
+      <Link>UIElements\Pivot\FleuxSettingsPivotItem.cs</Link>
+    </Compile>
+    <Compile Include="UIElements\Pivot\Pivot.cs">
+      <Link>UIElements\Pivot\Pivot.cs</Link>
+    </Compile>
+    <Compile Include="UIElements\Pivot\PivotItem.cs">
+      <Link>UIElements\Pivot\PivotItem.cs</Link>
+    </Compile>
+    <Compile Include="Android\DoubleBufferedControl.cs">
+    </Compile>
+    <Compile Include="Android\FleuxControl.cs" />
+    <Compile Include="Android\FleuxControlPage.cs" />
+    <Compile Include="Android\StringHelpers.cs">
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Images\bottom.png">
+      <Link>Images\bottom.png</Link>
+    </None>
+    <None Include="Images\righttransition.png">
+      <Link>Images\righttransition.png</Link>
+    </None>
+    <None Include="Images\top.png">
+      <Link>Images\top.png</Link>
+    </None>
+    <None Include="Images\verticalscrollbar.png">
+      <Link>Images\verticalscrollbar.png</Link>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\hobdrive-android\AndroidDrawing\AndroidDrawing.csproj">
+      <Project>{2259B653-DF8D-4ABD-941E-5551D3D3780F}</Project>
+      <Name>AndroidDrawing</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>
