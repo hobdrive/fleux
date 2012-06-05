@@ -16,6 +16,7 @@
     <AssemblyName>Fleux</AssemblyName>
     <MonoAndroidVersion>v2.1</MonoAndroidVersion>
     <TargetFrameworkVersion>v2.1</TargetFrameworkVersion>
+    <BaseIntermediateOutputPath>obj_android</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Env)' == 'alone' ">
     <MSBuildExtensionsPath>D:\projects\MonoAndroid</MSBuildExtensionsPath>
@@ -28,7 +29,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
+    <OutputPath>bin\Debug_android</OutputPath>
     <DefineConstants>DEBUG;__ANDROID__</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -38,7 +39,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Release</OutputPath>
+    <OutputPath>bin\Debug_android</OutputPath>
     <DefineConstants>__ANDROID__</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>

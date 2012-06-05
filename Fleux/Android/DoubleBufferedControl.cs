@@ -20,7 +20,7 @@
         protected bool offUpdated;
         protected bool resizing;
 
-        public class HostView : View
+        public class HostView : View, IDisposable
         {
             DoubleBufferedControl Control;
             public event Action Measured;
@@ -28,7 +28,6 @@
             Android.Graphics.Matrix hMatrix;
             Android.Graphics.Matrix vMatrix;
             Android.Graphics.Matrix origMatrix;
-            int x, y;
 
             public HostView(Android.Content.Context ctx, DoubleBufferedControl c) : base(ctx)
             {
@@ -63,6 +62,8 @@
 
             public override void Draw (Android.Graphics.Canvas canvas)
             {
+                if (Control == null) return;
+
                 Control.CreateGraphicBuffers(MeasuredWidth, MeasuredHeight);
 
                 if (origMatrix == null)
@@ -106,21 +107,21 @@
                         canvas.Matrix = vMatrix;
                     }else
                         canvas.Matrix = origMatrix;
-                    canvas.DrawBitmap(Control.offBmp.ABitmap, x,y, paint);
+                    canvas.DrawBitmap(Control.offBmp.ABitmap, 0,0, paint);
                     updcntflush++;
                 }
                 ctime = System.Environment.TickCount - ctime;
-//#if DEBUG
-                canvas.DrawText(""+updcnt+":"+updcntflush+" t: "+ctime+" canvas: "+Fleux.UIElements.Canvas.drawtime, x,y+20, spaint);
-//#endif
+#if DEBUG
+                canvas.DrawText(""+updcnt+":"+updcntflush+" t: "+ctime+" canvas: "+Fleux.UIElements.Canvas.drawtime, 0,20, spaint);
+#endif
             }
 
-            //TODO???
-            public new void Dispose()
+            public virtual new void Dispose()
             {
                 paint.Dispose();
                 hMatrix.Dispose();
                 vMatrix.Dispose();
+                origMatrix.Dispose();
                 paint = null;
                 Control = null;
             }

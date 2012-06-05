@@ -9,6 +9,8 @@
 
     public class Canvas : UIElement
     {
+        public event Action ContentChanged;
+
         public Canvas()
         {
             this.EntranceAnimation = new ForwarderAnimation(() => new AnimationGroup(this.Children.Where(e => e.EntranceAnimation != null).Select(e => e.EntranceAnimation)));
@@ -31,6 +33,7 @@
             element.Parent = this;
             this.Size = new Size(Math.Max(element.Bounds.Right, this.Size.Width), Math.Max(element.Bounds.Bottom, this.Size.Height));
             element.Updated = this.Update;
+            if (ContentChanged != null) ContentChanged();
         }
 
         public virtual void RemoveElement(UIElement element)
@@ -44,6 +47,7 @@
             });
             */
             element.Updated = null;
+            if (ContentChanged != null) ContentChanged();
         }
 
         //Rectangle lastVisibleRect;
@@ -58,7 +62,11 @@
             drawtime += ctime;
             foreach(var e in visible)
             {
-                e.Draw(drawingGraphics.CreateChild(e.Location, e.TransformationScaling, e.TransformationCenter));
+                try{
+                    e.Draw(drawingGraphics.CreateChild(e.Location, e.TransformationScaling, e.TransformationCenter));
+                }catch(Exception){
+                    //TODO: handle UI exceptions somehow!
+                }
             };
         }
 
@@ -75,6 +83,7 @@
                 element.Parent = this;
                 base.Size = new Size(Math.Max(element.Bounds.Right, base.Size.Width), Math.Max(element.Bounds.Bottom, base.Size.Height));
                 element.Updated = new Action(this.Update);
+                if (ContentChanged != null) ContentChanged();
             }
         }
 
@@ -86,6 +95,7 @@
         public void Clear()
         {
             this.Children.Clear();
+            if (ContentChanged != null) ContentChanged();
         }
     }
 }

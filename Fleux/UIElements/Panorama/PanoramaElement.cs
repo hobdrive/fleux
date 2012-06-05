@@ -111,13 +111,13 @@
             {
                 From = -this.Sections.Size.Width,
                 To = this.FinePosition,
-                OnAnimation = v => this.FinePosition = v
+                OnAnimation = v => { this.FinePosition = v; this.Update(); }
             };
             this.ExitAnimation = new FunctionBasedAnimation(FunctionBasedAnimation.Functions.CubicReverse)
             {
                 From = this.FinePosition,
                 To = -this.Sections.Size.Width,
-                OnAnimation = v => this.FinePosition = v
+                OnAnimation = v => { this.FinePosition = v; this.Update(); }
             };
         }
 
