@@ -17,9 +17,12 @@
         protected int currentSectionIndex;
 
         public bool IsPanoramaAnimating{ get; protected set; }
+        public static bool RubberEdgesDefault = true;
+        public bool RubberEdges{ get; set; }
 
         public PanoramaElement()
         {
+            this.RubberEdges = RubberEdgesDefault;
             this.Background = new Canvas();
             this.Title = new Canvas();
             this.Sections = new Canvas { Location = new Point(0, 130), Size = new Size(1800, 600) };
@@ -73,8 +76,10 @@
                 }
                 this.IsPanoramaAnimating = true;
                 var vv = this.currentSectionIndex * this.sectionSpace;
+                var atype = (RubberEdges && (FinePosition < 0 || FinePosition > (this.Sections.ChildrenCount-1)*this.SectionSpace)) ?
+                               FunctionBasedAnimation.Functions.BounceEntranceSin : FunctionBasedAnimation.Functions.SoftedFluid;
                 this.StoryBoardPlay(
-                    new FunctionBasedAnimation(FunctionBasedAnimation.Functions.SoftedFluid)
+                    new FunctionBasedAnimation(atype)
                     {
                         From = this.finePosition,
                         To = this.currentSectionIndex * this.sectionSpace,
@@ -163,7 +168,10 @@
                 // Validate if should we handle this Pan
                 if (Math.Abs(to.X - from.X) > Math.Abs(to.Y - from.Y))
                 {
-                    this.FinePosition -= to.X - from.X;
+                    var diff = to.X - from.X;
+                    if (this.RubberEdges && (this.FinePosition <= 0 || this.FinePosition >= (this.Sections.ChildrenCount-1)*this.SectionSpace))
+                        diff = diff/10;
+                    this.FinePosition -= diff;
                     this.Update();
                 }
                 if (done)
