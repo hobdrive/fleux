@@ -10,7 +10,6 @@
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>Fleux</RootNamespace>
-    <AndroidApplication>True</AndroidApplication>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <AssemblyName>Fleux</AssemblyName>
@@ -26,25 +25,25 @@
     <TargetFrameworkDirectory>$(MSBuildExtensionsPath)\Reference Assemblies\v2.2</TargetFrameworkDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>bin\Debug_android</OutputPath>
     <DefineConstants>DEBUG;__ANDROID__</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
+    <ConsolePause>False</ConsolePause>
     <AndroidLinkMode>None</AndroidLinkMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug_android</OutputPath>
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Release_android</OutputPath>
     <DefineConstants>__ANDROID__</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
-    <ConsolePause>false</ConsolePause>
+    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
+    <ConsolePause>False</ConsolePause>
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
   </PropertyGroup>
   <ItemGroup>
@@ -158,8 +157,8 @@
     <Compile Include="Core\NativeHelpers\IImagingFactory.cs">
       <Link>Core\NativeHelpers\IImagingFactory.cs</Link>
     </Compile>
-    <Compile Include="Core\NativeHelpers\Led.cs">
-      <Link>Core\NativeHelpers\Led.cs</Link>
+    <Compile Include="Android\Led.cs">
+      <Link>Android\Led.cs</Link>
     </Compile>
     <Compile Include="Core\NativeHelpers\Win32ImagingFactory.cs">
       <Link>Core\NativeHelpers\Win32ImagingFactory.cs</Link>

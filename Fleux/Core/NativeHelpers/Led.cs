@@ -75,7 +75,7 @@
                 {
                     count = nci.LedsCount;
                 }
-            }catch(Exception e){}
+            }catch(Exception){}
             return count;
         }
 
