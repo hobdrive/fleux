@@ -8,8 +8,13 @@
 
     public class StackPanel : Canvas
     {
+        
+        public int Padding{ get; set; }
+    
         public StackPanel()
         {
+            base.AutoResize = false;
+            this.Padding = 0;
             this.SizeChanged += (s, e) => this.Relayout();
         }
 
@@ -26,7 +31,7 @@
             {
                 i.Location = new Point(0, y);
                 i.ResizeForWidth(this.Size.Width);
-                y += i.Size.Height;
+                y += i.Size.Height + Padding;
             }
         }
     }
