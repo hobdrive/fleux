@@ -312,6 +312,16 @@
             return handled;
         }
 
+        public void PutBelow(UIElement anchor)
+        {
+            PutBelow(anchor, 0);
+        }
+
+        public void PutBelow(UIElement anchor, int padding)
+        {
+            this.Location = new Point(anchor.Location.X, anchor.Location.Y + anchor.Size.Height + padding);
+        }
+
         public void PutAtLeft(UIElement anchor)
         {
             PutAtLeft(anchor, 0);
