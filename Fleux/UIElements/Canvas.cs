@@ -10,9 +10,12 @@
     public class Canvas : UIElement
     {
         public event Action ContentChanged;
+        
+        public bool AutoResize{ get; set; }
 
         public Canvas()
         {
+            AutoResize = true;
             this.EntranceAnimation = new ForwarderAnimation(() => new AnimationGroup(this.Children.Where(e => e.EntranceAnimation != null).Select(e => e.EntranceAnimation)));
             this.ExitAnimation = new ForwarderAnimation(() => new AnimationGroup(this.Children.Where(e => e.ExitAnimation != null).Select(e => e.ExitAnimation)));
         }
@@ -31,7 +34,8 @@
                 return;
             this.Children.Add(element);
             element.Parent = this;
-            this.Size = new Size(Math.Max(element.Bounds.Right, this.Size.Width), Math.Max(element.Bounds.Bottom, this.Size.Height));
+            if (AutoResize)
+                this.Size = new Size(Math.Max(element.Bounds.Right, this.Size.Width), Math.Max(element.Bounds.Bottom, this.Size.Height));
             element.Updated = this.Update;
             if (ContentChanged != null) ContentChanged();
         }
@@ -64,6 +68,9 @@
             {
                 try{
                     e.Draw(drawingGraphics.CreateChild(e.Location, e.TransformationScaling, e.TransformationCenter));
+#if xxxDEBUG
+                    drawingGraphics.DrawRectangle(e.Location.X, e.Location.Y, e.Size.Width, e.Size.Height);
+#endif
                 }catch(Exception){
                     //TODO: handle UI exceptions somehow!
                 }
