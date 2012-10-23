@@ -211,9 +211,7 @@ namespace Fleux.Controls
                 try{
                     this.elements.ForEach(element => element.Draw(gr.CreateChild(element.Location, element.TransformationScaling, element.TransformationCenter)));
                 }catch(Exception ex){
-#if DEBUG
                     System.Console.Error.WriteLine("Fleux Failure: "+ex.StackTrace);
-#endif
                 }
                 if (this.ShadowedAnimationMode != ShadowedAnimationOptions.None
                     && this.shadowImageX < this.offBmp.Width

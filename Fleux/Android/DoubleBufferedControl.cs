@@ -1,4 +1,4 @@
-﻿namespace Fleux.Controls
+namespace Fleux.Controls
 {
     using System;
     using System.Drawing;
@@ -19,8 +19,9 @@
         protected bool offBmpDraw = false;
         protected bool offUpdated;
         protected bool resizing;
+        bool IsDisposed = false;
 
-        public class HostView : View, IDisposable
+        public class HostView : View
         {
             DoubleBufferedControl Control;
             public event Action Measured;
@@ -64,7 +65,7 @@
             {
                 if (Control == null) return;
 
-                Control.CreateGraphicBuffers(MeasuredWidth, MeasuredHeight);
+                Control.CreateGraphicBuffers();
 
                 if (origMatrix == null)
                 {
@@ -116,14 +117,20 @@
 #endif
             }
 
-            public virtual new void Dispose()
+            public new void Dispose()
             {
+                Android.Util.Log.Info("HOBD", "HostView Dispose");
                 paint.Dispose();
-                hMatrix.Dispose();
-                vMatrix.Dispose();
-                origMatrix.Dispose();
+                if (hMatrix != null)
+                    hMatrix.Dispose();
+                if (vMatrix != null)
+                    vMatrix.Dispose();
+                if (origMatrix != null)
+                    origMatrix.Dispose();
                 paint = null;
                 Control = null;
+
+                base.Dispose();
             }
 
 
@@ -154,7 +161,11 @@
         protected virtual void OnMouseUp(MouseEventArgs e){}
 
         protected virtual void ForcedInvalidate(){
-            CreateGraphicBuffers(this.AndroidView.MeasuredWidth, this.AndroidView.MeasuredHeight);
+            if (IsDisposed)
+                return;
+
+            CreateGraphicBuffers();
+
             /*
             lock(offBmp){
                 offBmpDraw = true;
@@ -181,18 +192,25 @@
 
         public virtual Color BackColor{ get; set;}
 
-        protected virtual void CreateGraphicBuffers(int Width, int Height)
+        protected virtual void CreateGraphicBuffers()
         {
             var Control  = this;
-            if (Control.offBmp == null){
-                Control.offBmp = new Bitmap(Width, Height);
-                Control.offGr = new Graphics(Control.offBmp);
+            if (Control.offBmp == null && this.AndroidView != null){
+                var Width = AndroidView.MeasuredWidth;
+                var Height = AndroidView.MeasuredHeight;
+                if (Width > 0 && Height > 0)
+                {
+                    Control.offBmp = new Bitmap(Width, Height);
+                    Control.offGr = new Graphics(Control.offBmp);
+                }
             }
         }
 
 
         public virtual void Dispose()
         {
+            Android.Util.Log.Info("HOBD", "DoubleBufferedControl Dispose");
+            IsDisposed = true;
             this.ReleaseGraphicBuffers();
         }
 
