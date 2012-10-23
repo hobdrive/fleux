@@ -105,15 +105,16 @@
 
         public void CancelAsyncAnimate()
         {
-            if (this.animationThread != null)
+            Thread at = this.animationThread;
+            if (at != null)
             {
                 this.stopAnimation = true;
-                this.animationThread.Join(1000);
+                at.Join(1000);
                 if (this.stopAnimation)
                 {
                     // If the animation thread takes longer
                     // than 1 sec to stop, then we kill it
-                    this.animationThread.Abort();
+                    at.Abort();
                     this.stopAnimation = false;
                 }
                 this.animationThread = null;
