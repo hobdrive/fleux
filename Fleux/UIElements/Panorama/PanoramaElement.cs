@@ -229,6 +229,8 @@
         {
             var titlef = (double)(this.Title.Size.Width - this.Size.Width) / (double)(this.Sections.Size.Width - this.Size.Width);
             var backgroundf = (double)(this.Background.Size.Width - this.Size.Width) / (double)(this.sectionSpace * (this.Sections.ChildrenCount - 1));
+            if (backgroundf < 0)
+                backgroundf = 0;
             this.Background.Location = new Point((int)(-this.finePosition * backgroundf), 0);
             this.Title.Location = new Point((int)(-this.finePosition * titlef), this.Title.Location.Y);
             this.Sections.Location = new Point((int)(-this.finePosition * 1), this.Sections.Location.Y);
