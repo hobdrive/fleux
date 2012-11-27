@@ -98,7 +98,8 @@
                 {
                     keepAnimating = this.animations.Aggregate(false, (current, animation) => (animation.Animate() || current));
                 }
-                System.Windows.Forms.Application.DoEvents();
+                // why that???
+                //System.Windows.Forms.Application.DoEvents();
             }
             this.stopAnimation = false;
         }
