@@ -123,6 +123,21 @@
 
         public string ID { get; set; }
 
+        public bool Visible{ get
+            {
+                return Visibility == StateVisible;
+            }
+            set
+            {
+                Visibility = value ? StateVisible : StateHidden;
+            }
+        }
+
+        const int StateVisible = 0;
+        const int StateHidden = 1;
+        const int StateGone = 2;
+        public int Visibility { get; set; }
+
         public UIElement this[int idx]
         {
             get{

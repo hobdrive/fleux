@@ -61,7 +61,9 @@
         {
             //if (lastVisibleRect != drawingGraphics.VisibleRect
             int ctime = System.Environment.TickCount;
-            var visible = this.Children.Where(i => i.Bounds.IntersectsWith(drawingGraphics.VisibleRect)).ToList();
+
+            var visible = this.Children.Where(i => i.Visible && i.Bounds.IntersectsWith(drawingGraphics.VisibleRect)).ToList();
+
             ctime = System.Environment.TickCount-ctime;
             drawtime += ctime;
             foreach(var e in visible)
