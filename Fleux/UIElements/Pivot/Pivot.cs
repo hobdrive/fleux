@@ -12,16 +12,16 @@
 
     public class Pivot : Canvas
     {
-        private readonly int headerPadding = 20;
-        private List<PivotItem> pivotItems = new List<PivotItem>();
-        private int headersWidth, headersHeight;
-        private int offsetForPanning;
-        private int offsetForHeaders;
-        private int offsetForBody;
-        private Canvas headers;
-        private PivotItem currentItem;
-        private bool currentFromLeft;
-        private Canvas body;
+        protected readonly int headerPadding = 20;
+        protected List<PivotItem> pivotItems = new List<PivotItem>();
+        protected int headersWidth, headersHeight;
+        protected int offsetForPanning;
+        protected int offsetForHeaders;
+        protected int offsetForBody;
+        protected Canvas headers;
+        protected PivotItem currentItem;
+        protected bool currentFromLeft;
+        protected Canvas body;
 
         public Point HeadersLocation = new Point(21, 30);
         public Point BodyLocation = new Point(21, 150);
@@ -197,7 +197,7 @@
             }
         }
 
-        private void RefreshHeaders()
+        protected virtual void RefreshHeaders()
         {
             int x = 0;
             this.headers.Clear();
