@@ -13,6 +13,13 @@
         protected bool offUpdated;
         protected bool resizing;
 
+        internal int totime;
+        internal int updcnt;
+        internal int updcntinval;
+        internal int updcntflush;
+        
+        public static bool PerfData = false;
+        
         public virtual void Draw(Action<Graphics> drawAction)
         {
             if (!IsDisposed && this.offGr != null)
@@ -23,11 +30,14 @@
 
         protected override void OnPaint(PaintEventArgs e)
         {
+            var ctime = System.Environment.TickCount;
+            
             lock (this)
             {
                 this.CreateGraphicBuffers();
                 if (this.offBmp != null)
                 {
+                    
                     if (!this.offUpdated)
                     {
                         this.Draw(new PaintEventArgs(this.offGr, ClientRectangle));
@@ -35,11 +45,16 @@
                     }
 
                     this.controlGr.DrawImage(this.offBmp, 0, 0);
+ 
+                    ctime = System.Environment.TickCount - ctime;
+                    this.totime += ctime;
+                    this.updcnt++;
                 }
                 else
                 {
                     this.DrawBackground(e);
                 }
+                this.updcntflush++;
             }
         }
 
@@ -118,8 +133,12 @@
         {
             if (!IsDisposed && this.offBmp != null)
             {
+                var ctime = System.Environment.TickCount;
+
                 this.offUpdated = false;
+                
                 this.Draw(new PaintEventArgs(this.offGr, new Rectangle(0, 0, this.offBmp.Width, this.offBmp.Height)));
+                
                 if (FleuxApplication.HorizontalMirror || FleuxApplication.VerticalMirror)
                 {
                     Rectangle rect = new Rectangle(0, 0, offBmp.Width, offBmp.Height);
@@ -169,7 +188,26 @@
                 try{
                     this.controlGr.DrawImage(this.offBmp, 0, 0);
                 }catch(Exception){}
-                  
+                
+                ctime = System.Environment.TickCount - ctime;
+                this.totime += ctime;
+                this.updcnt++;
+                this.updcntinval++;
+
+                if (PerfData)
+                {
+                    var cavg = totime / (updcnt+1);
+
+                    this.controlGr.FillRectangle(new SolidBrush(Color.White), 0,0, 400, 20);
+                    this.controlGr.DrawString(""+updcnt+":"+updcntflush+":"+updcntinval+" ctime: "+ctime+" cavg:"+cavg+" canv: "+Fleux.UIElements.Canvas.drawtime,
+                                              new Font(FontFamily.GenericMonospace, 15, FontStyle.Regular), new SolidBrush(Color.Black), 0,0);
+                    if (updcnt > 100)
+                    {
+                        totime = 0;
+                        updcnt = 0;
+                    }
+                }
+                                  
             }
         }
     }
