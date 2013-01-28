@@ -77,6 +77,17 @@
                 }
             }
         }
+        
+        public int Width
+        {
+            get{
+                return Size.Width;
+            }
+            
+            set{
+                this.Size = new Size(value, Size.Height);
+            }
+        }
 
         public double TransformationScaling { get; set; }
 

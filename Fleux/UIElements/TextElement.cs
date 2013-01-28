@@ -19,12 +19,26 @@
 
         public enum AutoSizeModeOptions
         {
-            None,
+            /// Fixed size
+            None, 
+            /// Both height and width are calculated
             OneLineAutoHeight,
+            /// auto height, fixed width
+            OneLineAutoHeightFixedWidth,
+            /// Wrap text over fixed width
             WrapText,
         }
-
-        public AutoSizeModeOptions AutoSizeMode { get; set; }
+  
+        AutoSizeModeOptions _AutoSizeMode;
+        public AutoSizeModeOptions AutoSizeMode {
+            get{
+                return _AutoSizeMode;
+            }
+            set{
+                _AutoSizeMode = value;
+                Relayout(FleuxApplication.DummyDrawingGraphics);
+            }
+        }
 
         public string Text
         {
@@ -44,7 +58,8 @@
 
         public override void ResizeForWidth(int width)
         {
-            if (this.AutoSizeMode != AutoSizeModeOptions.None)
+            if (this.AutoSizeMode == AutoSizeModeOptions.WrapText ||
+                this.AutoSizeMode == AutoSizeModeOptions.OneLineAutoHeight)
             {
                 this.Size = new Size(width, 10); // Height will be calculated later
                 try
@@ -72,6 +87,7 @@
             {
                 case AutoSizeModeOptions.None:
                 case AutoSizeModeOptions.OneLineAutoHeight:
+                case AutoSizeModeOptions.OneLineAutoHeightFixedWidth:
                     drawingGraphics.DrawText(this.text);
                     break;
                 case AutoSizeModeOptions.WrapText:
@@ -84,19 +100,23 @@
         {
             if (this.AutoSizeMode != AutoSizeModeOptions.None)
             {
-                var height = 0;
+                int height = 0;
                 switch (this.AutoSizeMode)
                 {
                     case AutoSizeModeOptions.OneLineAutoHeight:
-                        height = dg.Style(this.Style)
-                            .CalculateTextSize(this.text ?? "").Height;
+                        var sz = dg.Style(this.Style).CalculateTextSize(this.text ?? "");
+                        this.Size = new Size(sz.Width, sz.Height);
+                        break;
+                    case AutoSizeModeOptions.OneLineAutoHeightFixedWidth:
+                        height = dg.Style(this.Style).CalculateTextSize(this.text ?? "").Height;
+                        this.Size = new Size(this.Size.Width, height);
                         break;
                     case AutoSizeModeOptions.WrapText:
                         height = dg.Style(this.Style)
                             .CalculateMultilineTextHeight(this.text ?? "", this.Size.Width);
+                        this.Size = new Size(this.Size.Width, height);
                         break;
                 }
-                this.Size = new Size(this.Size.Width, height);
             }
         }
     }
