@@ -24,12 +24,12 @@
             this.Relayout();
         }
 
-        private void Relayout()
+        public void Relayout()
         {
             int y = 0;
             foreach (var i in this.Children)
             {
-                i.Location = new Point(0, y);
+                i.Location = new Point(i.Location.X, y);
                 i.ResizeForWidth(this.Size.Width);
                 y += i.Size.Height + Padding;
             }

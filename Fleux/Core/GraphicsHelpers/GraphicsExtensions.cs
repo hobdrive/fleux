@@ -19,6 +19,12 @@ namespace Fleux.Core.GraphicsHelpers
         {
             return new Rectangle(r.Left, r.Top, r.Right, r.Bottom);
         }
+#if WINCE
+        /// for code compatibility
+        public static void Flush(this Graphics gr)
+        {
+        }
+#endif
 
         public static Graphics DrawPng(this Graphics gr, IImageWrapper pngImage, Rectangle destRect)
         {

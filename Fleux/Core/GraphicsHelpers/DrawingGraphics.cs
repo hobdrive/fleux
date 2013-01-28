@@ -514,9 +514,12 @@
                                      this.state.CurrentBrush,
                                      this.CalculateX(this.state.CurrentX),
                                      this.CalculateY(this.state.CurrentY));
+            /*
+            //Huge performance hurt:                         
             var measure = this.Graphics.MeasureString(text, this.state.CurrenFont);
             this.state.CurrentX += FleuxApplication.ScaleToLogic((int)measure.Width);
             this.ValidateExtends(this.CalculateX(this.state.CurrentX), this.CalculateY(this.state.CurrentY) + (int)measure.Height);
+            //*/
             return this;
         }
 
