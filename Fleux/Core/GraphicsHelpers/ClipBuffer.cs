@@ -36,8 +36,9 @@
             this.graphics.Dispose();
         }
 
-        private void Apply()
+        public void Apply()
         {
+            graphics.Flush();
             this.ownerGraphics.DrawImage(this.image, this.region.X, this.region.Y);
         }
     }

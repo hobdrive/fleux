@@ -1,5 +1,6 @@
 Fleux/bin/*
 Fleux/obj/*
+Fleux/obj_android/*
 Samples/FleuxDemo/bin/*
 Samples/FleuxDemo/obj/*
 Samples/WindowsPhone7Sample/bin/*
