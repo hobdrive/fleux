@@ -313,7 +313,7 @@
         protected virtual bool TraverseHandle(Point start, Func<UIElement, bool> elementHandler)
         {
             bool handled = false;
-            foreach (var el in this.Children.Where(x => x.Bounds.Contains(start)).Reverse())
+            foreach (var el in this.Children.Where(x => x.Visible && x.Bounds.Contains(start)).Reverse())
             {
                 if (elementHandler(el))
                 {
@@ -327,7 +327,7 @@
         protected virtual UIElement TraverseHandle(Point start, Func<UIElement, UIElement> elementHandler)
         {
             UIElement handled = null;
-            foreach (var el in this.Children.Where(x => x.Bounds.Contains(start)).Reverse())
+            foreach (var el in this.Children.Where(x => x.Visible && x.Bounds.Contains(start)).Reverse())
             {
                 handled = elementHandler(el);
                 if (handled != null)
