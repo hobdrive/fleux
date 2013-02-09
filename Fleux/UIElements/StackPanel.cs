@@ -27,12 +27,16 @@
         public void Relayout()
         {
             int y = 0;
+            UIElement lastch = null;
             foreach (var i in this.Children)
             {
                 i.Location = new Point(i.Location.X, y);
                 i.ResizeForWidth(this.Size.Width);
                 y += i.Size.Height + Padding;
+                lastch = i;
             }
+            if (lastch != null && lastch.Location.Y + lastch.Size.Height > this.Size.Height)
+                this.Height = lastch.Location.Y + lastch.Size.Height + Padding;
         }
     }
 }
