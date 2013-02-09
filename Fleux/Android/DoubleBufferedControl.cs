@@ -256,8 +256,8 @@ namespace Fleux.Controls
                 // AndroidView in java may occasionally be already dead!
                 try{
                     AndroidView.PostInvalidate();
-                }catch(Exception){
-                    //
+                }catch(Exception e){
+                    System.Console.WriteLine(e.StackTrace);
                 }
                 AndroidView.updcntinval++;
             }

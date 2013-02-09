@@ -89,6 +89,17 @@
             }
         }
 
+        public int Height
+        {
+            get{
+                return Size.Height;
+            }
+            
+            set{
+                this.Size = new Size(Size.Height, value);
+            }
+        }
+
         public double TransformationScaling { get; set; }
 
         public Point TransformationCenter { get; set; }
