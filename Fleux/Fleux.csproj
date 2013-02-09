@@ -62,9 +62,10 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;WIN32;$(PlatformFamilyName)</DefineConstants>
-    <DebugType>none</DebugType>
-    <DebugSymbols>false</DebugSymbols>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
     <NoStdLib>false</NoStdLib>
+    <DocumentationFile>bin\Debug\Fleux.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -76,8 +77,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|WINCE' ">
     <OutputPath>bin\Debug_ce\</OutputPath>
     <DefineConstants>DEBUG;TRACE;$(PlatformFamilyName);WINCE</DefineConstants>
-    <DebugType>none</DebugType>
-    <DebugSymbols>false</DebugSymbols>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
     <NoStdLib>false</NoStdLib>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|WINCE' ">

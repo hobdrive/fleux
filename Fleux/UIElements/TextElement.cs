@@ -10,22 +10,36 @@
     {
         protected string text;
         protected bool needUpdate = true;
+        private bool _inRelayout;
 
         public TextElement(string text)
         {
             this.text = text;
             this.Style = MetroTheme.PhoneTextNormalStyle;
+            SizeChanged += delegate
+                {
+                    if (_inRelayout) return; // to avoid creating FleuxApplication.DummyDrawingGraphics
+                    DoRelayout(FleuxApplication.DummyDrawingGraphics);
+                };
         }
 
         public enum AutoSizeModeOptions
         {
+            /// <summary>
             /// Fixed size
+            /// </summary>
             None, 
+            /// <summary>
             /// Both height and width are calculated
+            /// </summary>
             OneLineAutoHeight,
-            /// auto height, fixed width
+            /// <summary>
+            /// Auto height, fixed width
+            /// </summary>
             OneLineAutoHeightFixedWidth,
+            /// <summary>
             /// Wrap text over fixed width
+            /// </summary>
             WrapText,
         }
   
@@ -36,7 +50,7 @@
             }
             set{
                 _AutoSizeMode = value;
-                Relayout(FleuxApplication.DummyDrawingGraphics);
+                DoRelayout(FleuxApplication.DummyDrawingGraphics);
             }
         }
 
@@ -64,7 +78,7 @@
                 this.Size = new Size(width, 10); // Height will be calculated later
                 try
                 {
-                    this.Relayout(FleuxApplication.DummyDrawingGraphics);
+                    DoRelayout(FleuxApplication.DummyDrawingGraphics);
                 }
                 catch (Exception)
                 {
@@ -77,7 +91,7 @@
         {
             if (this.needUpdate)
             {
-                this.Relayout(drawingGraphics);
+                DoRelayout(drawingGraphics);
                 this.needUpdate = false;
             }
 
@@ -93,6 +107,21 @@
                 case AutoSizeModeOptions.WrapText:
                     drawingGraphics.DrawMultiLineText(this.text, this.Size.Width, this.Size.Height);
                     break;
+            }
+        }
+
+        private void DoRelayout(IDrawingGraphics drawingGraphics)
+        {
+            if (_inRelayout) return;
+
+            _inRelayout = true;
+            try
+            {
+                Relayout(drawingGraphics);
+            }
+            finally
+            {
+                _inRelayout = false;
             }
         }
 

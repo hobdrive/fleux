@@ -96,7 +96,7 @@
             }
             
             set{
-                this.Size = new Size(Size.Height, value);
+                this.Size = new Size(Size.Width, value);
             }
         }
 

@@ -78,11 +78,13 @@
 #endif
         }
 
+
+        private static readonly Rectangle _dummyDrawingGraphicsRect = new Rectangle(0, 0, 1, 1);
         public static IDrawingGraphics DummyDrawingGraphics
         {
             get
             {
-                return DrawingGraphics.FromGraphicsAndRect(DummyGraphics, DummyImage, new Rectangle(0, 0, 1, 1));
+                return DrawingGraphics.FromGraphicsAndRect(DummyGraphics, DummyImage, _dummyDrawingGraphicsRect);
             }
         }
 
