@@ -24,6 +24,7 @@
             // Default transformation parameters
             this.TransformationScaling = 1.0;
             this.TransformationCenter = new Point(0, 0);
+            Enabled = true;
         }
 
         public event EventHandler<SizeChangedEventArgs> SizeChanged;
@@ -34,6 +35,7 @@
         public bool PreTap = false;
 
         private Point location;
+        private bool _enabled;
 
         public Point Location
         {
@@ -130,6 +132,20 @@
         public Action ReleasedHandler { get; set; }
 
         public UIElement Parent { get; set; }
+
+        /// <summary>
+        /// Gets or sets boolean indicating whether the UIElememt can respond to user interaction.
+        /// </summary>
+        public bool Enabled
+        {
+            get { return _enabled; }
+            set
+            {
+                if (_enabled == value) return;
+                _enabled = value;
+                Update();
+            }
+        }
 
         public IEnumerable<UIElement> ChildrenEnumerable
         {
@@ -230,6 +246,11 @@
 
         public virtual bool Tap(Point p)
         {
+            if (!Enabled)
+            {
+                return false;
+            }
+
             bool handled = false;
             if (PreTap && this.TapHandler != null)
             {
@@ -247,6 +268,11 @@
 
         public virtual bool DoubleTap(Point p)
         {
+            if (!Enabled)
+            {
+                return false;
+            }
+
             bool handled = this.TraverseHandle(this.ApplyTransformation(p),
                                                el => el.DoubleTap(this.ApplyTransformation(p).ClientTo(this.ApplyTransformation(el.Location))));
             if (!handled && this.DoubleTapHandler != null)
