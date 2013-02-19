@@ -326,6 +326,8 @@
 
         public virtual UIElement Pressed(Point p)
         {
+            if (!Enabled) return null;
+
             UIElement handled = this.TraverseHandle(this.ApplyTransformation(p),
                                                el => el.Pressed(this.ApplyTransformation(p).ClientTo(this.ApplyTransformation(el.Location))));
             if (handled == null && this.PressedHandler != null)
