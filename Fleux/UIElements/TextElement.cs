@@ -73,7 +73,8 @@
         public override void ResizeForWidth(int width)
         {
             if (this.AutoSizeMode == AutoSizeModeOptions.WrapText ||
-                this.AutoSizeMode == AutoSizeModeOptions.OneLineAutoHeight)
+                this.AutoSizeMode == AutoSizeModeOptions.OneLineAutoHeight ||
+                this.AutoSizeMode == AutoSizeModeOptions.OneLineAutoHeightFixedWidth)
             {
                 this.Size = new Size(width, 10); // Height will be calculated later
                 try
