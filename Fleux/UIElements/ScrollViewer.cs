@@ -167,7 +167,7 @@
             {
                 if (this.VerticalOffset < 0)
                 {
-                    int cheight = 0;
+                    int cheight = - dg.CalculateHeight(Math.Max(ShadowHeight + this.VerticalOffset, 0));
                     for(int s = 0; s < ShadowSteps; s++)
                     {
                         drawingGraphics.Graphics.AlphaBlend(TopShadow,
@@ -194,6 +194,7 @@
         {
             drawingGr.DrawAlphaImage("verticalscrollbar.png", new Rectangle(this.Size.Width - this.ScrollBarWidth, 0, this.ScrollBarWidth, this.Size.Height));
             var scrollHeight = 0;
+            var scrollWidth = 0;
             var scrollBegin = 0;
             if (this.Content.Size.Height != 0)
             {
@@ -201,6 +202,16 @@
                 scrollBegin = this.Size.Height * -this.VerticalOffset / this.Content.Size.Height;
             }
             drawingGr.Color(this.ScrollBarColor).FillRectangle(new Rectangle(this.Size.Width - this.ScrollBarWidth, scrollBegin, this.ScrollBarWidth, scrollHeight));
+            
+            if (HorizontalScroll)
+            {
+                if (this.Content.Size.Width != 0)
+                {
+                    scrollWidth = Math.Max(this.Size.Width * this.Size.Width / this.Content.Size.Width, 20);
+                    scrollBegin = this.Size.Width * -this.HorizontalOffset / this.Content.Size.Width;
+                }
+                drawingGr.Color(this.ScrollBarColor).FillRectangle(new Rectangle(scrollBegin, this.Size.Height - this.ScrollBarWidth, scrollWidth, this.ScrollBarWidth));
+            }
         }
 
         public override bool Pan(Point from, Point to, bool done, Point startPoint)
