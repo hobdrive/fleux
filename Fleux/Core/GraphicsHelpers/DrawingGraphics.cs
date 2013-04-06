@@ -621,9 +621,11 @@
             var gr = Graphics.FromImage(bitmap);
             var realRegion = this.CalculateRect(region);
 #if WINCE || WIN32
+            // win32 gdi draws text badly on transparent images ;(
             gr.DrawImage(this.canvasImage, 0, 0, realRegion, GraphicsUnit.Pixel);
 #else
-            gr.Clear(System.Drawing.Color.Transparent); // win32 gdi draws text badly on transparent images ;(
+            // Android is just fine!
+            gr.Clear(System.Drawing.Color.Transparent);
 #endif
             FleuxApplication.ApplyGraphicsSettings(gr);
             return new ClipBuffer(bitmap, gr, realRegion, this.Graphics);
