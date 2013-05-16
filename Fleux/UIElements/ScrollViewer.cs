@@ -29,7 +29,7 @@
             this.EntranceAnimation = new ForwarderAnimation(() => this.content.EntranceAnimation);
             this.ExitAnimation = new ForwarderAnimation(() => this.content.ExitAnimation);
             this.ScrollBarWidth = 5;
-            this.ScrollBarColor = Color.White;
+            this.ScrollBarColor = ScrollBarDefaultColor;
         }
 
         ~ScrollViewer()
@@ -94,6 +94,8 @@
         public bool ShowScrollbars { get; set; }
 
         public Color ScrollBarColor { get; set; }
+        
+        public static Color ScrollBarDefaultColor = Color.White;
 
         public int ScrollBarWidth { get; set; }
 
