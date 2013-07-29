@@ -49,7 +49,7 @@
                 {
                     Point location = this.location;
                     this.location = value;
-                    if (this.LocationChanged != null)
+                    if (this.LocationChanged != null && location != this.location)
                     {
                         this.LocationChanged(this, null);
                     }

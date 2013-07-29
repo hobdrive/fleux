@@ -75,7 +75,7 @@
                     this.currentSectionIndex = value;
                 }
                 this.IsPanoramaAnimating = true;
-                var vv = this.currentSectionIndex * this.sectionSpace;
+                // var vv = this.currentSectionIndex * this.sectionSpace;
                 var atype = (RubberEdges && (FinePosition < 0 || FinePosition > (this.Sections.ChildrenCount-1)*this.SectionSpace)) ?
                                FunctionBasedAnimation.Functions.BounceEntranceSin : FunctionBasedAnimation.Functions.SoftedFluid;
                 this.StoryBoardPlay(

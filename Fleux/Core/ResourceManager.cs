@@ -28,6 +28,7 @@
         public const int FontQualityAntialiased = 2;
         public const int FontQualityClearType = 3;
 
+        #pragma warning disable 0219, 0414
         int fontQuality = FontQualityNormal;
 
         private ResourceManager()
@@ -270,7 +271,7 @@
             {
                 try{
                     T val = creator();
-                    source.Add(key, creator());
+                    source.Add(key, val);
                 }catch(Exception){
                     return default(T);
                 }

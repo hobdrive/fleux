@@ -74,7 +74,7 @@
 
         private void Relayout()
         {
-            if (this.Size != null && this.Size.Width > 0 && this.title != null)
+            if (!this.Size.IsEmpty && this.Size.Width > 0 && this.title != null)
             {
                 this.textHeight = FleuxApplication.DummyDrawingGraphics
                     .Style(this.TitleStyle)

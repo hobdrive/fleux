@@ -18,7 +18,6 @@
         protected int shadowImageX;
 
         private readonly List<UIElement> elements = new List<UIElement>();
-        private readonly StoryBoard storyboard = new StoryBoard();
         private readonly GesturesEngine gestures = new GesturesEngine();
 
         private bool invalidating = false;

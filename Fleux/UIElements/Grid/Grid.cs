@@ -25,10 +25,6 @@
             set { this.rows = value; }
         }
 
-        public int Width { get; set; }
-
-        public int Height { get; set; }
-
         public UIElement this[int row, int column]
         {
             set { this.Add(row, column, value); }
