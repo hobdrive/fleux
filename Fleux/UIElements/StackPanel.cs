@@ -43,9 +43,10 @@
             UIElement lastch = null;
             foreach (var i in this.Children)
             {
-                var cwidth = this.Width/columns - Padding;
-                i.Location = new Point((no == 0 ? i.Location.X : 0) + cwidth*(no % columns) + Padding*(no % columns), y);
-                i.ResizeForWidth(cwidth);
+                var cwidth = (double)this.Width/columns - Padding*columns - Padding;
+                int x = (int)((no == 0 ? i.Location.X : 0) + cwidth*(no % columns) + Padding*(no % columns));
+                i.Location = new Point(x, y);
+                i.ResizeForWidth((int)cwidth);
                 
                 no = (no+1) % columns;
                 if (no % columns == 0)
