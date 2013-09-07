@@ -1,7 +1,10 @@
-﻿namespace Fleux.UIElements
+﻿
+using Fleux.Core.Scaling;
+using System;
+using System.Drawing;
+
+namespace Fleux.UIElements
 {
-    using System;
-    using System.Drawing;
     using Core;
     using Core.GraphicsHelpers;
     using Styles;
@@ -10,6 +13,8 @@
     {
         protected string text;
         protected bool needUpdate = true;
+        public Size TextSize;
+        
         private bool _inRelayout;
 
         public TextElement(string text)
@@ -90,6 +95,8 @@
 
         public override void Draw(IDrawingGraphics drawingGraphics)
         {
+            var ctext = text;
+            
             if (this.needUpdate)
             {
                 DoRelayout(drawingGraphics);
@@ -98,15 +105,27 @@
 
             drawingGraphics.Style(this.Style);
 
+            /* WTF????
+            if (this.AutoSizeMode == AutoSizeModeOptions.None ||
+                this.AutoSizeMode == AutoSizeModeOptions.OneLineAutoHeightFixedWidth)
+            {
+                while (TextSize.Width.ToPixels() > this.Width)
+                {
+                    ctext = ctext.Substring(0, ctext.Length-3)+"..";
+                    Relayout(drawingGraphics, ctext);
+                }
+            }    
+            */
+            
             switch (this.AutoSizeMode)
             {
                 case AutoSizeModeOptions.None:
-                case AutoSizeModeOptions.OneLineAutoHeight:
                 case AutoSizeModeOptions.OneLineAutoHeightFixedWidth:
-                    drawingGraphics.DrawText(this.text);
+                case AutoSizeModeOptions.OneLineAutoHeight:
+                    drawingGraphics.DrawText(ctext);
                     break;
                 case AutoSizeModeOptions.WrapText:
-                    drawingGraphics.DrawMultiLineText(this.text, this.Size.Width, this.Size.Height);
+                    drawingGraphics.DrawMultiLineText(ctext, this.Size.Width, this.Size.Height);
                     break;
             }
         }
@@ -125,25 +144,30 @@
                 _inRelayout = false;
             }
         }
-
+        
         protected virtual void Relayout(IDrawingGraphics dg)
         {
+            Relayout(dg, this.text);
+        }
+
+        protected virtual void Relayout(IDrawingGraphics dg, string text)
+        {
+            TextSize = dg.Style(this.Style).CalculateTextSize(text);
             if (this.AutoSizeMode != AutoSizeModeOptions.None)
             {
                 int height = 0;
                 switch (this.AutoSizeMode)
                 {
                     case AutoSizeModeOptions.OneLineAutoHeight:
-                        var sz = dg.Style(this.Style).CalculateTextSize(this.text ?? "");
-                        this.Size = new Size(sz.Width, sz.Height);
+                        this.Size = new Size(TextSize.Width, TextSize.Height);
                         break;
                     case AutoSizeModeOptions.OneLineAutoHeightFixedWidth:
-                        height = dg.Style(this.Style).CalculateTextSize(this.text ?? "").Height;
+                        height = TextSize.Height;
                         this.Size = new Size(this.Size.Width, height);
                         break;
                     case AutoSizeModeOptions.WrapText:
                         height = dg.Style(this.Style)
-                            .CalculateMultilineTextHeight(this.text ?? "", this.Size.Width);
+                            .CalculateMultilineTextHeight(text, this.Size.Width);
                         this.Size = new Size(this.Size.Width, height);
                         break;
                 }
