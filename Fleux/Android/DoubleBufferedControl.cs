@@ -19,6 +19,7 @@ namespace Fleux.Controls
     {
         protected HostView AndroidView;
         protected Bitmap offBmp;
+        protected int offBmpWidth, offBmpHeight;
         protected Graphics offGr;
         protected bool offBmpDraw = false;
 
@@ -282,11 +283,11 @@ namespace Fleux.Controls
         {
             var Control  = this;
             if (Control.offBmp == null && this.AndroidView != null){
-                var Width = AndroidView.MeasuredWidth;
-                var Height = AndroidView.MeasuredHeight;
-                if (Width > 0 && Height > 0)
+                offBmpWidth = AndroidView.MeasuredWidth;
+                offBmpHeight = AndroidView.MeasuredHeight;
+                if (offBmpWidth > 0 && offBmpHeight > 0)
                 {
-                    Control.offBmp = new Bitmap(Width, Height);
+                    Control.offBmp = new Bitmap(offBmpWidth, offBmpHeight);
                     Control.offGr = new Graphics(Control.offBmp);
                 }
             }

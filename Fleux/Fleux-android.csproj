@@ -264,7 +264,7 @@
     </Compile>
     <Compile Include="Android\DoubleBufferedControl.cs">
     </Compile>
-    <Compile Include="Android\FleuxControl.cs" />
+    <Compile Include="Controls\FleuxControl.cs" />
     <Compile Include="Android\FleuxControlPage.cs" />
     <Compile Include="Android\StringHelpers.cs">
     </Compile>
