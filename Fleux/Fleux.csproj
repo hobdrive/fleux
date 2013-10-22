@@ -181,6 +181,7 @@
     <Compile Include="Styles\ThicknessStyle.cs" />
     <Compile Include="UIElements\TransparentImageElement.cs" />
     <Compile Include="UIElements\UIElement.cs" />
+    <Compile Include="UIElements\DecoratorElement.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Images\top.png" />
