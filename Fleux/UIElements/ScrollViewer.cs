@@ -62,6 +62,8 @@
                 this.Children.Add(this.content);
                 this.horizontalInertia = null;
                 this.verticalInertia = null;
+                this.HorizontalOffset = 0;
+                this.VerticalOffset = 0;
             }
         }
 
