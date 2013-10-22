@@ -129,7 +129,11 @@
 
         public Func<Point, UIElement> PressedHandler { get; set; }
 
-        public Action ReleasedHandler { get; set; }
+        /// <summary>
+        /// Indicates the mouse released event
+        /// In case handler returns true, all other highlevel events are cancelled
+        /// </summary>
+        public Func<bool> ReleasedHandler { get; set; }
 
         public UIElement Parent { get; set; }
 
@@ -201,7 +205,7 @@
                         this.Update();
                         return this;
                     };
-                    this.ReleasedHandler = () => { this.TransformationScaling = 1.0; this.Update(); };
+                    this.ReleasedHandler = () => { this.TransformationScaling = 1.0; this.Update(); return false; };
                 }
                 else
                 {
@@ -328,21 +332,24 @@
         {
             if (!Enabled) return null;
 
-            UIElement handled = this.TraverseHandle(this.ApplyTransformation(p),
+            UIElement pressTarget = this.TraverseHandle(this.ApplyTransformation(p),
                                                el => el.Pressed(this.ApplyTransformation(p).ClientTo(this.ApplyTransformation(el.Location))));
-            if (handled == null && this.PressedHandler != null)
+            if (pressTarget == null && this.PressedHandler != null)
             {
-                handled = this.PressedHandler(this.ApplyTransformation(p));
+                pressTarget = this.PressedHandler(this.ApplyTransformation(p));
             }
-            return handled;
+            return pressTarget;
         }
 
-        public virtual void Released()
+        public virtual bool Released()
         {
+            if (!Enabled) return false;
+            
             if (this.ReleasedHandler != null)
             {
-                this.ReleasedHandler();
+                return this.ReleasedHandler();
             }
+            return false;
         }
 
         public virtual void ResizeForWidth(int width)

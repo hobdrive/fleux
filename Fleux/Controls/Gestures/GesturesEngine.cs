@@ -52,6 +52,7 @@
         private bool mouseDown;
         private Point prevDownPoint;
         private Timer holdTimer;
+        private bool CancelLastAction = false;
         
         public int LastTapDuration;
 
@@ -124,6 +125,12 @@
             this.canBeHold = false;
             this.RaiseReleased(this.mouseDownPoint, point);
 
+            if (CancelLastAction)
+            {
+                CancelLastAction = false;
+                return;
+            }
+            
             // Check for tap or double tap
             if (this.canBeTap && this.mouseDownPoint.IsCloseTo(point, this.parameters.TapDistance)
                 && LastTapDuration <= this.parameters.TapTimePeriod)
@@ -208,6 +215,11 @@
             {
                 this.Released.Invoke(start, end);
             }
+        }
+        
+        public void CancelCurrentAction()
+        {
+            this.CancelLastAction = true;
         }
     }
 }

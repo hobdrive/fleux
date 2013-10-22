@@ -149,7 +149,9 @@
         {
             if (this.pressedHandledBy != null)
             {
-                this.pressedHandledBy.Released();
+                var res = this.pressedHandledBy.Released();
+                if (res)
+                    gestures.CancelCurrentAction();
             }
         }
 

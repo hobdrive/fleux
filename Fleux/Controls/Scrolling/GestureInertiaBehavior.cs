@@ -20,7 +20,7 @@
 
         public int Min { get; set; }
 
-        /* If true, pans and flicks will not shift content over than minimums */
+        /// If true, pans and flicks will not shift content over than minimums
         public bool TrimPanning = false;
 
         public void Pan(int from, int to, bool done)
