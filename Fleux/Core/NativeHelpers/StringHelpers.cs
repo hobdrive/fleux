@@ -18,16 +18,20 @@
         /// </summary>
         public static Size MeasureString(Graphics gr, Font font, string text, int width)
         {
-            Rect bounds = new Rect() { Left = 0, Right = width, Bottom = 1, Top = 0 };
-            IntPtr hDc = gr.GetHdc();
-            int flags = DTCALCRECT | DTWORDBREAK;
-            IntPtr controlFont = font.ToHfont();
-            IntPtr originalObject = SelectObject(hDc, controlFont);
-            DrawText(hDc, text, text.Length, ref bounds, flags);
-            SelectObject(hDc, originalObject); // Release resources
-            gr.ReleaseHdc(hDc);
-
-            return new Size(bounds.Right - bounds.Left, bounds.Bottom - bounds.Top);
+            try{
+                Rect bounds = new Rect() { Left = 0, Right = width, Bottom = 1, Top = 0 };
+                IntPtr hDc = gr.GetHdc();
+                int flags = DTCALCRECT | DTWORDBREAK;
+                IntPtr controlFont = font.ToHfont();
+                IntPtr originalObject = SelectObject(hDc, controlFont);
+                DrawText(hDc, text, text.Length, ref bounds, flags);
+                SelectObject(hDc, originalObject); // Release resources
+                gr.ReleaseHdc(hDc);
+    
+                return new Size(bounds.Right - bounds.Left, bounds.Bottom - bounds.Top);
+            }catch(Exception){
+                return Size.Empty;
+            }
         }
         [DllImport("coredll.dll")]
         private static extern int DrawText(IntPtr hdc, string lpstr, int ncount, ref Rect lprect, int wformat);
