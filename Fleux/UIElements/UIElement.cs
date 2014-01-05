@@ -165,14 +165,10 @@
 
         public string ID { get; set; }
 
-        public bool Visible{ get
-            {
-                return Visibility == StateVisible;
-            }
-            set
-            {
-                Visibility = value ? StateVisible : StateHidden;
-            }
+        public bool Visible
+        {
+            get { return Visibility == StateVisible; }
+            set { Visibility = value ? StateVisible : StateHidden; }
         }
 
         const int StateVisible = 0;
@@ -220,14 +216,7 @@
         {
             if (this.Parent != null)
             {
-                if (child.Bounds.IntersectsWith(new Rectangle(0, 0, this.Size.Width, this.Size.Height)))
-                {
-                    return this.Parent.IsShowing(this);
-                }
-                else
-                {
-                    return false;
-                }
+                return child.Bounds.IntersectsWith(new Rectangle(0, 0, this.Size.Width, this.Size.Height)) && this.Parent.IsShowing(this);
             }
             else
             {
