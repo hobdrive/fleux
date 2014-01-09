@@ -356,6 +356,10 @@
         {
         }
 
+        public virtual void ResizeForHeight(int height)
+        {
+        }
+
         protected virtual bool TraverseHandle(Point start, Func<UIElement, bool> elementHandler)
         {
             bool handled = false;
