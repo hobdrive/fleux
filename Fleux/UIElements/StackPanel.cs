@@ -59,7 +59,7 @@ namespace Fleux.UIElements
             {
                 var nextColumnLocation = GetNextColumnLocation(nextColumnIndex, child);
 
-                child.Location = GetChildLocationPoint(nextColumnLocation, nextLineLocation);
+                child.Location = GetLocationPoint(nextColumnLocation, nextLineLocation);
 
                 ResizeChild(child);
 
@@ -135,7 +135,7 @@ namespace Fleux.UIElements
             return currentLineLocation + previousChildSize + Padding;
         }
 
-        private Point GetChildLocationPoint(int nextColumnLocation, int nextLineLocation)
+        private Point GetLocationPoint(int nextColumnLocation, int nextLineLocation)
         {
             return IsVertical
                 ? new Point(nextColumnLocation, nextLineLocation)
