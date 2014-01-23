@@ -117,6 +117,11 @@
 
         public Action Updated { get; set; }
 
+        /// <summary>
+        /// If true, then this element will consume all the unhandled input, and will not pass it to the parent.
+        /// </summary>
+        public bool ConsumeAllInput { get; set; }
+
         public Func<Point, bool> TapHandler { get; set; }
 
         public Func<Point, bool> DoubleTapHandler { get; set; }
@@ -252,6 +257,7 @@
             }
             handled = this.TraverseHandle(this.ApplyTransformation(p),
                                                 el => el.Tap(this.ApplyTransformation(p).ClientTo(this.ApplyTransformation(el.Location))));
+            handled |= ConsumeAllInput;
             if (!handled && !PreTap && this.TapHandler != null)
             {
                 handled = this.TapHandler(this.ApplyTransformation(p));
@@ -268,6 +274,7 @@
 
             bool handled = this.TraverseHandle(this.ApplyTransformation(p),
                                                el => el.DoubleTap(this.ApplyTransformation(p).ClientTo(this.ApplyTransformation(el.Location))));
+            handled |= ConsumeAllInput;
             if (!handled && this.DoubleTapHandler != null)
             {
                 handled = this.DoubleTapHandler(this.ApplyTransformation(p));
@@ -279,6 +286,7 @@
         {
             bool handled = this.TraverseHandle(this.ApplyTransformation(p),
                                                el => el.Hold(this.ApplyTransformation(p).ClientTo(this.ApplyTransformation(el.Location))));
+            handled |= ConsumeAllInput;
             if (!handled && this.HoldHandler != null)
             {
                 handled = this.HoldHandler(this.ApplyTransformation(p));
@@ -293,6 +301,7 @@
                                                                this.ApplyTransformation(to).ClientTo(this.ApplyTransformation(el.Location)),
                                                                millisecs,
                                                                this.ApplyTransformation(startPoint).ClientTo(this.ApplyTransformation(el.Location))));
+            handled |= ConsumeAllInput;
             if (!handled && this.FlickHandler != null)
             {
                 handled = this.FlickHandler(this.ApplyTransformation(from),
@@ -310,6 +319,7 @@
                                                             this.ApplyTransformation(to).ClientTo(this.ApplyTransformation(el.Location)),
                                                             done,
                                                             this.ApplyTransformation(startPoint).ClientTo(this.ApplyTransformation(el.Location))));
+            handled |= ConsumeAllInput;
             if (!handled && this.PanHandler != null)
             {
                 handled = this.PanHandler(this.ApplyTransformation(from), this.ApplyTransformation(to), done, this.ApplyTransformation(startPoint));
@@ -327,6 +337,8 @@
             {
                 pressTarget = this.PressedHandler(this.ApplyTransformation(p));
             }
+            if (ConsumeAllInput && pressTarget == null)
+                pressTarget = this;
             return pressTarget;
         }
 
