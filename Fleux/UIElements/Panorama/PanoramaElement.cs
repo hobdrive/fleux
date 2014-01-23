@@ -16,6 +16,12 @@
         protected bool isPanning;
         protected int currentSectionIndex;
 
+        public static int defaultDefaultScrollDuration = 600;
+        public static int MinimumScrollDuration = 200;
+        public int defaultScrollDuration = defaultDefaultScrollDuration;
+        protected int scrollDuration;
+        protected bool variableSpeedFlick = false;
+
         public bool IsPanoramaAnimating{ get; protected set; }
         public static bool RubberEdgesDefault = true;
         public bool RubberEdges{ get; set; }
@@ -83,10 +89,11 @@
                     {
                         From = this.finePosition,
                         To = this.currentSectionIndex * this.sectionSpace,
-                        Duration = 400,
+                        Duration = variableSpeedFlick ? scrollDuration : defaultScrollDuration,
                         OnAnimation = v => { this.FinePosition = v; this.Update(); }
                     }
                 );
+                variableSpeedFlick = false;
                 
                 // TODO!
                 // TODO - moveout into OnAnimationEnd!
@@ -134,6 +141,10 @@
             }
             if (!base.Flick(from, to, millisecs, startPoint) && (Math.Abs(to.X - from.X) > Math.Abs(to.Y - from.Y)))
             {
+                scrollDuration = Math.Max(MinimumScrollDuration,
+                                          defaultScrollDuration * millisecs /
+                                          Fleux.Controls.Gestures.GestureDetectionParameters.Current.FlickPeriod);
+                variableSpeedFlick = true;
                 this.CurrentSectionIndex += -Math.Sign(to.X - from.X);
             }
             else if (this.isPanning)
