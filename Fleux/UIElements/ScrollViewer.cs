@@ -19,10 +19,13 @@
         private int panV = 0;
         private int panH = 0;
 
+        public static int ShadowHeightDefault = 15;
+        public static int ShadowStepsDefault = 3;
+
         public bool DrawShadows { get; set; }
         Bitmap TopShadow, BottomShadow;
-        public int ShadowHeight = 30;
-        public int ShadowSteps = 3;
+        public int ShadowHeight = ShadowHeightDefault;
+        public int ShadowSteps = ShadowStepsDefault;
 
         public ScrollViewer()
         {
@@ -137,7 +140,7 @@
                 drawingGraphics.Graphics.DrawImage(this.clipBitmap, drawingGraphics.CalculateX(this.HorizontalOffset - this.panH), drawingGraphics.CalculateY(this.VerticalOffset - this.panV));
             }else
             {
-            using (var clipBitmap = drawingGraphics.GetClipBuffer(new Rectangle(0, 0, this.Size.Width, this.Size.Height), this.clipBitmap))
+            using (var clipBuffer = drawingGraphics.GetClipBuffer(new Rectangle(0, 0, this.Size.Width, this.Size.Height), this.clipBitmap))
             {
                 /* Do shadows */
                 if (this.DrawShadows)
@@ -158,11 +161,11 @@
                     }
                 }
                 
-                this.Content.Draw(clipBitmap.DrawingGr.CreateChild(new Point(this.HorizontalOffset, this.VerticalOffset),
+                this.Content.Draw(clipBuffer.DrawingGr.CreateChild(new Point(this.HorizontalOffset, this.VerticalOffset),
                                                                    this.content.TransformationScaling, this.content.TransformationCenter));
                 if (this.ShowScrollbars)
                 {
-                    this.DrawScrollBar(clipBitmap.DrawingGr);
+                    this.DrawScrollBar(clipBuffer.DrawingGr);
                 }
             }
             }
