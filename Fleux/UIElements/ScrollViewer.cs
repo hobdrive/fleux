@@ -21,6 +21,7 @@
 
         public static int ShadowHeightDefault = 15;
         public static int ShadowStepsDefault = 3;
+        public static bool DrawShadowsDefault = true;
 
         public bool DrawShadows { get; set; }
         Bitmap TopShadow, BottomShadow;
@@ -33,6 +34,7 @@
             this.ExitAnimation = new ForwarderAnimation(() => this.content.ExitAnimation);
             this.ScrollBarWidth = 5;
             this.ScrollBarColor = ScrollBarDefaultColor;
+            DrawShadows = DrawShadowsDefault;
         }
 
         ~ScrollViewer()
