@@ -47,7 +47,20 @@ namespace Fleux.UIElements
         public override void AddElement(UIElement element)
         {
             base.AddElement(element);
+            element.VisibleChanged += element_VisibleChanged;
             this.Relayout();
+        }
+
+        public override void RemoveElement(UIElement element)
+        {
+            base.RemoveElement(element);
+            element.VisibleChanged -= element_VisibleChanged;
+            this.Relayout();
+        }
+
+        private void element_VisibleChanged(object sender, System.EventArgs e)
+        {
+            Relayout();
         }
 
         public void Relayout()
@@ -55,7 +68,7 @@ namespace Fleux.UIElements
             var nextLineLocation = 0;
             var nextColumnIndex = 0;
 
-            foreach (var child in Children)
+            foreach (var child in Children.Where(child => child.Visible).ToArray())
             {
                 var nextColumnLocation = GetNextColumnLocation(nextColumnIndex, child);
 
@@ -68,7 +81,7 @@ namespace Fleux.UIElements
                 nextLineLocation = GetNewLineLocation(nextLineLocation, child, nextColumnIndex);
             }
 
-            IncreaseSizeIfNeed();
+            ChangeSizeIfNeed();
         }
 
         private void ResizeChild(UIElement child)
@@ -83,23 +96,42 @@ namespace Fleux.UIElements
             }
         }
 
-        private void IncreaseSizeIfNeed()
+        private void ChangeSizeIfNeed()
         {
             var lastChild = Children.LastOrDefault();
 
             if (lastChild == null)
                 return;
 
-            if (IsVertical)
+            var desiredSize = GetDesiredSize();
+
+            if (AutoResize)
             {
-                if (lastChild.Location.Y + lastChild.Size.Height > Size.Height)
-                    Height = lastChild.Location.Y + lastChild.Size.Height + Padding;
+                Size = desiredSize;
             }
             else
             {
-                if (lastChild.Location.X + lastChild.Size.Width > Size.Width)
-                    Width = lastChild.Location.X + lastChild.Size.Width + Padding;
+                if (IsVertical)
+                {
+                    if (desiredSize.Height > Size.Height)
+                        Height = desiredSize.Height;
+
+                }
+                else
+                {
+                    if (desiredSize.Width > Size.Width)
+                        Width = desiredSize.Width;
+
+                }
             }
+        }
+
+        private Size GetDesiredSize()
+        {
+            var desiredHeight = Children.Where(ch => ch.Visible).Max(ch => ch.Location.Y + ch.Height) + Padding*2;
+            var desiredWidth = Children.Where(ch => ch.Visible).Max(ch => ch.Location.X + ch.Width) + Padding*2;
+
+            return new Size(desiredWidth, desiredHeight);
         }
 
         private double GetChildColumnSize()

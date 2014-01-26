@@ -5,17 +5,16 @@
     using System.Drawing;
     using System.Linq;
     using Animations;
-    using Controls.Gestures;
     using Core;
     using Core.Dim;
     using Core.GraphicsHelpers;
-    using Core.NativeHelpers;
-    using Core.Scaling;
     using Events;
 
     public abstract class UIElement
     {
         protected readonly List<UIElement> Children = new List<UIElement>();
+
+        public event EventHandler VisibleChanged;
 
         private Size size;
 
@@ -29,6 +28,15 @@
 
         public event EventHandler<SizeChangedEventArgs> SizeChanged;
 
+        private void OnVisibleChanged()
+        {
+            var temp = VisibleChanged;
+            if (temp != null)
+            {
+                temp(this, new EventArgs());
+            }
+        }
+
         /**
          * If true, the element will receive its own TapHandler _before_ all its children (prioritizing it)
          */
@@ -39,10 +47,7 @@
 
         public Point Location
         {
-            get
-            {
-                return this.location;
-            }
+            get { return this.location; }
             set
             {
                 if (this.location != value)
@@ -59,12 +64,9 @@
 
         public event EventHandler<SizeChangedEventArgs> LocationChanged;
 
-        public Size Size 
-        { 
-            get
-            {
-                return this.size;
-            }
+        public Size Size
+        {
+            get { return this.size; }
 
             set
             {
@@ -74,32 +76,24 @@
                     this.size = value;
                     if (this.SizeChanged != null)
                     {
-                        this.SizeChanged(this, new SizeChangedEventArgs { New = value, Old = old });
+                        this.SizeChanged(this, new SizeChangedEventArgs {New = value, Old = old});
                     }
                 }
             }
         }
-        
+
         public int Width
         {
-            get{
-                return Size.Width;
-            }
-            
-            set{
-                this.Size = new Size(value, Size.Height);
-            }
+            get { return Size.Width; }
+
+            set { this.Size = new Size(value, Size.Height); }
         }
 
         public int Height
         {
-            get{
-                return Size.Height;
-            }
-            
-            set{
-                this.Size = new Size(Size.Width, value);
-            }
+            get { return Size.Height; }
+
+            set { this.Size = new Size(Size.Width, value); }
         }
 
         public double TransformationScaling { get; set; }
@@ -159,33 +153,39 @@
             }
         }
 
-        public int ChildrenCount{
-            get{ return this.Children.Count; }
+        public int ChildrenCount
+        {
+            get { return this.Children.Count; }
         }
 
         public string ID { get; set; }
 
-        public bool Visible{ get
-            {
-                return Visibility == StateVisible;
-            }
+        public bool Visible
+        {
+            get { return Visibility == StateVisible; }
+            set { Visibility = value ? StateVisible : StateHidden; }
+        }
+
+        private const int StateVisible = 0;
+        private const int StateHidden = 1;
+        private const int StateGone = 2;
+
+        private int _visibility;
+
+        public int Visibility
+        {
+            get { return _visibility; }
             set
             {
-                Visibility = value ? StateVisible : StateHidden;
+                _visibility = value;
+                OnVisibleChanged();
             }
         }
 
-        const int StateVisible = 0;
-        const int StateHidden = 1;
-        const int StateGone = 2;
-        public int Visibility { get; set; }
-
         public UIElement this[int idx]
         {
-            get{
-                return this.Children[idx];
-            }
-            
+            get { return this.Children[idx]; }
+
         }
 
         public virtual bool PressFeedbackSupported
@@ -197,7 +197,7 @@
                     this.PressedHandler = p =>
                     {
                         this.TransformationScaling = 0.95;
-                        this.TransformationCenter = new Point(this.Size.Width / 2, this.Size.Height / 2);
+                        this.TransformationCenter = new Point(this.Size.Width/2, this.Size.Height/2);
                         if (FleuxSettings.HapticFeedbackMode == FleuxSettings.HapticOptions.FeedbackEnabledPress)
                         {
                             FleuxApplication.Led.Vibrate();
@@ -205,7 +205,12 @@
                         this.Update();
                         return this;
                     };
-                    this.ReleasedHandler = () => { this.TransformationScaling = 1.0; this.Update(); return false; };
+                    this.ReleasedHandler = () =>
+                    {
+                        this.TransformationScaling = 1.0;
+                        this.Update();
+                        return false;
+                    };
                 }
                 else
                 {
@@ -262,7 +267,7 @@
                 if (handled) return handled;
             }
             handled = this.TraverseHandle(this.ApplyTransformation(p),
-                                                el => el.Tap(this.ApplyTransformation(p).ClientTo(this.ApplyTransformation(el.Location))));
+                el => el.Tap(this.ApplyTransformation(p).ClientTo(this.ApplyTransformation(el.Location))));
             if (!handled && !PreTap && this.TapHandler != null)
             {
                 handled = this.TapHandler(this.ApplyTransformation(p));
@@ -278,7 +283,7 @@
             }
 
             bool handled = this.TraverseHandle(this.ApplyTransformation(p),
-                                               el => el.DoubleTap(this.ApplyTransformation(p).ClientTo(this.ApplyTransformation(el.Location))));
+                el => el.DoubleTap(this.ApplyTransformation(p).ClientTo(this.ApplyTransformation(el.Location))));
             if (!handled && this.DoubleTapHandler != null)
             {
                 handled = this.DoubleTapHandler(this.ApplyTransformation(p));
@@ -289,7 +294,7 @@
         public virtual bool Hold(Point p)
         {
             bool handled = this.TraverseHandle(this.ApplyTransformation(p),
-                                               el => el.Hold(this.ApplyTransformation(p).ClientTo(this.ApplyTransformation(el.Location))));
+                el => el.Hold(this.ApplyTransformation(p).ClientTo(this.ApplyTransformation(el.Location))));
             if (!handled && this.HoldHandler != null)
             {
                 handled = this.HoldHandler(this.ApplyTransformation(p));
@@ -300,16 +305,16 @@
         public virtual bool Flick(Point from, Point to, int millisecs, Point startPoint)
         {
             bool handled = this.TraverseHandle(this.ApplyTransformation(startPoint),
-                                                el => el.Flick(this.ApplyTransformation(from).ClientTo(this.ApplyTransformation(el.Location)),
-                                                               this.ApplyTransformation(to).ClientTo(this.ApplyTransformation(el.Location)),
-                                                               millisecs,
-                                                               this.ApplyTransformation(startPoint).ClientTo(this.ApplyTransformation(el.Location))));
+                el => el.Flick(this.ApplyTransformation(from).ClientTo(this.ApplyTransformation(el.Location)),
+                    this.ApplyTransformation(to).ClientTo(this.ApplyTransformation(el.Location)),
+                    millisecs,
+                    this.ApplyTransformation(startPoint).ClientTo(this.ApplyTransformation(el.Location))));
             if (!handled && this.FlickHandler != null)
             {
                 handled = this.FlickHandler(this.ApplyTransformation(from),
-                                            this.ApplyTransformation(to),
-                                            millisecs,
-                                            this.ApplyTransformation(startPoint));
+                    this.ApplyTransformation(to),
+                    millisecs,
+                    this.ApplyTransformation(startPoint));
             }
             return handled;
         }
@@ -317,13 +322,14 @@
         public virtual bool Pan(Point from, Point to, bool done, Point startPoint)
         {
             bool handled = this.TraverseHandle(this.ApplyTransformation(startPoint),
-                                               el => el.Pan(this.ApplyTransformation(from).ClientTo(this.ApplyTransformation(el.Location)),
-                                                            this.ApplyTransformation(to).ClientTo(this.ApplyTransformation(el.Location)),
-                                                            done,
-                                                            this.ApplyTransformation(startPoint).ClientTo(this.ApplyTransformation(el.Location))));
+                el => el.Pan(this.ApplyTransformation(from).ClientTo(this.ApplyTransformation(el.Location)),
+                    this.ApplyTransformation(to).ClientTo(this.ApplyTransformation(el.Location)),
+                    done,
+                    this.ApplyTransformation(startPoint).ClientTo(this.ApplyTransformation(el.Location))));
             if (!handled && this.PanHandler != null)
             {
-                handled = this.PanHandler(this.ApplyTransformation(from), this.ApplyTransformation(to), done, this.ApplyTransformation(startPoint));
+                handled = this.PanHandler(this.ApplyTransformation(from), this.ApplyTransformation(to), done,
+                    this.ApplyTransformation(startPoint));
             }
             return handled;
         }
@@ -333,7 +339,7 @@
             if (!Enabled) return null;
 
             UIElement pressTarget = this.TraverseHandle(this.ApplyTransformation(p),
-                                               el => el.Pressed(this.ApplyTransformation(p).ClientTo(this.ApplyTransformation(el.Location))));
+                el => el.Pressed(this.ApplyTransformation(p).ClientTo(this.ApplyTransformation(el.Location))));
             if (pressTarget == null && this.PressedHandler != null)
             {
                 pressTarget = this.PressedHandler(this.ApplyTransformation(p));
@@ -344,7 +350,7 @@
         public virtual bool Released()
         {
             if (!Enabled) return false;
-            
+
             if (this.ReleasedHandler != null)
             {
                 return this.ReleasedHandler();
@@ -417,7 +423,5 @@
         {
             this.Location = new Point((anchor.Location.X + anchor.Size.Width) + padding, anchor.Location.Y);
         }
-
-
     }
 }
