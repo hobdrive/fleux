@@ -1,4 +1,6 @@
-﻿namespace Fleux.UIElements.Panorama
+﻿using Fleux.Core;
+
+namespace Fleux.UIElements.Panorama
 {
     using System;
     using System.Drawing;
@@ -31,7 +33,7 @@
             this.RubberEdges = RubberEdgesDefault;
             this.Background = new Canvas();
             this.Title = new Canvas();
-            this.Sections = new Canvas { Location = new Point(0, 130), Size = new Size(1800, 600) };
+            this.Sections = new Canvas { Location = new Point(0, 130), Size = new Size(1800, 600), ID = "PanoramaSections" };
             this.AddElement(this.Background);
             this.AddElement(this.Title);
             this.AddElement(this.Sections);
