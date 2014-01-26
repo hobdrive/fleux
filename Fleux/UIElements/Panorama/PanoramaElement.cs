@@ -80,7 +80,7 @@
                 {
                     this.currentSectionIndex = value;
                 }
-                this.IsPanoramaAnimating = true;
+                this.IsPanoramaAnimating = FleuxSettings.GlobalAnimating = true;
                 // var vv = this.currentSectionIndex * this.sectionSpace;
                 var atype = (RubberEdges && (FinePosition < 0 || FinePosition > (this.Sections.ChildrenCount-1)*this.SectionSpace)) ?
                                FunctionBasedAnimation.Functions.BounceEntranceSin : FunctionBasedAnimation.Functions.SoftedFluid;
@@ -174,7 +174,10 @@
             if (!base.Pan(from, to, done, startPoint))
             {
                 this.isPanning = !done;
-                this.IsPanoramaAnimating = !done;
+
+                if (!done) {
+                    FleuxSettings.GlobalAnimating = this.IsPanoramaAnimating = true;
+                }
 
                 // Validate if should we handle this Pan
                 if (Math.Abs(to.X - from.X) > Math.Abs(to.Y - from.Y))
@@ -256,15 +259,8 @@
             this.animation = animation;
             sb.CancelAsyncAnimate();
             sb.Clear();
-            sb.AddAnimations(this.animation,
-                // hack? implement it better?
-                new CommitStoryboardAnimation(){
-                    StartsAt = 400,
-                    Duration = 500,
-                    CommitAction = () => { this.IsPanoramaAnimating = false; }
-                }
-            );
-            sb.BeginAnimate();
+            sb.AddAnimation(this.animation);
+            sb.BeginAnimate(() => { FleuxSettings.GlobalAnimating = this.IsPanoramaAnimating = false; });
         }
     }
 }

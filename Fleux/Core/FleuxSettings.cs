@@ -45,5 +45,11 @@
         /// </summary>
         public static bool AnimationMode { get { return animationMode; } set { animationMode = value;} }
         static bool animationMode = true;
+
+        /// <summary>
+        /// True means system is under heavy animation. Objects may consider reduce drawing to improve overall performance
+        /// </summary>
+        public static bool GlobalAnimating { get { return globalAnimating; } set { globalAnimating = value;} }
+        static bool globalAnimating = false;
     }
 }
