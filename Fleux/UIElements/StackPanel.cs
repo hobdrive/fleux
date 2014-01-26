@@ -98,9 +98,7 @@ namespace Fleux.UIElements
 
         private void ChangeSizeIfNeed()
         {
-            var lastChild = Children.LastOrDefault();
-
-            if (lastChild == null)
+            if (!Children.Any())
                 return;
 
             var desiredSize = GetDesiredSize();
@@ -128,8 +126,10 @@ namespace Fleux.UIElements
 
         private Size GetDesiredSize()
         {
-            var desiredHeight = Children.Where(ch => ch.Visible).Max(ch => ch.Location.Y + ch.Height) + Padding*2;
-            var desiredWidth = Children.Where(ch => ch.Visible).Max(ch => ch.Location.X + ch.Width) + Padding*2;
+            var visibleChildren = Children.Where(ch => ch.Visible);
+
+            var desiredHeight = visibleChildren.Max(ch => ch.Location.Y + ch.Height) + Padding * 2;
+            var desiredWidth = visibleChildren.Max(ch => ch.Location.X + ch.Width) + Padding * 2;
 
             return new Size(desiredWidth, desiredHeight);
         }
