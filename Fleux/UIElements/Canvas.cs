@@ -1,4 +1,6 @@
-﻿namespace Fleux.UIElements
+﻿using Fleux.UIElements.Grid;
+
+namespace Fleux.UIElements
 {
     using System;
     using System.Drawing;
@@ -63,18 +65,37 @@
             int ctime = System.Environment.TickCount;
 
             var visible = this.Children.Where(i => i.Visible && i.Bounds.IntersectsWith(drawingGraphics.VisibleRect)).ToList();
+#if xDEBUG
+			if (this is Fleux.UIElements.Panorama.PanoramaSection)
+			{
+				var ch = this.Children.Where(i => i.Visible);
+
+			}
+			var visible = this.Children.Where(i => i.Visible).ToList();
+#endif
+#if xDEBUG
+            if (this.ID == "PanoramaSections"){
+                System.Console.WriteLine("section:"+visible.Count + " vrect:"+drawingGraphics.VisibleRect.ToString());
+                foreach(var ch in visible)
+                    System.Console.WriteLine("child: "+ch.Bounds.ToString());
+            }
+#endif
 
             ctime = System.Environment.TickCount-ctime;
             drawtime += ctime;
             foreach(var e in visible)
             {
                 try{
+#if xDEBUG
+                    System.Console.WriteLine("Canvas draw " + e.GetType().ToString() + " vis: "+visible.Count + "tot: "+this.ChildrenCount);
+#endif
                     e.Draw(drawingGraphics.CreateChild(e.Location, e.TransformationScaling, e.TransformationCenter));
-#if xxxDEBUG
+#if xDEBUG
+					drawingGraphics.Color(Color.Red);
                     drawingGraphics.DrawRectangle(e.Location.X, e.Location.Y, e.Size.Width, e.Size.Height);
 #endif
-                }catch(Exception){
-                    //TODO: handle UI exceptions somehow!
+                }catch(Exception ex){
+                    System.Console.WriteLine("Canvas draw exception " + ex);
                 }
             };
         }
