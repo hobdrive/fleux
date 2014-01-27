@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace Fleux.UIElements
 {
@@ -6,6 +7,8 @@ namespace Fleux.UIElements
 
     public class StackPanel : Canvas
     {
+        private bool _noNeedReloyout;
+
         public int Padding{ get; set; }
         
         int columns = 1;
@@ -41,7 +44,12 @@ namespace Fleux.UIElements
 
             base.AutoResize = false;
             this.Padding = 0;
-            this.SizeChanged += (s, e) => this.Relayout();
+            this.SizeChanged += OnSizeChanged;
+        }
+
+        void OnSizeChanged(object sender, Events.SizeChangedEventArgs e)
+        {
+            this.Relayout();
         }
 
         public override void AddElement(UIElement element)
@@ -65,6 +73,9 @@ namespace Fleux.UIElements
 
         public void Relayout()
         {
+            if (_noNeedReloyout)
+                return;
+
             var nextLineLocation = 0;
             var nextColumnIndex = 0;
 
@@ -81,7 +92,7 @@ namespace Fleux.UIElements
                 nextLineLocation = GetNewLineLocation(nextLineLocation, child, nextColumnIndex);
             }
 
-            ChangeSizeIfNeed();
+            WithoutRelayout(ChangeSizeIfNeed);
         }
 
         private void ResizeChild(UIElement child)
@@ -121,6 +132,20 @@ namespace Fleux.UIElements
                         Width = desiredSize.Width;
 
                 }
+            }
+        }
+
+        private void WithoutRelayout(Action action)
+        {
+            _noNeedReloyout = true;
+
+            try
+            {
+                action();
+            }
+            finally
+            {
+                _noNeedReloyout = false;
             }
         }
 
