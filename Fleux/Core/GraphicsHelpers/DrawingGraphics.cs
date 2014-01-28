@@ -114,7 +114,10 @@
         {
             // cail: wtf? useless clipping on high resolutions
             // cail: WTF2:
-            get { return new Rectangle(Math.Max(0, -this.Location.X.ToLogic()), Math.Max(0,-this.Location.Y.ToLogic()), MaxWidth.ToLogic(), MaxHeight.ToLogic()); }
+            get {
+                var vx = Math.Max(0, -this.Location.X.ToLogic());
+                return new Rectangle(vx, Math.Max(0,-this.Location.Y.ToLogic()), MaxWidth.ToLogic()-vx, MaxHeight.ToLogic());
+            }
         }
 
         public static DrawingGraphics FromGraphicsAndRect(Graphics gr, Image canvasImage, Rectangle rect)
