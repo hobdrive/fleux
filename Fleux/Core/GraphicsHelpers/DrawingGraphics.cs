@@ -554,6 +554,38 @@
             return new Size(((int)s.Width).ToLogic(), ((int)s.Height).ToLogic());
         }
 
+        private Size CalculateTextSizeForFontSize(string text, int fontSize)
+        {
+            var measuredFront = ResourceManager.Instance.GetFont(this.state.CurrenFont.FontFamily.Name, this.state.CurrenFont.Style, fontSize);
+
+            var s = this.Graphics.MeasureString(text, measuredFront);
+            return new Size(((int) s.Width).ToLogic(), ((int) s.Height).ToLogic());
+        }
+
+        public int FindMaxFontSizeForArea(string text, Size maxArea, out Size newArea)
+        {
+            if (text == null)
+                throw new ArgumentNullException("text");
+
+            if (maxArea.IsEmpty)
+                throw new ArgumentException("maxArea can't be empty");
+
+            var current = (int) (state.CurrenFont.Size*0.95);
+            newArea = new Size();
+
+            while (current > 0)
+            {
+                newArea = CalculateTextSizeForFontSize(text, current);
+
+                if (maxArea.Height > newArea.Height && maxArea.Width > newArea.Width)
+                    break;
+
+                current -= 3;
+            }
+
+            return current;
+        }
+
         public IDrawingGraphics DrawMultiLineText(string text, int width, int height)
         {
             this.Graphics.DrawString(text,
@@ -603,12 +635,15 @@
 
         public IDrawingGraphics CreateChild(Point innerlocation, double scalingTransformation, Point transformationCenter)
         {
-            var location = innerlocation.ToPixels().ToParent(this.Location);
-            var children = DrawingGraphics.FromGraphicsLocationMaxWidth(this.Graphics, this.canvasImage, location.X, location.Y, this.MaxWidth - location.X);
-            children.scalingFactorFromParent = this.scalingFactorFromParent * this.scalingFactor;
-            children.scalingFactor = scalingTransformation;
-            children.TransformationCenter = transformationCenter;
-            return children;
+            var childLocation = innerlocation.ToPixels().ToParent(this.Location);
+            var childMaxWidth = this.MaxWidth - (childLocation.X - this.Location.X);
+            var child = FromGraphicsLocationMaxWidth(this.Graphics, this.canvasImage, childLocation.X, childLocation.Y, childMaxWidth);
+
+            child.scalingFactorFromParent = this.scalingFactorFromParent * this.scalingFactor;
+            child.scalingFactor = scalingTransformation;
+            child.TransformationCenter = transformationCenter;
+
+            return child;
         }
 
         public IDrawingGraphics CreateChild(Point innerlocation)
