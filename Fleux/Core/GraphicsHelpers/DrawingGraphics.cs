@@ -556,7 +556,7 @@
 
         private Size CalculateTextSizeForFontSize(string text, int fontSize)
         {
-            var measuredFront = ResourceManager.Instance.GetFont(this.state.CurrenFont.FontFamily.Name, this.state.CurrenFont.Style, fontSize);
+            var measuredFront = ResourceManager.Instance.GetFont(this.state.CurrenFont.Name, this.state.CurrenFont.Style, fontSize);
 
             var s = this.Graphics.MeasureString(text, measuredFront);
             return new Size(((int) s.Width).ToLogic(), ((int) s.Height).ToLogic());
