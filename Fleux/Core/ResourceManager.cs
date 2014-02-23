@@ -20,7 +20,7 @@
         private readonly Dictionary<string, Bitmap> bitmapSizedMap = new Dictionary<string, Bitmap>();
         private readonly Dictionary<string, IImageWrapper> iimagesMap = new Dictionary<string, IImageWrapper>();
         private static ResourceManager instance;
-		private static IImageResourceProvider _embededResourceProvider;
+		private static IImageResourceProvider _imageResourceProvider;
 
         public const int FontQualityDraft = 0;
         public const int FontQualityNormal = 1;
@@ -41,7 +41,7 @@
 
 		public static void SetImageResourceProvider(IImageResourceProvider provider)
 		{
-			_embededResourceProvider = provider;
+			_imageResourceProvider = provider;
 		}
 
         public void SetFontQuality(int fontQuality)
@@ -111,14 +111,14 @@
         {
             return this.CreateOrGet(this.iimagesMap,
                                     resourceName,
-                                    () => GetEmbeddedResourceProvider().GetIImageFromEmbeddedResource(resourceName, assembly));
+                                    () => GetImageResourceProvider().GetIImageFromEmbeddedResource(resourceName, assembly));
         }
 
         public IImageWrapper GetIImageFromNoResEmbeddedResource(string resourceName, string defaultName, Assembly asm)
         {
             return this.CreateOrGet(this.iimagesMap,
                                     resourceName,
-                                    () => GetEmbeddedResourceProvider().GetIImageFromEmbeddedResource(resourceName,asm));
+                                    () => GetImageResourceProvider().GetIImageFromEmbeddedResource(resourceName,asm));
         }
 
         public Bitmap GetBitmapFromEmbeddedResource(string resourceName)
@@ -130,7 +130,7 @@
 		{
 			return this.CreateOrGet (this.bitmapMap,
 			                                 resourceName,
-			                                 () => GetEmbeddedResourceProvider ().GetBitmapFromEmbeddedResource (resourceName, asm));
+			                                 () => GetImageResourceProvider ().GetBitmapFromEmbeddedResource (resourceName, asm));
 		}
 
         public Bitmap GetBitmapFromEmbeddedResource(string resourceName, int width, int height, Assembly asm)
@@ -159,7 +159,7 @@
         {
 			return this.CreateOrGet (this.iimagesMap,
 			                                 imagePath,
-			                                 () => GetEmbeddedResourceProvider ().GetIImage (imagePath));
+			                                 () => GetImageResourceProvider ().GetIImage (imagePath));
         }
 
         public void ReleaseAllResources()
@@ -172,12 +172,12 @@
             ReleaseAllFromDictionary(this.iimagesMap, i => { });
         }
 
-		private IImageResourceProvider GetEmbeddedResourceProvider()
+		private IImageResourceProvider GetImageResourceProvider()
 		{
-			return _embededResourceProvider ?? (_embededResourceProvider = CreateWinEmbeddedResourceProvider ());
+			return _imageResourceProvider ?? (_imageResourceProvider = CreateWinImageResourceProvider ());
 		}
 
-		private IImageResourceProvider CreateWinEmbeddedResourceProvider ()
+		private IImageResourceProvider CreateWinImageResourceProvider ()
 		{
 			//todo: inject like xna or better
 			return new WinImageProvider (); 
