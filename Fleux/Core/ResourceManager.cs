@@ -19,9 +19,8 @@
         private readonly Dictionary<string, Bitmap> bitmapMap = new Dictionary<string, Bitmap>();
         private readonly Dictionary<string, Bitmap> bitmapSizedMap = new Dictionary<string, Bitmap>();
         private readonly Dictionary<string, IImageWrapper> iimagesMap = new Dictionary<string, IImageWrapper>();
-        private readonly IImagingFactory factory;
-
         private static ResourceManager instance;
+		private static IImageResourceProvider _imageResourceProvider;
 
         public const int FontQualityDraft = 0;
         public const int FontQualityNormal = 1;
@@ -33,23 +32,17 @@
 
         private ResourceManager()
         {
-            if (Environment.OSVersion.Platform == PlatformID.WinCE)
-            {
-                try{
-                    this.factory = (IImagingFactory)Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("327ABDA8-072B-11D3-9D7B-0000F81EF32E")));
-                }catch(Exception){
-                    // some winCE do not have even this
-                    this.factory = new Win32ImagingFactory();
-                }
-            }else{
-                this.factory = new Win32ImagingFactory();
-            }
         }
 
         public static ResourceManager Instance
         {
             get { return instance ?? (instance = new ResourceManager()); }
         }
+
+		public static void SetImageResourceProvider(IImageResourceProvider provider)
+		{
+			_imageResourceProvider = provider;
+		}
 
         public void SetFontQuality(int fontQuality)
         {
@@ -114,47 +107,18 @@
             return this.GetIImageFromEmbeddedResource(resourceName, Assembly.GetCallingAssembly());
         }
 
-        public IImageWrapper GetIImageFromEmbeddedResource(string resourceName, Assembly asm)
+        public IImageWrapper GetIImageFromEmbeddedResource(string resourceName, Assembly assembly)
         {
             return this.CreateOrGet(this.iimagesMap,
                                     resourceName,
-                                    () =>
-                                    {
-                                        var original = resourceName;
-                                        var keyName = asm.GetManifestResourceNames().FirstOrDefault(p => p.EndsWith(resourceName)) ??
-                                                         asm.GetManifestResourceNames().FirstOrDefault(p => p.EndsWith(original));
-
-                                        // if there is not a dpi aware image just use the original name for find it
-                                        IImage imagingResource;
-                                        using (var strm = asm.GetManifestResourceStream(keyName))
-                                        {
-                                            var cbBuf = (uint)strm.Length;
-                                            byte[] pbBuf = new byte[strm.Length];
-                                            strm.Read(pbBuf, 0, unchecked((int)strm.Length));
-                                            //var pbBuf = strm.GetBuffer();
-                                            factory.CreateImageFromBuffer(pbBuf, cbBuf, BufferDisposalFlag.BufferDisposalFlagNone, out imagingResource);
-                                        }
-                                        return new IImageWrapper(imagingResource);
-                                    });
+                                    () => GetImageResourceProvider().GetIImageFromEmbeddedResource(resourceName, assembly));
         }
 
         public IImageWrapper GetIImageFromNoResEmbeddedResource(string resourceName, string defaultName, Assembly asm)
         {
             return this.CreateOrGet(this.iimagesMap,
                                     resourceName,
-                                    () =>
-                                    {
-                                        var keyName = asm.GetManifestResourceNames().FirstOrDefault(p => p.EndsWith(resourceName));
-
-                                        IImage imagingResource;
-                                        using (var strm = (MemoryStream)asm.GetManifestResourceStream(keyName))
-                                        {
-                                            var pbBuf = strm.GetBuffer();
-                                            var cbBuf = (uint)strm.Length;
-                                            factory.CreateImageFromBuffer(pbBuf, cbBuf, BufferDisposalFlag.BufferDisposalFlagNone, out imagingResource);
-                                        }
-                                        return new IImageWrapper(imagingResource);
-                                    });
+                                    () => GetImageResourceProvider().GetIImageFromEmbeddedResource(resourceName,asm));
         }
 
         public Bitmap GetBitmapFromEmbeddedResource(string resourceName)
@@ -163,32 +127,11 @@
         }
 
         public Bitmap GetBitmapFromEmbeddedResource(string resourceName, Assembly asm)
-        {
-            return this.CreateOrGet(this.bitmapMap,
-                                    resourceName,
-                                    () =>
-                                    {
-                                        var original = resourceName;
-
-                                        var keyName = asm.GetManifestResourceNames().FirstOrDefault(p => p.EndsWith(resourceName)) ??
-                                                         asm.GetManifestResourceNames().FirstOrDefault(p => p.EndsWith(original));
-
-                                        // if there is not a dpi aware image just use the original name for find it
-                                        Bitmap bitmap;
-                                        if (Environment.OSVersion.Platform == PlatformID.WinCE)
-                                        {
-                                            using (var strm = (MemoryStream)asm.GetManifestResourceStream(keyName))
-                                            {
-                                                bitmap = new Bitmap(strm);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            bitmap = new Bitmap(asm.GetManifestResourceStream(keyName));
-                                        }
-                                        return bitmap;
-                                    });
-        }
+		{
+			return this.CreateOrGet (this.bitmapMap,
+			                                 resourceName,
+			                                 () => GetImageResourceProvider ().GetBitmapFromEmbeddedResource (resourceName, asm));
+		}
 
         public Bitmap GetBitmapFromEmbeddedResource(string resourceName, int width, int height, Assembly asm)
         {
@@ -214,17 +157,9 @@
 
         public IImageWrapper GetIImage(string imagePath)
         {
-            return this.CreateOrGet(this.iimagesMap,
-                                    imagePath,
-                                    delegate
-                                    {
-                                        IImage image;
-                                        var fullpath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName().CodeBase);
-                                        fullpath = Path.Combine(fullpath, "Graphics");
-                                        fullpath = Path.Combine(fullpath, imagePath);
-                                        this.factory.CreateImageFromFile(fullpath, out image);
-                                        return new IImageWrapper(image);
-                                    });
+			return this.CreateOrGet (this.iimagesMap,
+			                                 imagePath,
+			                                 () => GetImageResourceProvider ().GetIImage (imagePath));
         }
 
         public void ReleaseAllResources()
@@ -236,6 +171,17 @@
             ReleaseAllFromDictionary(this.bitmapSizedMap, b => b.Dispose());
             ReleaseAllFromDictionary(this.iimagesMap, i => { });
         }
+
+		private IImageResourceProvider GetImageResourceProvider()
+		{
+			return _imageResourceProvider ?? (_imageResourceProvider = CreateWinImageResourceProvider ());
+		}
+
+		private IImageResourceProvider CreateWinImageResourceProvider ()
+		{
+			//todo: inject like xna or better
+			return new WinImageProvider (); 
+		}
 
         private static void CleanUpMap<T>(Dictionary<string, T> dictionary, int max)
             where T : IDisposable
@@ -284,4 +230,12 @@
             CleanUpMap(this.iimagesMap, 15);
         }
     }
+
+	public interface IImageResourceProvider
+	{
+		IImageWrapper GetIImageFromEmbeddedResource(string resourceName, Assembly asm);
+		Bitmap GetBitmapFromEmbeddedResource(string resourceName, Assembly asm);
+		IImageWrapper GetIImage(string imagePath);
+	}
+
 }
