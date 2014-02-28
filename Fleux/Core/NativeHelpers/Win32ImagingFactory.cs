@@ -79,7 +79,8 @@ public class Win32ImagingFactory : IImagingFactory
     
     public uint CreateImageFromFile(string filename, out IImage image)
     {
-        throw new NotImplementedException();
+        image = new Win32Image(new Bitmap(filename));
+        return 0;
     }
     
     public uint CreateImageFromBuffer(byte[] buffer, uint size, BufferDisposalFlag disposalFlag, out IImage image)

@@ -30,8 +30,14 @@
         #pragma warning disable 0219, 0414
         int fontQuality = FontQualityNormal;
 
+        /// <summary>
+        /// Gets or sets the root image search path.
+        /// </summary>
+        public string RootImagePath{ get; set; }
+
         private ResourceManager()
         {
+            RootImagePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName().CodeBase);
         }
 
         public static ResourceManager Instance
@@ -157,9 +163,10 @@
 
         public IImageWrapper GetIImage(string imagePath)
         {
+            var fullPath = Path.Combine(RootImagePath, imagePath);
 			return this.CreateOrGet (this.iimagesMap,
 			                                 imagePath,
-			                                 () => GetImageResourceProvider ().GetIImage (imagePath));
+			                                 () => GetImageResourceProvider ().GetIImage (fullPath));
         }
 
         public void ReleaseAllResources()

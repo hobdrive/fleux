@@ -59,10 +59,7 @@ namespace Fleux.Core
 		public IImageWrapper GetIImage(string imagePath)
 		{
 			IImage image;
-			var fullpath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName().CodeBase);
-			fullpath = Path.Combine(fullpath, "Graphics");
-			fullpath = Path.Combine(fullpath, imagePath);
-			_factory.CreateImageFromFile(fullpath, out image);
+			_factory.CreateImageFromFile(imagePath, out image);
 			return new IImageWrapper(image);
 		}
 
