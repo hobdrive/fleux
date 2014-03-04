@@ -210,10 +210,15 @@
         public IImageWrapper GetIImage(string imagePath)
         {
             var fullPath = Path.Combine(RootImagePath, imagePath);
-			return this.CreateOrGet (this.iimagesMap,
-			                                 imagePath,
-			                                 () => GetImageResourceProvider ().GetIImage (fullPath));
-        }
+            return this.CreateOrGet(this.iimagesMap,
+                        imagePath,
+                        delegate
+                        {
+                            IImage image;
+                            this.factory.CreateImageFromFile(fullPath, out image);
+                            return new IImageWrapper(image);
+                        });
+                }
 
         public void ReleaseAllResources()
         {
