@@ -153,6 +153,9 @@ namespace Fleux.UIElements
         {
             var visibleChildren = Children.Where(ch => ch.Visible);
 
+            if (visibleChildren.Count() == 0)
+                return new Size(0,0);
+
             var desiredHeight = visibleChildren.Max(ch => ch.Location.Y + ch.Height) + Padding * 2;
             var desiredWidth = visibleChildren.Max(ch => ch.Location.X + ch.Width) + Padding * 2;
 

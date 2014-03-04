@@ -19,8 +19,9 @@
         private readonly Dictionary<string, Bitmap> bitmapMap = new Dictionary<string, Bitmap>();
         private readonly Dictionary<string, Bitmap> bitmapSizedMap = new Dictionary<string, Bitmap>();
         private readonly Dictionary<string, IImageWrapper> iimagesMap = new Dictionary<string, IImageWrapper>();
+        private readonly IImagingFactory factory;
+
         private static ResourceManager instance;
-		private static IImageResourceProvider _imageResourceProvider;
 
         public const int FontQualityDraft = 0;
         public const int FontQualityNormal = 1;
@@ -44,11 +45,6 @@
         {
             get { return instance ?? (instance = new ResourceManager()); }
         }
-
-		public static void SetImageResourceProvider(IImageResourceProvider provider)
-		{
-			_imageResourceProvider = provider;
-		}
 
         public void SetFontQuality(int fontQuality)
         {
@@ -113,18 +109,47 @@
             return this.GetIImageFromEmbeddedResource(resourceName, Assembly.GetCallingAssembly());
         }
 
-        public IImageWrapper GetIImageFromEmbeddedResource(string resourceName, Assembly assembly)
+        public IImageWrapper GetIImageFromEmbeddedResource(string resourceName, Assembly asm)
         {
             return this.CreateOrGet(this.iimagesMap,
                                     resourceName,
-                                    () => GetImageResourceProvider().GetIImageFromEmbeddedResource(resourceName, assembly));
+                                    () =>
+                                    {
+                                        var original = resourceName;
+                                        var keyName = asm.GetManifestResourceNames().FirstOrDefault(p => p.EndsWith(resourceName)) ??
+                                                         asm.GetManifestResourceNames().FirstOrDefault(p => p.EndsWith(original));
+
+                                        // if there is not a dpi aware image just use the original name for find it
+                                        IImage imagingResource;
+                                        using (var strm = asm.GetManifestResourceStream(keyName))
+                                        {
+                                            var cbBuf = (uint)strm.Length;
+                                            byte[] pbBuf = new byte[strm.Length];
+                                            strm.Read(pbBuf, 0, unchecked((int)strm.Length));
+                                            //var pbBuf = strm.GetBuffer();
+                                            factory.CreateImageFromBuffer(pbBuf, cbBuf, BufferDisposalFlag.BufferDisposalFlagNone, out imagingResource);
+                                        }
+                                        return new IImageWrapper(imagingResource);
+                                    });
         }
 
         public IImageWrapper GetIImageFromNoResEmbeddedResource(string resourceName, string defaultName, Assembly asm)
         {
             return this.CreateOrGet(this.iimagesMap,
                                     resourceName,
-                                    () => GetImageResourceProvider().GetIImageFromEmbeddedResource(resourceName,asm));
+                                    () =>
+                                    {
+                                        var keyName = asm.GetManifestResourceNames().FirstOrDefault(p => p.EndsWith(resourceName));
+
+                                        IImage imagingResource;
+                                        using (var strm = (MemoryStream)asm.GetManifestResourceStream(keyName))
+                                        {
+                                            var pbBuf = strm.GetBuffer();
+                                            var cbBuf = (uint)strm.Length;
+                                            factory.CreateImageFromBuffer(pbBuf, cbBuf, BufferDisposalFlag.BufferDisposalFlagNone, out imagingResource);
+                                        }
+                                        return new IImageWrapper(imagingResource);
+                                    });
         }
 
         public Bitmap GetBitmapFromEmbeddedResource(string resourceName)
@@ -133,11 +158,32 @@
         }
 
         public Bitmap GetBitmapFromEmbeddedResource(string resourceName, Assembly asm)
-		{
-			return this.CreateOrGet (this.bitmapMap,
-			                                 resourceName,
-			                                 () => GetImageResourceProvider ().GetBitmapFromEmbeddedResource (resourceName, asm));
-		}
+        {
+            return this.CreateOrGet(this.bitmapMap,
+                                    resourceName,
+                                    () =>
+                                    {
+                                        var original = resourceName;
+
+                                        var keyName = asm.GetManifestResourceNames().FirstOrDefault(p => p.EndsWith(resourceName)) ??
+                                                         asm.GetManifestResourceNames().FirstOrDefault(p => p.EndsWith(original));
+
+                                        // if there is not a dpi aware image just use the original name for find it
+                                        Bitmap bitmap;
+                                        if (Environment.OSVersion.Platform == PlatformID.WinCE)
+                                        {
+                                            using (var strm = (MemoryStream)asm.GetManifestResourceStream(keyName))
+                                            {
+                                                bitmap = new Bitmap(strm);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            bitmap = new Bitmap(asm.GetManifestResourceStream(keyName));
+                                        }
+                                        return bitmap;
+                                    });
+        }
 
         public Bitmap GetBitmapFromEmbeddedResource(string resourceName, int width, int height, Assembly asm)
         {
@@ -178,17 +224,6 @@
             ReleaseAllFromDictionary(this.bitmapSizedMap, b => b.Dispose());
             ReleaseAllFromDictionary(this.iimagesMap, i => { });
         }
-
-		private IImageResourceProvider GetImageResourceProvider()
-		{
-			return _imageResourceProvider ?? (_imageResourceProvider = CreateWinImageResourceProvider ());
-		}
-
-		private IImageResourceProvider CreateWinImageResourceProvider ()
-		{
-			//todo: inject like xna or better
-			return new WinImageProvider (); 
-		}
 
         private static void CleanUpMap<T>(Dictionary<string, T> dictionary, int max)
             where T : IDisposable
@@ -237,12 +272,4 @@
             CleanUpMap(this.iimagesMap, 15);
         }
     }
-
-	public interface IImageResourceProvider
-	{
-		IImageWrapper GetIImageFromEmbeddedResource(string resourceName, Assembly asm);
-		Bitmap GetBitmapFromEmbeddedResource(string resourceName, Assembly asm);
-		IImageWrapper GetIImage(string imagePath);
-	}
-
 }
