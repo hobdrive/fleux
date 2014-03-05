@@ -38,6 +38,7 @@
 
         private ResourceManager()
         {
+#if WINCE
             if (Environment.OSVersion.Platform == PlatformID.WinCE)
             {
                 try{
@@ -46,9 +47,16 @@
                     // some winCE do not have even this
                     this.factory = new Win32ImagingFactory();
                 }
-            }else{
+            }
+#endif
+#if WIN32
+            {
                 this.factory = new Win32ImagingFactory();
             }
+#endif
+#if __ANDROID__
+            // todo
+#endif
             RootImagePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName().CodeBase);
         }
 
