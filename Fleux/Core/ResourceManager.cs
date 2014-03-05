@@ -38,6 +38,17 @@
 
         private ResourceManager()
         {
+            if (Environment.OSVersion.Platform == PlatformID.WinCE)
+            {
+                try{
+                    this.factory = (IImagingFactory)Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("327ABDA8-072B-11D3-9D7B-0000F81EF32E")));
+                }catch(Exception){
+                    // some winCE do not have even this
+                    this.factory = new Win32ImagingFactory();
+                }
+            }else{
+                this.factory = new Win32ImagingFactory();
+            }
             RootImagePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName().CodeBase);
         }
 
@@ -265,7 +276,10 @@
                 try{
                     T val = creator();
                     source.Add(key, val);
-                }catch(Exception){
+                }catch(Exception e){
+#if DEBUG
+                    System.Console.Write(e);
+#endif
                     return default(T);
                 }
             }
