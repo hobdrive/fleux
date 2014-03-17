@@ -166,6 +166,7 @@
     <Compile Include="Core\GraphicsHelpers\IDrawingGraphics.cs" />
     <Compile Include="Core\NativeHelpers\IImageWrapper.cs" />
     <Compile Include="Core\NativeHelpers\IImagingFactory.cs" />
+    <Compile Include="Core\NativeHelpers\WinImageProvider.cs" />
     <Compile Include="Core\ResourceManager.cs" />
     <Compile Include="Core\Scaling\ImagingExtensions.cs" />
     <Compile Include="Core\Scaling\IntExtensions.cs" />
