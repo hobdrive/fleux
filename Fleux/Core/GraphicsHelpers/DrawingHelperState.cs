@@ -18,6 +18,7 @@
             this.FontStyle = System.Drawing.FontStyle.Regular;
             this.CalculateExtendsAction = calculateExtendsAction;
             this.Color = Color.White;
+            this.PenWidth = 1;
         }
 
         public int CurrentX
