@@ -32,7 +32,12 @@
             {
                 if (this.thread == null)
                 {
-                    this.thread = new Thread(this.DispatcherWorker) { Priority = ThreadPriority.AboveNormal };
+                    this.thread = new Thread(this.DispatcherWorker)
+                    {
+#if !SILVERLIGHT
+                        Priority = ThreadPriority.AboveNormal
+#endif
+                    };
                     this.thread.Start();
                 }
             }
