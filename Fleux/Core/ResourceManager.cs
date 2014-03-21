@@ -1,4 +1,4 @@
-﻿﻿namespace Fleux.Core
+﻿namespace Fleux.Core
 {
     using System;
     using System.Collections.Generic;
@@ -232,7 +232,7 @@
                     source.Add(key, val);
                 }catch(Exception e){
 #if DEBUG
-                    System.Console.Write(e);
+                    System.Console.Write("CreateOrGet key="+key + " " + e.Message);
 #endif
                     return default(T);
                 }

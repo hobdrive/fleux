@@ -34,6 +34,12 @@ namespace Fleux.Core.GraphicsHelpers
             gr.ReleaseHdc(hDc);
 #endif
 #if __ANDROID__
+            if (pngImage.Image is AImage)
+            {
+                gr.DrawImage( ((AImage)pngImage.Image).bitmap,
+                    destRect, new Rectangle(0, 0, pngImage.Size.Width, pngImage.Size.Height),
+                    GraphicsUnit.Pixel);
+            }
 #endif
 #if WIN32
             if (pngImage.Image is Win32Image)
