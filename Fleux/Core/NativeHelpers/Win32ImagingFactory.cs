@@ -30,7 +30,7 @@ public class Win32Image : IImage
         info.Xdpi = 92;
         info.Ydpi = 92;
         return 0;
-    }
+		}
     
     public uint SetImageFlags(uint flags)
     {

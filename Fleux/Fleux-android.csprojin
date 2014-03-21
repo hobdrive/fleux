@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+include(hobd/_hobd_header.csprojin)
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -59,8 +60,14 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
 
-define(ROOT, ../../../..)
-include(hobd/lib/fleuxdesktop2/Fleux/_fleux_common.csproj)
+include(_i.csprojin)
+
+define(`ROOT', ..\..\..\..\hobd\lib\fleuxdesktop2)
+define(`ROOTDIR', Fleux)
+
+  <ItemGroup>
+include(hobd/lib/fleuxdesktop2/Fleux/_fleux_common.csprojin)
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -70,6 +77,8 @@ include(hobd/lib/fleuxdesktop2/Fleux/_fleux_common.csproj)
     <Compile Include="Android\FleuxControlPage.cs" />
     <Compile Include="Android\StringHelpers.cs">
     </Compile>
+    <Compile Include="Android\AndroidImageProvider.cs"/>
+    <Compile Include="Android\AndroidImagingFactory.cs"/>
     <Compile Include="Android\Led.cs">
       <Link>Android\Led.cs</Link>
     </Compile>
