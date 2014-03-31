@@ -642,6 +642,7 @@
         {
             var gr = Graphics.FromImage(bitmap);
             var realRegion = this.CalculateRect(region);
+            Graphics.Flush();
             gr.DrawImage(this.canvasImage, 0, 0, realRegion, GraphicsUnit.Pixel);
             FleuxApplication.ApplyGraphicsSettings(gr);
             return new ClipBuffer(bitmap, gr, realRegion, this.Graphics);
