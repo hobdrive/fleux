@@ -37,7 +37,11 @@
 
         private ResourceManager()
         {
+#if WINDOWS_PHONE
+           RootImagePath = "";
+#else
             RootImagePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName().CodeBase);
+#endif
         }
 
         public static ResourceManager Instance
@@ -166,7 +170,7 @@
             var fullPath = Path.Combine(RootImagePath, imagePath);
 			return this.CreateOrGet (this.iimagesMap,
 			                                 imagePath,
-			                                 () => GetImageResourceProvider ().GetIImage (fullPath));
+                                             () => GetImageResourceProvider().GetIImage(fullPath));
         }
 
         public void ReleaseAllResources()
