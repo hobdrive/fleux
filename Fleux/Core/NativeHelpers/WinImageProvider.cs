@@ -25,9 +25,10 @@ namespace Fleux.Core
             var keyName = asm.GetManifestResourceNames().FirstOrDefault(p => p.EndsWith(resourceName));
 
             IImage imagingResource;
-            using (var strm = (MemoryStream) asm.GetManifestResourceStream(keyName))
+            using (var strm = asm.GetManifestResourceStream(keyName))
             {
-                var pbBuf = strm.GetBuffer();
+                var pbBuf = new byte[strm.Length];
+                strm.Read(pbBuf, 0, (int) strm.Length);
                 var cbBuf = (uint) strm.Length;
                 _factory.CreateImageFromBuffer(pbBuf, cbBuf, BufferDisposalFlag.BufferDisposalFlagNone,
                     out imagingResource);
