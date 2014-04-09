@@ -37,11 +37,7 @@
 
         private ResourceManager()
         {
-#if WINDOWS_PHONE
-           RootImagePath = "";
-#else
             RootImagePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName().CodeBase);
-#endif
         }
 
         public static ResourceManager Instance
