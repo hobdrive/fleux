@@ -94,7 +94,8 @@ namespace Fleux.Controls
                 if (origMatrix == null)
                 {
                     origMatrix = new Android.Graphics.Matrix();
-                    origMatrix.Set (canvas.Matrix);
+                    origMatrix.Set (Control.AndroidView.origMatrix);
+                    
                 }
                 if (hMatrix == null)
                 {
@@ -132,12 +133,12 @@ namespace Fleux.Controls
                 {
                     if (Fleux.Core.FleuxApplication.HorizontalMirror)
                     {
-                        canvas.Matrix = hMatrix;
+                        Control.AndroidView.hMatrix = hMatrix;
                     }else if (Fleux.Core.FleuxApplication.VerticalMirror)
                     {
-                        canvas.Matrix = vMatrix;
+                        Control.AndroidView.vMatrix = vMatrix;
                     }else
-                        canvas.Matrix = origMatrix;
+                        Control.AndroidView.origMatrix = origMatrix;
 
                     // Thats for FastGraphics.cs
                     Control.offGr.Flush();
