@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Timers;
+using Android.Graphics;
 
 namespace Fleux.Controls
 {
@@ -88,6 +89,8 @@ namespace Fleux.Controls
             public override void Draw (Android.Graphics.Canvas canvas)
             {
                 if (Control == null) return;
+
+                SetSoftwareLayer();
 
                 Control.CreateGraphicBuffers();
 
@@ -208,6 +211,19 @@ namespace Fleux.Controls
                 };
             }
     
+            //-----------------------------------------------------------------
+            private void SetSoftwareLayer ( )
+            {
+                // TODO: Figure out what causes flickering
+
+                const int layerTypeSoftware = 1;
+
+                if ((int) Build.VERSION.SdkInt >= 11)
+                {
+                    var method = JNIEnv.GetMethodID (JNIEnv.GetObjectClass (Handle), "setLayerType", "(ILandroid/graphics/Paint;)V");
+                    JNIEnv.CallVoidMethod (Handle, method, new JValue (layerTypeSoftware), new JValue (null));
+                }
+            }
         }
 
         protected virtual void Draw(System.Windows.Forms.PaintEventArgs e){
