@@ -90,7 +90,7 @@ namespace Fleux.Controls
             {
                 if (Control == null) return;
 
-                SetSoftwareLayer();
+                Control.Draw (new PaintEventArgs (Control.offGr, new Rectangle (0, 0, Control.offBmp.Width, Control.offBmp.Height)));
 
                 Control.CreateGraphicBuffers();
 
@@ -152,7 +152,7 @@ namespace Fleux.Controls
                     // Thats for FastGraphics.cs
                     Control.offGr.Flush();
 
-                    canvas.DrawBitmap(Control.offBmp.ABitmap, 0,0, paint);
+                    canvas.DrawBitmap (Control.offBmp.ABitmap, 0, 0, paint);
                     Control.offUpdated = false;
                     updcntflush++;
                 }
@@ -210,7 +210,7 @@ namespace Fleux.Controls
 
                 };
             }
-    
+
             //-----------------------------------------------------------------
             private void SetSoftwareLayer ( )
             {
@@ -267,7 +267,7 @@ namespace Fleux.Controls
             lock(offBmp){
                 var ctime = System.Environment.TickCount;
                 offBmpDraw = true;
-                Draw(new PaintEventArgs(offGr, new Rectangle(0,0, offBmp.Width, offBmp.Height)));
+                //Draw(new PaintEventArgs(offGr, new Rectangle(0,0, offBmp.Width, offBmp.Height)));
                 offBmpDraw = false;
                 ctime = System.Environment.TickCount - ctime;
                 AndroidView.totime += ctime;
