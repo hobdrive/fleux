@@ -20,9 +20,11 @@ namespace Fleux.Controls
     {
         protected HostView AndroidView;
         protected Bitmap offBmp;
-        protected int offBmpWidth, offBmpHeight;
         protected Graphics offGr;
         protected bool offBmpDraw = false;
+        Android.Graphics.Rect srect, drect;
+        
+        public int offBmpWidth, offBmpHeight;
 
         /// <summary>
         /// If true, means invalidate request was send and still pending.
@@ -37,6 +39,9 @@ namespace Fleux.Controls
         bool IsDisposed = false;
 
         public static bool PerfData = false;
+        
+        /// Main Canvas scaledown resolution
+        public int DownScale = 1;
 
         public class HostView : View
         {
@@ -60,6 +65,8 @@ namespace Fleux.Controls
             {
                 this.Control = c;
                 c.AndroidView = this;
+                
+                paint.FilterBitmap = true;
 
                 Activate();
             }
@@ -90,76 +97,48 @@ namespace Fleux.Controls
             {
                 if (Control == null) return;
 
-                Control.Draw (new PaintEventArgs (Control.offGr, new Rectangle (0, 0, Control.offBmp.Width, Control.offBmp.Height)));
-
                 Control.CreateGraphicBuffers();
 
-                if (origMatrix == null)
-                {
-                    origMatrix = new Android.Graphics.Matrix();
-                    origMatrix.Set (canvas.Matrix);
-                    
-                }
-                if (hMatrix == null)
-                {
-                    hMatrix = new Android.Graphics.Matrix();
-                    hMatrix.Set(origMatrix);
-                    hMatrix.PostTranslate(-Control.offBmp.Width, 0);
-                    hMatrix.PostScale(-1, 1);
-                }
-                if (vMatrix == null)
-                {
-                    vMatrix = new Android.Graphics.Matrix();
-                    vMatrix.Set(origMatrix);
-                    vMatrix.PostTranslate(0, -Control.offBmp.Height);
-                    vMatrix.PostScale(1, -1);
-                }
-
                 var ctime = System.Environment.TickCount;
-                var realupdate = false;
                 Fleux.UIElements.Canvas.drawtime = 0;
-                /**/
-                if (Control.offNeedExtraDraw && Control.offUpdated)
-                lock(Control.offBmp){
-                    Control.offNeedExtraDraw = false;
-                    Control.offUpdated = false;
 
-                    Control.offBmpDraw = true;
-                    Control.Draw(new PaintEventArgs(Control.offGr, new Rectangle(0,0, Control.offBmp.Width, Control.offBmp.Height)));
-                    Control.offBmpDraw = false;
+                if (Control.offUpdated)
+                {
+		            lock(Control.offBmp)
+		            {
 
-                    updcnt++;
-                    realupdate = true;
-                }
-                //*/
+		                Control.Draw(new PaintEventArgs(Control.offGr, new Rectangle(0,0, Control.offBmp.Width, Control.offBmp.Height)));
+
+		                updcnt++;
+		            }
+		        }
+		        
                 lock(Control.offBmp)
                 {
                     if (Fleux.Core.FleuxApplication.HorizontalMirror)
                     {
                         canvas.Save();
                         canvas.Scale (-1, 1);
-                        canvas.Translate (-Control.offBmp.Width, 0);
+                        canvas.Translate (-(float)Control.drect.Width(), 0);
                     }else if (Fleux.Core.FleuxApplication.VerticalMirror)
                     {
                         canvas.Save();
                         canvas.Scale (1, -1);
-                        canvas.Translate (0, -Control.offBmp.Height);
+                        canvas.Translate (0, -(float)Control.drect.Height());
                     }
                     else
                         canvas.Restore();
 
-
-                    // Thats for FastGraphics.cs
                     Control.offGr.Flush();
 
-                    canvas.DrawBitmap (Control.offBmp.ABitmap, 0, 0, paint);
+                    canvas.DrawBitmap(Control.offBmp.ABitmap, Control.srect, Control.drect, paint);
+
                     Control.offUpdated = false;
                     updcntflush++;
                 }
                 if (PerfData)
                 {
                     ctime = System.Environment.TickCount - ctime;
-                    //if (realupdate)
                     {
                         totime += ctime;
                     }
@@ -183,12 +162,6 @@ namespace Fleux.Controls
             {
                 Android.Util.Log.Info("HOBD", "HostView Dispose");
                 paint.Dispose();
-                if (hMatrix != null)
-                    hMatrix.Dispose();
-                if (vMatrix != null)
-                    vMatrix.Dispose();
-                if (origMatrix != null)
-                    origMatrix.Dispose();
                 paint = null;
                 Control = null;
 
@@ -202,11 +175,11 @@ namespace Fleux.Controls
                 base.Touch += (v, te) => {
                     MotionEvent e = te.Event;
                     if (((int)e.Action&0xFF) == (int)MotionEventActions.Down)
-                        Control.OnMouseDown(new MouseEventArgs((int)e.GetX(), (int)e.GetY()));
+                        Control.OnMouseDown(new MouseEventArgs((int)e.GetX()/Control.DownScale, (int)e.GetY()/Control.DownScale));
                     if (((int)e.Action&0xFF) == (int)MotionEventActions.Move)
-                        Control.OnMouseMove(new MouseEventArgs((int)e.GetX(), (int)e.GetY()));
+                        Control.OnMouseMove(new MouseEventArgs((int)e.GetX()/Control.DownScale, (int)e.GetY()/Control.DownScale));
                     if (((int)e.Action&0xFF) == (int)MotionEventActions.Up)
-                        Control.OnMouseUp(new MouseEventArgs((int)e.GetX(), (int)e.GetY()));
+                        Control.OnMouseUp(new MouseEventArgs((int)e.GetX()/Control.DownScale, (int)e.GetY()/Control.DownScale));
 
                 };
             }
@@ -241,39 +214,6 @@ namespace Fleux.Controls
             if (IsDisposed)
                 return;
 
-            if (lastRedraw == null)
-            {
-                lastRedraw = new System.Timers.Timer(500);
-                lastRedraw.Elapsed += (object sender, ElapsedEventArgs e) => { ForcedInvalidate(); };
-                lastRedraw.Enabled = false;
-                lastRedraw.AutoReset = false;
-            }
-
-            /**/
-            if (offUpdated)
-            {
-                //offNeedExtraDraw = true;
-                lastRedraw.Enabled = true;
-                Thread.Sleep(20);
-                return;
-            }
-            //*/
-
-            lastRedraw.Enabled = false;
-
-            CreateGraphicBuffers();
-
-            /**/
-            lock(offBmp){
-                var ctime = System.Environment.TickCount;
-                offBmpDraw = true;
-                //Draw(new PaintEventArgs(offGr, new Rectangle(0,0, offBmp.Width, offBmp.Height)));
-                offBmpDraw = false;
-                ctime = System.Environment.TickCount - ctime;
-                AndroidView.totime += ctime;
-                AndroidView.updcnt++;
-            }
-            //*/
             if (!offUpdated)
             {
                 offUpdated = true;
@@ -306,13 +246,16 @@ namespace Fleux.Controls
         {
             var Control  = this;
             if (Control.offBmp == null && this.AndroidView != null){
-                offBmpWidth = AndroidView.MeasuredWidth;
-                offBmpHeight = AndroidView.MeasuredHeight;
+                offBmpWidth = AndroidView.MeasuredWidth/DownScale;
+                offBmpHeight = AndroidView.MeasuredHeight/DownScale;
+                
                 if (offBmpWidth > 0 && offBmpHeight > 0)
                 {
                     Control.offBmp = new Bitmap(offBmpWidth, offBmpHeight);
                     Control.offGr = new Graphics(Control.offBmp);
                 }
+                srect = new Android.Graphics.Rect(0,0, offBmpWidth, offBmpHeight);
+                drect = new Android.Graphics.Rect(0,0, AndroidView.MeasuredWidth, AndroidView.MeasuredHeight);
             }
         }
 
