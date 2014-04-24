@@ -126,8 +126,6 @@ namespace Fleux.Controls
                         canvas.Scale (1, -1);
                         canvas.Translate (0, -(float)Control.drect.Height());
                     }
-                    else
-                        canvas.Restore();
 
                     Control.offGr.Flush();
 
