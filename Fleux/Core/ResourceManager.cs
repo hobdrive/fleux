@@ -232,7 +232,7 @@
                     source.Add(key, val);
                 }catch(Exception e){
 #if DEBUG
-                    System.Console.Write("CreateOrGet key="+key + " " + e.Message);
+                    System.Console.WriteLine("CreateOrGet failed key="+key + " " + e.Message + "\n" + e.StackTrace);
 #endif
                     return default(T);
                 }
