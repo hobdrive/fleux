@@ -20,16 +20,28 @@ namespace Fleux.Core
 		}
 
 		public IImageWrapper GetIImageFromEmbeddedResource(string resourceName, Assembly asm)
-		{
-			var keyName = asm.GetManifestResourceNames().FirstOrDefault(p => p.EndsWith(resourceName));
+        {
+            var keyName = asm.GetManifestResourceNames().FirstOrDefault(p => p.EndsWith(resourceName));
 
-			IImage imagingResource;
-			using (var strm = (MemoryStream)asm.GetManifestResourceStream(keyName))
-			{
-				var pbBuf = strm.GetBuffer();
-				var cbBuf = (uint)strm.Length;
-				_factory.CreateImageFromBuffer(pbBuf, cbBuf, BufferDisposalFlag.BufferDisposalFlagNone, out imagingResource);
-			}
+            IImage imagingResource = null;
+            var rstream = asm.GetManifestResourceStream(keyName);
+            if(rstream is MemoryStream)
+            {
+                using(var strm = (rstream as MemoryStream))
+                {
+                    var pbBuf = strm.GetBuffer();
+                    var cbBuf = (uint)strm.Length;
+                    _factory.CreateImageFromBuffer(pbBuf, cbBuf, BufferDisposalFlag.BufferDisposalFlagNone, out imagingResource);
+                }
+            }else{
+                using(var strm = rstream)
+                {
+                    var pbBuf = new byte[strm.Length];
+                    strm.Read(pbBuf, 0, (int)strm.Length);
+                    var cbBuf = (uint)strm.Length;
+                    _factory.CreateImageFromBuffer(pbBuf, cbBuf, BufferDisposalFlag.BufferDisposalFlagNone, out imagingResource);
+                }
+            }
 			return new IImageWrapper(imagingResource);
 		}
 
