@@ -122,6 +122,25 @@ namespace Fleux.UIElements
             return base.Children.FirstOrDefault<UIElement>(c => (c.ID == id));
         }
 
+        /// <summary>
+        /// Finds the child recursively
+        /// </summary>
+        public virtual UIElement FindChild(string id)
+        {
+            foreach(var c in base.Children)
+            {
+                if (c is Canvas)
+                {
+                    var cc = (c as Canvas).FindChild(id);
+                    if (cc != null)
+                        return cc;
+                }
+                if (c.ID == id)
+                    return c;
+            }
+            return null;
+        }
+
         public void Clear()
         {
             this.Children.Clear();
