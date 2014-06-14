@@ -1,4 +1,6 @@
-﻿namespace Fleux.Controls
+﻿using System.Threading;
+
+namespace Fleux.Controls
 {
     using System;
     using System.Drawing;
@@ -136,9 +138,13 @@
                 var ctime = System.Environment.TickCount;
 
                 this.offUpdated = false;
-                
+
                 this.Draw(new PaintEventArgs(this.offGr, new Rectangle(0, 0, this.offBmp.Width, this.offBmp.Height)));
-                
+
+                // FIXME: On Linux high loaded Updates() makes other threads to stuck, causing huge number of useless redraw cycles
+                if (Environment.OSVersion.Platform == PlatformID.Unix)
+                    Thread.Sleep(5);
+
                 if (FleuxApplication.HorizontalMirror || FleuxApplication.VerticalMirror)
                 {
                     Rectangle rect = new Rectangle(0, 0, offBmp.Width, offBmp.Height);
@@ -199,9 +205,9 @@
                     var cavg = totime / (updcnt+1);
 
                     this.controlGr.FillRectangle(new SolidBrush(Color.White), 0,0, 400, 20);
-                    this.controlGr.DrawString(""+updcnt+":"+updcntflush+":"+updcntinval+" ctime: "+ctime+" cavg:"+cavg+" canv: "+Fleux.UIElements.Canvas.drawtime,
+                    this.controlGr.DrawString("upd:"+updcnt+" flush:"+updcntflush+" int:"+updcntinval+" ctime:"+ctime+" cavg:"+cavg+" canvtime:"+Fleux.UIElements.Canvas.drawtime,
                                               new Font(FontFamily.GenericMonospace, 15, FontStyle.Regular), new SolidBrush(Color.Black), 0,0);
-                    if (updcnt > 100)
+                    if (updcnt > 500)
                     {
                         totime = 0;
                         updcnt = 0;

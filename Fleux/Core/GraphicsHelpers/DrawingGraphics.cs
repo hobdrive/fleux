@@ -557,6 +557,38 @@
             return new Size(((int)s.Width).ToLogic(), ((int)s.Height).ToLogic());
         }
 
+        private Size CalculateTextSizeForFontSize(string text, int fontSize)
+        {
+            var measuredFront = ResourceManager.Instance.GetFont(this.state.CurrenFont.Name, this.state.CurrenFont.Style, fontSize);
+
+            var s = this.Graphics.MeasureString(text, measuredFront);
+            return new Size(((int) s.Width).ToLogic(), ((int) s.Height).ToLogic());
+        }
+
+        public int FindFontSizeForArea(string text, Size maxArea, out Size newArea)
+        {
+            if (text == null)
+                throw new ArgumentNullException("text");
+
+            if (maxArea.IsEmpty)
+                throw new ArgumentException("maxArea can't be empty");
+
+            var current = (int) (state.CurrenFont.Size*0.95);
+            newArea = new Size();
+
+            while (current > 0)
+            {
+                newArea = CalculateTextSizeForFontSize(text, current);
+
+                if (maxArea.Height > newArea.Height && maxArea.Width > newArea.Width)
+                    break;
+
+                current -= 3;
+            }
+
+            return current;
+        }
+
         public IDrawingGraphics DrawMultiLineText(string text, int width, int height)
         {
             this.Graphics.DrawString(text,

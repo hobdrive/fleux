@@ -27,7 +27,21 @@
 
         public UIElement this[int row, int column]
         {
+            get
+            {
+                var needCell = cells.FirstOrDefault(c => c.Row == row && c.Column == column);
+                return needCell == null ? null : needCell.Content;
+            }
             set { this.Add(row, column, value); }
+        }
+
+        public Point this[UIElement element]
+        {
+            get
+            {
+                var cell = cells.FirstOrDefault(c => c.Content == element);
+                return cell != null ? new Point(cell.Column, cell.Row) : Point.Empty;
+            }
         }
 
         public void Add(int row,

@@ -219,6 +219,7 @@ namespace Fleux.UIElements.Panorama
         public void RemoveSection(PanoramaSection section)
         {
             UIElement[] elementArray = this.Sections.ChildrenEnumerable.ToArray<UIElement>();
+
             int num = 0;
             for (int i = 0; i < elementArray.Length; i++)
             {
@@ -262,7 +263,12 @@ namespace Fleux.UIElements.Panorama
             sb.CancelAsyncAnimate();
             sb.Clear();
             sb.AddAnimation(this.animation);
-            sb.BeginAnimate(() => { FleuxSettings.GlobalAnimating = this.IsPanoramaAnimating = false; });
+            sb.BeginAnimate(() => {
+                FleuxSettings.GlobalAnimating = this.IsPanoramaAnimating = false;
+                /* TODO: in case of remove during section change - we end up on empty screen */
+                this.FinePosition = this.currentSectionIndex * this.sectionSpace;
+                Update();
+            });
         }
     }
 }

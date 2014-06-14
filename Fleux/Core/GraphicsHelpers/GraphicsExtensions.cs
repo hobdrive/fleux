@@ -32,7 +32,16 @@ namespace Fleux.Core.GraphicsHelpers
             var hDc = gr.GetHdc();
             pngImage.Draw(hDc, destRect, new Rectangle(0, 0, pngImage.Size.Width, pngImage.Size.Height));
             gr.ReleaseHdc(hDc);
-#else
+#endif
+#if __ANDROID__
+            if (pngImage.Image is AImage)
+            {
+                gr.DrawImage( ((AImage)pngImage.Image).bitmap,
+                    destRect, new Rectangle(0, 0, pngImage.Size.Width, pngImage.Size.Height),
+                    GraphicsUnit.Pixel);
+            }
+#endif
+#if WIN32
             if (pngImage.Image is Win32Image)
             {
                 gr.DrawImage( ((Win32Image)pngImage.Image).bitmap,

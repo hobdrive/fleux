@@ -1,35 +1,48 @@
-﻿namespace Fleux.UIElements
+﻿using Fleux.Core.NativeHelpers;
+
+namespace Fleux.UIElements
 {
     using System;
     using System.Drawing;
     using System.Reflection;
     using Core;
     using Core.GraphicsHelpers;
+    using Core.Scaling;
 
     public class ImageElement : UIElement
     {
-        private Image image;
+        private IImageWrapper image;
+        Size ImageSize;
+        bool KeepAspect = true;
 
-        public ImageElement(string resourceName)
-            : this(ResourceManager.Instance.GetBitmapFromEmbeddedResource(resourceName, Assembly.GetCallingAssembly()))
+        public ImageElement(string resourceName) : this(resourceName, true)
         {
         }
 
-        public ImageElement(Image image)
+        public ImageElement(string resourceName, bool keepAspect)
         {
-            this.image = image;
-            this.Size = image.Size;
-        }
+            this.image = ResourceManager.Instance.GetIImage(resourceName);
+            KeepAspect = keepAspect;
 
-        public Image Image
-        {
-            get { return this.image; }
-            set { this.image = value; }
+            this.ImageSize = new Size(image.Size.Width.ToLogic(), image.Size.Height.ToLogic());
+            this.Size = ImageSize;
         }
 
         public override void Draw(IDrawingGraphics drawingGraphics)
         {
-            drawingGraphics.DrawImage(this.image, 0, 0, Size.Width, Size.Height);
+            var size = Size;
+
+            if (KeepAspect)
+            {
+                double scale = (double)ImageSize.Width / ImageSize.Height;
+                size = new Size(Size.Width, (int)(Size.Width / scale));
+                if (size.Height > Size.Height)
+                    size = new Size((int)(Size.Height * scale), Size.Height);
+            }
+
+            drawingGraphics.DrawAlphaImage(this.image, new Rectangle((Size.Width - size.Width)/2,
+                                                                     (Size.Height - size.Height)/2,
+                                                                     size.Width, size.Height));
         }
     }
 }
