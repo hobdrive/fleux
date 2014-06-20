@@ -41,10 +41,10 @@ namespace Fleux.Core.GraphicsHelpers
                     GraphicsUnit.Pixel);
             }
 #endif
-#if WIN32
-            if (pngImage.Image is Win32Image)
+#if WIN32 || XNA
+            if (pngImage.Image is BasicImage)
             {
-                gr.DrawImage( ((Win32Image)pngImage.Image).bitmap,
+                gr.DrawImage( ((BasicImage)pngImage.Image).bitmap,
                               destRect, new Rectangle(0, 0, pngImage.Size.Width, pngImage.Size.Height),
                               GraphicsUnit.Pixel);
             }

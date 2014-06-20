@@ -169,6 +169,9 @@
     <Compile Include="..\..\..\..\hobd\lib\fleuxdesktop2\Fleux\Core\NativeHelpers\IImageWrapper.cs">
       <Link>Fleux\Core\NativeHelpers\IImageWrapper.cs</Link>
     </Compile>
+    <Compile Include="..\..\..\..\hobd\lib\fleuxdesktop2\Fleux\Core\NativeHelpers\BasicImage.cs">
+      <Link>Fleux\Core\NativeHelpers\BasicImage.cs</Link>
+    </Compile>
     <Compile Include="..\..\..\..\hobd\lib\fleuxdesktop2\Fleux\Core\NativeHelpers\IImagingFactory.cs">
       <Link>Fleux\Core\NativeHelpers\IImagingFactory.cs</Link>
     </Compile>

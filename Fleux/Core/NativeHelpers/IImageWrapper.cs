@@ -4,6 +4,9 @@
     using System.Drawing;
     using GraphicsHelpers;
 
+    /// <summary>
+    /// TODO: I see not reasoning in this class, suggest to cut it out
+    /// </summary>
     public class IImageWrapper : IDisposable
     {
         public IImage Image;

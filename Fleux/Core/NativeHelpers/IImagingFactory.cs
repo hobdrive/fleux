@@ -95,7 +95,11 @@
         uint UninstallImageCodec(); // This is a place holder, note the lack of arguments
     }
 
-    // Pulled from imaging.h in the Windows Mobile 5.0 Pocket PC SDK
+    /// <summary>
+    /// Thats a basic image interface, its main purpose - transparency support in WinCE.
+    /// In all other platforms it is implemented with BasicImage, which is a simple wrapper over "Bitmap"
+    /// Pulled from imaging.h in the Windows Mobile 5.0 Pocket PC SDK
+    /// </summary>
     [ComImport, Guid("327ABDA9-072B-11D3-9D7B-0000F81EF32E"),
      InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     [ComVisible(true)]
