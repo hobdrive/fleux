@@ -166,7 +166,7 @@
             var fullPath = Path.Combine(RootImagePath, imagePath);
 			return this.CreateOrGet (this.iimagesMap,
 			                                 imagePath,
-			                                 () => GetImageResourceProvider ().GetIImage (fullPath));
+                                             () => GetImageResourceProvider().GetIImage(fullPath));
         }
 
         public void ReleaseAllResources()

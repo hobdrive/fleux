@@ -34,7 +34,12 @@
             {
                 if (this.thread == null)
                 {
-                    this.thread = new Thread(this.DispatcherWorker) { Priority = ThreadPriority.AboveNormal };
+                    this.thread = new Thread(this.DispatcherWorker)
+                    {
+#if !SILVERLIGHT
+                        Priority = ThreadPriority.AboveNormal
+#endif
+                    };
                     this.thread.Start();
                 }
                 else
@@ -50,7 +55,12 @@
             {
                 this.pendingAction.Invoke();
                 this.lastInvokedAction = this.pendingAction;
+#if !SILVERLIGHT
                 this.dispatchEvent.WaitOne(1000, false);
+#endif
+#if SILVERLIGHT
+                this.dispatchEvent.WaitOne(1000);
+#endif
             }
 
             lock (this)
