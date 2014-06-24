@@ -73,13 +73,14 @@
         {
             if (this.animationThread == null)
             {
-                this.animationThread = new Thread(() =>
+                var at = new Thread(() =>
                 {
                     this.AnimateSync();
                     onAnimateCompleted();
                     this.animationThread = null;
                 });
-                this.animationThread.Start();
+                at.Start();
+                this.animationThread = at;
             }
         }
 
