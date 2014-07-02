@@ -169,6 +169,14 @@
                                              () => GetImageResourceProvider().GetIImage(fullPath));
         }
 
+        public Bitmap GetBitmap(string imagePath)
+        {
+            var fullPath = Path.Combine(RootImagePath, imagePath);
+            return this.CreateOrGet (this.bitmapMap,
+                                     imagePath,
+                                     () => GetImageResourceProvider().GetBitmap(fullPath));
+        }
+
         public void ReleaseAllResources()
         {
             ReleaseAllFromDictionary(this.brushMap, b => b.Dispose());
@@ -246,11 +254,17 @@
         }
     }
 
-	public interface IImageResourceProvider
-	{
-		IImageWrapper GetIImageFromEmbeddedResource(string resourceName, Assembly asm);
-		Bitmap GetBitmapFromEmbeddedResource(string resourceName, Assembly asm);
-		IImageWrapper GetIImage(string imagePath);
-	}
+    /// <summary>
+    /// Abstract imaging resource provider interface
+    /// ImageWrapper is a generic transparent interface (it is separated because of WinCE specifics
+    /// Bitmap is a generic bitmap which could be non transparent (but support transparency on all except WinCE platforms)
+    /// </summary>
+    public interface IImageResourceProvider
+    {
+        IImageWrapper GetIImageFromEmbeddedResource(string resourceName, Assembly asm);
+        Bitmap GetBitmapFromEmbeddedResource(string resourceName, Assembly asm);
+        IImageWrapper GetIImage(string imagePath);
+        Bitmap GetBitmap(string imagePath);
+    }
 
 }

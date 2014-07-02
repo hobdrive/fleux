@@ -52,5 +52,10 @@ namespace Fleux.Core
 			_factory.CreateImageFromFile(imagePath, out image);
 			return new IImageWrapper(image);
 		}
+
+		public Bitmap GetBitmap(string imagePath)
+		{
+			return new Bitmap(imagePath);
+		}
 	}
 }

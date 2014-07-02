@@ -69,6 +69,17 @@ namespace Fleux.Core
             return bitmap;
         }
 
+        public Bitmap GetBitmap(string imagePath)
+        {
+            Bitmap bitmap = null;
+            try{
+                bitmap = new Bitmap(imagePath);
+            }catch(Exception){
+            }
+            return bitmap;
+        }
+
+
         public IImageWrapper GetIImage(string imagePath)
         {
             IImage image;
