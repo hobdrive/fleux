@@ -72,18 +72,48 @@
             }
         }
 
-        public Color Color { get; set; }
-
-        public int PenWidth { get; set; } // PenWidth in pixels (already scaled)
-
-        public Brush CurrentBrush
-        {
-            get { return ResourceManager.Instance.GetBrush(this.Color); }
+        Color _color;
+        public Color Color {
+            get{
+                return _color;
+            }
+            set{
+                _color = value;
+                _currentBrush = null;
+                _currentPen = null;
+            }
         }
 
+        // PenWidth is in pixels (already scaled)
+        int _penWidth = 0;
+        public int PenWidth {
+            get{
+                return _penWidth;
+            }
+            set{
+                _penWidth = value;
+                _currentPen = null;
+            }
+        }
+
+        Brush _currentBrush = null;
+        public Brush CurrentBrush
+        {
+            get{
+                if (_currentBrush == null)
+                    _currentBrush = ResourceManager.Instance.GetBrush(this.Color);
+                return _currentBrush;
+            }
+        }
+
+        Pen _currentPen = null;
         public Pen CurrentPen
         {
-            get { return ResourceManager.Instance.GetPen(this.Color, this.PenWidth); }
+            get {
+                if (_currentPen == null)
+                    _currentPen = ResourceManager.Instance.GetPen(this.Color, this.PenWidth);
+                return _currentPen;
+            }
         }
 
         public void SetFontStyle(FontStyle flag, bool enable)
