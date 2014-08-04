@@ -18,8 +18,10 @@ namespace Fleux.UIElements
         public Canvas()
         {
             AutoResize = true;
-            this.EntranceAnimation = new ForwarderAnimation(() => new AnimationGroup(this.Children.Where(e => e.EntranceAnimation != null).Select(e => e.EntranceAnimation)));
-            this.ExitAnimation = new ForwarderAnimation(() => new AnimationGroup(this.Children.Where(e => e.ExitAnimation != null).Select(e => e.ExitAnimation)));
+            /// TODO: ToList() makes it thread safe.
+            /// Better way to do that???
+            this.EntranceAnimation = new ForwarderAnimation(() => new AnimationGroup(this.Children.ToList().Where(e => e.EntranceAnimation != null).Select(e => e.EntranceAnimation)));
+            this.ExitAnimation = new ForwarderAnimation(() => new AnimationGroup(this.Children.ToList().Where(e => e.ExitAnimation != null).Select(e => e.ExitAnimation)));
         }
 
         public override System.Drawing.Rectangle Bounds
