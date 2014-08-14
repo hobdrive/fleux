@@ -565,7 +565,7 @@
             return new Size(((int) s.Width).ToLogic(), ((int) s.Height).ToLogic());
         }
 
-        public int FindFontSizeForArea(string text, Size maxArea, out Size newArea)
+        public int CalculateFontSizeForArea(string text, Size maxArea, out Size newArea)
         {
             if (text == null)
                 throw new ArgumentNullException("text");

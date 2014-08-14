@@ -166,6 +166,8 @@
 
         int CalculateMultilineTextHeight(string text, int width);
 
+        int CalculateFontSizeForArea(string text, Size maxArea, out Size newArea);
+
         Size CalculateTextSize(string text);
 
         int CalculateWidth(int x);
