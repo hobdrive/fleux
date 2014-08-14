@@ -1,4 +1,5 @@
 ﻿using Fleux.UIElements.Grid;
+using System.Collections.Generic;
 
 namespace Fleux.UIElements
 {
@@ -15,13 +16,13 @@ namespace Fleux.UIElements
         
         public bool AutoResize{ get; set; }
 
+        object child_lock = new object();
+
         public Canvas()
         {
             AutoResize = true;
-            /// TODO: ToList() makes it thread safe.
-            /// Better way to do that???
-            this.EntranceAnimation = new ForwarderAnimation(() => new AnimationGroup(this.Children.ToList().Where(e => e.EntranceAnimation != null).Select(e => e.EntranceAnimation)));
-            this.ExitAnimation = new ForwarderAnimation(() => new AnimationGroup(this.Children.ToList().Where(e => e.ExitAnimation != null).Select(e => e.ExitAnimation)));
+            this.EntranceAnimation = new ForwarderAnimation(() => new AnimationGroup(this.SafeChildren.Where(e => e.EntranceAnimation != null).Select(e => e.EntranceAnimation)));
+            this.ExitAnimation = new ForwarderAnimation(() => new AnimationGroup(this.SafeChildren.Where(e => e.ExitAnimation != null).Select(e => e.ExitAnimation)));
         }
 
         public override System.Drawing.Rectangle Bounds
@@ -32,11 +33,23 @@ namespace Fleux.UIElements
             }
         }
 
+        public virtual List<UIElement> SafeChildren{
+            get{
+                lock(child_lock){
+                    return this.Children.ToList();
+                }
+            }
+        }
+             
+
         public virtual void AddElement(UIElement element)
         {
-            if (this.Children.Contains(element))
-                return;
-            this.Children.Add(element);
+            lock(child_lock)
+            {
+                if (this.Children.Contains(element))
+                    return;
+                this.Children.Add(element);
+            }
             element.Parent = this;
             if (AutoResize)
                 this.Size = new Size(Math.Max(element.Bounds.Right, this.Size.Width), Math.Max(element.Bounds.Bottom, this.Size.Height));
@@ -46,7 +59,10 @@ namespace Fleux.UIElements
 
         public virtual void RemoveElement(UIElement element)
         {
-            this.Children.Remove(element);
+            lock(child_lock)
+            {
+                this.Children.Remove(element);
+            }
             element.Parent = null;
             /*
             this.Size = new Size(0,0);
@@ -66,7 +82,7 @@ namespace Fleux.UIElements
             //if (lastVisibleRect != drawingGraphics.VisibleRect
             int ctime = System.Environment.TickCount;
 
-            var visible = this.Children.Where(i => i.Visible && i.Bounds.IntersectsWith(drawingGraphics.VisibleRect)).ToList();
+            var visible = this.SafeChildren.Where(i => i.Visible && i.Bounds.IntersectsWith(drawingGraphics.VisibleRect)).ToList();
 #if xDEBUG
 			if (this is Fleux.UIElements.Panorama.PanoramaSection)
 			{
@@ -102,6 +118,9 @@ namespace Fleux.UIElements
             };
         }
 
+        /// <summary>
+        /// No need to lock addition!
+        /// </summary>
         public virtual void AddElementAfter(UIElement element, UIElement sibling)
         {
             if (!base.Children.Contains(element))
@@ -121,7 +140,7 @@ namespace Fleux.UIElements
 
         public virtual UIElement Child(string id)
         {
-            return base.Children.FirstOrDefault<UIElement>(c => (c.ID == id));
+            return SafeChildren.FirstOrDefault<UIElement>(c => (c.ID == id));
         }
 
         /// <summary>
@@ -129,7 +148,7 @@ namespace Fleux.UIElements
         /// </summary>
         public virtual UIElement FindChild(string id)
         {
-            foreach(var c in base.Children)
+            foreach(var c in SafeChildren)
             {
                 if (c is Canvas)
                 {
@@ -145,7 +164,10 @@ namespace Fleux.UIElements
 
         public void Clear()
         {
-            this.Children.Clear();
+            lock(child_lock)
+            {
+                this.Children.Clear();
+            }
             if (ContentChanged != null) ContentChanged();
         }
     }
