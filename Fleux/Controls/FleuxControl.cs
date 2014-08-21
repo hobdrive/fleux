@@ -293,8 +293,11 @@
                     if (!this.invalidating)
                     {
                         this.invalidating = true;
-                        base.ForcedInvalidate();
-                        this.invalidating = false;
+                        try{
+                            base.ForcedInvalidate();
+                        }finally{
+                            this.invalidating = false;
+                        }
                     }
                 }
             }
