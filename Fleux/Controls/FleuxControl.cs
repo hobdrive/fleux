@@ -36,7 +36,7 @@
             this.gestures.Flick = this.Flick;
             this.gestures.Pressed = this.Pressed;
             this.gestures.Released = this.Released;
-            this.shadowImageX = 1000; // TODO: Review this field initialization.
+            this.shadowImageX = int.MaxValue; // TODO: Review this field initialization.
         }
 
         Color SafeBackColor = Color.Black;
@@ -197,7 +197,8 @@
             }
             exitSb.AddAnimation(new CommitStoryboardAnimation { Duration = this.EntranceDuration, CommitAction = () => this.ForcedInvalidate() });
             exitSb.AnimateSync();
-
+            this.shadowImageX = int.MaxValue;
+            this.active = false;
             if (this.OnExitAnimationCompleted != null)
             {
                 this.OnExitAnimationCompleted();
@@ -224,7 +225,7 @@
                     && this.shadowImageX < this.offBmp.Width
                     && this.shadowImageX > -this.offBmp.Width * 3)
                 {
-                    gr.DrawAlphaImage("righttransition.png", new Rectangle(this.shadowImageX, 0, this.offBmp.Width * 3, this.offBmp.Height).ToLogic());
+                    gr.DrawAlphaImage("righttransition.png", new Rectangle(this.shadowImageX, 0, (this.offBmp.Width+1) * 3, this.offBmp.Height+1).ToLogic());
                 }
             }
             else
