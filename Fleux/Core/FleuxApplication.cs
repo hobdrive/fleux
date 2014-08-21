@@ -169,5 +169,10 @@
             // TODO: Review why 50 dpi fits better than 72 dpi
             return (int)((points * FleuxApplication.deviceDpi) / 50);
         }
+
+        public static void Log(Exception e)
+        {
+            System.Console.WriteLine(e.StackTrace);
+        }
     }
 }

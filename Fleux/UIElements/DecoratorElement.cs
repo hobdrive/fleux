@@ -1,6 +1,7 @@
 using System;
 using Fleux.Core.GraphicsHelpers;
 using System.Threading;
+using Fleux.Core;
 
 namespace Fleux.UIElements
 {
@@ -28,11 +29,21 @@ namespace Fleux.UIElements
         
         public override void Draw(IDrawingGraphics drawingGraphics)
         {
-            if (DecorateBefore != null)
-                DecorateBefore(drawingGraphics);
-            Target.Draw(drawingGraphics.CreateChild(Target.Location, Target.TransformationScaling, Target.TransformationCenter));
-            if (DecorateAfter != null)
-                DecorateAfter(drawingGraphics);
+            try{
+                if (DecorateBefore != null)
+                    DecorateBefore(drawingGraphics);
+            }catch(Exception e)
+            {
+                FleuxApplication.Log(e);
+            }
+            Target.Draw(drawingGraphics.CreateChild(Target.Location, Target.Transformation));
+            try{
+                if (DecorateAfter != null)
+                    DecorateAfter(drawingGraphics);
+            }catch(Exception e)
+            {
+                FleuxApplication.Log(e);
+           }
         }
     }
 }
