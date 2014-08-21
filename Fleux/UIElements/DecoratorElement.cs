@@ -36,7 +36,7 @@ namespace Fleux.UIElements
             {
                 FleuxApplication.Log(e);
             }
-            Target.Draw(drawingGraphics.CreateChild(Target.Location, Target.Transformation));
+            Target.Draw(drawingGraphics.CreateChild(Target.Location));
             try{
                 if (DecorateAfter != null)
                     DecorateAfter(drawingGraphics);
