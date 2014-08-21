@@ -163,6 +163,8 @@
 
         public IImageWrapper GetIImage(string imagePath)
         {
+            if (imagePath == null)
+                return null;
             var fullPath = Path.Combine(RootImagePath, imagePath);
 			return this.CreateOrGet (this.iimagesMap,
 			                                 imagePath,
@@ -171,6 +173,8 @@
 
         public Bitmap GetBitmap(string imagePath)
         {
+            if (imagePath == null)
+                return null;
             var fullPath = Path.Combine(RootImagePath, imagePath);
             return this.CreateOrGet (this.bitmapMap,
                                      imagePath,
