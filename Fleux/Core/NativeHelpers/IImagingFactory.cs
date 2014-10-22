@@ -52,11 +52,12 @@
         InterpolationHintAveraging,
         InterpolationHintBicubic
     }
-
+#if !__IOS__
     // Pulled from imaging.h in the Windows Mobile 5.0 Pocket PC SDK
     [ComImport, Guid("327ABDA7-072B-11D3-9D7B-0000F81EF32E"),
      InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     [ComVisible(true)]
+#endif
     public interface IImagingFactory
     {
         uint CreateImageFromStream(); // This is a place holder, note the lack of arguments
@@ -100,9 +101,11 @@
     /// In all other platforms it is implemented with BasicImage, which is a simple wrapper over "Bitmap"
     /// Pulled from imaging.h in the Windows Mobile 5.0 Pocket PC SDK
     /// </summary>
+	#if !__IOS__
     [ComImport, Guid("327ABDA9-072B-11D3-9D7B-0000F81EF32E"),
      InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     [ComVisible(true)]
+	#endif
     public interface IImage
     {
         uint GetPhysicalDimension(out Size size);
@@ -127,8 +130,10 @@
     }
 
     // Pulled from imaging.h in the Windows Mobile 5.0 Pocket PC SDK
-    [ComImport, Guid("327ABDAA-072B-11D3-9D7B-0000F81EF32E"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+	#if !__IOS__
+	[ComImport, Guid("327ABDAA-072B-11D3-9D7B-0000F81EF32E"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     [ComVisible(true)]
+	#endif
     public interface IBitmapImage
     {
         uint GetSize(out Size size);
