@@ -307,7 +307,7 @@
         {
             var handled = false;
             this.LastTapDuration = this.gestures.LastTapDuration;
-            foreach (var el in this.elements.Where(e => e.Bounds.Contains(p)))
+            foreach (var el in this.elements.Where(e => e.Bounds.Contains(p)).ToArray())
             {
                 if (el.Hold(p.ClientTo(el.Location)))
                 {
@@ -332,7 +332,7 @@
                             FleuxApplication.Led.Vibrate();
                         }
                         var handled = false;
-                        foreach (var el in this.elements.Where(e => e.Bounds.Contains(p)))
+                        foreach (var el in this.elements.Where(e => e.Bounds.Contains(p)).ToArray())
                         {
                             if (el.Tap(p.ClientTo(el.Location)))
                             {
@@ -350,7 +350,7 @@
         private void DoubleTap(Point p)
         {
             var handled = false;
-            foreach (var el in this.elements.Where(e => e.Bounds.Contains(p)))
+            foreach (var el in this.elements.Where(e => e.Bounds.Contains(p)).ToArray())
             {
                 if (el.DoubleTap(p.ClientTo(el.Location)))
                 {
