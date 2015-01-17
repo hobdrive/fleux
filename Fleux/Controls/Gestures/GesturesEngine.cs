@@ -97,13 +97,16 @@
 
         public void MouseDown(Point point)
         {
-            this.mouseDownTicks = Environment.TickCount;
             this.mouseDownPoint = point;
             this.prevDownPoint = point;
             this.canBeTap = true;
             this.canBeHold = true;
             this.mouseDown = true;
             this.RaisePressed(point);
+            // Save ticks after pressed handling.
+            // This makes presses more stable on slow hardware
+            this.mouseDownTicks = Environment.TickCount;
+
             this.holdTimer.Enabled = false;
             this.holdTimer.Interval = this.parameters.TapTimePeriod;
             this.holdTimer.Enabled = true;
