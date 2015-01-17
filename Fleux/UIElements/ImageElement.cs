@@ -31,6 +31,7 @@ namespace Fleux.UIElements
         public override void Draw(IDrawingGraphics drawingGraphics)
         {
             var size = Size;
+            var trect = new Rectangle(0,0, size.Width, size.Height);
 
             if (KeepAspect)
             {
@@ -38,11 +39,12 @@ namespace Fleux.UIElements
                 size = new Size(Size.Width, (int)(Size.Width / scale));
                 if (size.Height > Size.Height)
                     size = new Size((int)(Size.Height * scale), Size.Height);
+                trect = new Rectangle((Size.Width - size.Width)/2,
+                                     (Size.Height - size.Height)/2,
+                                     size.Width, size.Height);
             }
 
-            drawingGraphics.DrawAlphaImage(this.image, new Rectangle((Size.Width - size.Width)/2,
-                                                                     (Size.Height - size.Height)/2,
-                                                                     size.Width, size.Height));
+            drawingGraphics.DrawAlphaImage(this.image, trect);
         }
     }
 }
