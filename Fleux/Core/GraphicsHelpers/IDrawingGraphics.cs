@@ -165,7 +165,7 @@
         IDrawingGraphics DrawRightText(string text); // Aligned to currentX
 
         int CalculateMultilineTextHeight(string text, int width);
-
+        
         int CalculateFontSizeForArea(string text, Size maxArea, out Size newArea);
 
         Size CalculateTextSize(string text);
@@ -179,9 +179,12 @@
         int CalculateY(int y);
 
         Rectangle CalculateRect(Rectangle logicalRect);
-
-        IDrawingGraphics CreateChild(Point innerlocation, double scaling, Point transformationCenter);
-
+        
         IDrawingGraphics CreateChild(Point innerlocation);
+        
+        IDrawingGraphics CreateChild(Point innerlocation, DGTransformation transformation);
+
+        void Dispose();
+        
     }
 }

@@ -18,6 +18,7 @@
         protected int shadowImageX;
 
         private readonly List<UIElement> elements = new List<UIElement>();
+        private readonly StoryBoard storyboard = new StoryBoard();
         private readonly GesturesEngine gestures = new GesturesEngine();
 
         private bool invalidating = false;
@@ -212,7 +213,7 @@
                 e.Graphics.Clear(this.SafeBackColor);
                 var gr = DrawingGraphics.FromGraphicsAndRect(this.offGr, this.offBmp, new Rectangle(0, 0, this.offBmp.Width, this.offBmp.Height));
                 try{
-                    this.elements.ForEach(element => element.Draw(gr.CreateChild(element.Location, element.TransformationScaling, element.TransformationCenter)));
+                    this.elements.ForEach(element => element.Draw(gr.CreateChild(element.Location, element.Transformation)));
                 }catch(Exception ex){
 #if DEBUG
 	                  // TODO drawing exception because of

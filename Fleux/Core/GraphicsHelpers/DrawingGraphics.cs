@@ -1,4 +1,7 @@
-﻿namespace Fleux.Core.GraphicsHelpers
+﻿using Fleux.Controls;
+using System.Drawing.Imaging;
+
+namespace Fleux.Core.GraphicsHelpers
 {
     using System;
     using System.Drawing;
@@ -10,16 +13,39 @@
     using Dim;
     using Scaling;
     using Styles;
-    using UIElements;
+
+    public class DGTransformation
+    {
+        public float Rotation;
+        public Point RotationCenter;
+
+        public float ScalingX, ScalingY;
+        public Point ScalingCenter;
+
+        public float SkewX, SkewY;
+        public float Transparency;
+        public string Effect;
+        
+        public static DGTransformation Empty {
+            get { return new DGTransformation{ ScalingX = 1, ScalingY = 1 }; }
+        }
+        
+        public DGTransformation Mix(DGTransformation other)
+        {
+            return new DGTransformation()
+            {
+                ScalingX = this.ScalingX * other.ScalingX,
+                ScalingY = this.ScalingY * other.ScalingY,
+                ScalingCenter = other.ScalingCenter.ClientTo(this.ScalingCenter),
+                Transparency = this.Transparency * other.Transparency,
+            };
+        }
+    }
 
     public class DrawingGraphics : IDrawingGraphics
     {
         // The state (not scaled) used for the drawing primitives
         public readonly DrawingHelperState state;
-
-        // ScalingTransformation fields
-        private double scalingFactorFromParent = 1.0;
-        private double scalingFactor = 1.0;
 
         // Rectangle (pixels) enclosing the content
         private Rectangle drawingExtends;
@@ -36,6 +62,8 @@
             this.drawingExtends = new Rectangle();
             this.MaxWidth = canvasImage.Width;
             this.MaxHeight = canvasImage.Height;
+            this.transformation = DGTransformation.Empty;
+            
         }
 
         // Expressed in pixels
@@ -46,16 +74,7 @@
         // Graphics where the actions will be performed
         public Graphics Graphics { get; private set; }
 
-        // Transformations
-        //----------------
-        // Scaling
-        public double TransformationScaling
-        {
-            get { return this.scalingFactor; }
-            set { this.scalingFactor = value; }
-        }
-
-        public Point TransformationCenter { get; set; }
+        private DGTransformation transformation;
 
         // Rectangle to be used on the Graphics
         // Expressed in pixels
@@ -636,22 +655,35 @@
             throw new NotImplementedException();
         }
 
-        public IDrawingGraphics CreateChild(Point innerlocation, double scalingTransformation, Point transformationCenter)
+        public IDrawingGraphics CreateChild(Point innerlocation, DGTransformation t)
         {
             var childLocation = innerlocation.ToPixels().ToParent(this.Location);
             var childMaxWidth = this.MaxWidth - (childLocation.X - this.Location.X);
-            var child = FromGraphicsLocationMaxWidth(this.Graphics, this.canvasImage, childLocation.X, childLocation.Y, childMaxWidth);
 
-            child.scalingFactorFromParent = this.scalingFactorFromParent * this.scalingFactor;
-            child.scalingFactor = scalingTransformation;
-            child.TransformationCenter = transformationCenter;
+            var g = this.Graphics;
+            if (t != null)
+            {
+                // ???
+            }
+            var child = FromGraphicsLocationMaxWidth(g, this.canvasImage, childLocation.X, childLocation.Y, childMaxWidth);
+            if (t != null)
+                child.transformation = this.transformation.Mix(t);
+            //child.transformation.Apply(g);
 
             return child;
         }
 
+        public IDrawingGraphics CreateChild(Point innerlocation, float scalingTransformation, Point transformationCenter)
+        {
+            return CreateChild(innerlocation, new DGTransformation{
+                //Scaling = this.transformation.Scaling * scalingTransformation,
+                ScalingCenter = transformationCenter,
+            });
+        }
+
         public IDrawingGraphics CreateChild(Point innerlocation)
         {
-            return this.CreateChild(innerlocation, 1.0, new Point(0, 0));
+            return this.CreateChild(innerlocation, null);
         }
 
         public ClipBuffer GetClipBuffer(Rectangle region, Bitmap bitmap)
@@ -682,24 +714,24 @@
 
         public int CalculateWidth(int logicalWidth)
         {
-            return (int)(Math.Abs(logicalWidth).ToPixels() * this.scalingFactorFromParent * this.scalingFactor);
+            return (int)(Math.Abs(logicalWidth).ToPixels() * this.transformation.ScalingX);
         }
 
         public int CalculateHeight(int logicalHeight)
         {
-            return (int)(Math.Abs(logicalHeight).ToPixels() * this.scalingFactorFromParent * this.scalingFactor);
+            return (int)(Math.Abs(logicalHeight).ToPixels() * this.transformation.ScalingY);
         }
 
         public int CalculateX(int x)
         {
             return this.ScaledBounds.Left + 
-                ((int)(this.TransformationCenter.X + ((x - this.TransformationCenter.X) * this.scalingFactorFromParent * this.scalingFactor))).ToPixels();
+                ((int)(this.transformation.ScalingCenter.X + ((x - this.transformation.ScalingCenter.X) * this.transformation.ScalingX))).ToPixels();
         }
 
         public int CalculateY(int y)
         {
             return this.ScaledBounds.Top +
-                ((int)(this.TransformationCenter.Y + ((y - this.TransformationCenter.Y) * this.scalingFactorFromParent * this.scalingFactor))).ToPixels();
+                ((int)(this.transformation.ScalingCenter.Y + ((y - this.transformation.ScalingCenter.Y) * this.transformation.ScalingY))).ToPixels();
         }
 
         public Rectangle CalculateRect(Rectangle logicalRect)
@@ -736,5 +768,10 @@
         {
             this.ValidateExtends(this.CalculateX(x), this.CalculateY(y));
         }
+
+        public void Dispose()
+        {
+        }
+
     }
 }

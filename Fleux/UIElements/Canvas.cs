@@ -1,5 +1,7 @@
 ﻿using Fleux.UIElements.Grid;
 using System.Collections.Generic;
+using System.Drawing;
+using Fleux.Core.GraphicsHelpers;
 
 namespace Fleux.UIElements
 {
@@ -87,7 +89,6 @@ namespace Fleux.UIElements
 			if (this is Fleux.UIElements.Panorama.PanoramaSection)
 			{
 				var ch = this.Children.Where(i => i.Visible);
-
 			}
 			var visible = this.Children.Where(i => i.Visible).ToList();
 #endif
@@ -107,7 +108,16 @@ namespace Fleux.UIElements
 #if xDEBUG
                     System.Console.WriteLine("Canvas draw " + e.GetType().ToString() + " vis: "+visible.Count + "tot: "+this.ChildrenCount);
 #endif
-                    e.Draw(drawingGraphics.CreateChild(e.Location, e.TransformationScaling, e.TransformationCenter));
+                    /*if (e.Transformation != null)
+                    {
+                        //Bitmap b = new Bitmap(e.Size.Width, e.Size.Height);
+                        //Graphics g =  Graphics.FromImage(b);
+                        //var cdg = DrawingGraphics.FromGraphicsAndRect(g, b, new Rectangle(e.Location.X, e.Location.Y, e.Size.Width, e.Size.Height));
+                        e.Draw(cdg);
+                        //b.Dispose();
+                        //g.Dispose();
+                    }else*/
+                        e.Draw(drawingGraphics.CreateChild(e.Location, e.Transformation));
 #if xDEBUG
 					drawingGraphics.Color(Color.Red);
                     drawingGraphics.DrawRectangle(e.Location.X, e.Location.Y, e.Size.Width, e.Size.Height);

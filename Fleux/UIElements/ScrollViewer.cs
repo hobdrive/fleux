@@ -164,7 +164,7 @@
                 }
                 
                 this.Content.Draw(clipBuffer.DrawingGr.CreateChild(new Point(this.HorizontalOffset, this.VerticalOffset),
-                                                                   this.content.TransformationScaling, this.content.TransformationCenter));
+                                                                   this.content.Transformation));
                 if (this.ShowScrollbars)
                 {
                     this.DrawScrollBar(clipBuffer.DrawingGr);

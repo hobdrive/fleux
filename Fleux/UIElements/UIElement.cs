@@ -20,9 +20,6 @@
 
         public UIElement()
         {
-            // Default transformation parameters
-            this.TransformationScaling = 1.0;
-            this.TransformationCenter = new Point(0, 0);
             Enabled = true;
         }
 
@@ -96,9 +93,7 @@
             set { this.Size = new Size(Size.Width, value); }
         }
 
-        public double TransformationScaling { get; set; }
-
-        public Point TransformationCenter { get; set; }
+        public DGTransformation Transformation { get; set; }
 
         public virtual Rectangle Bounds
         {
@@ -201,8 +196,12 @@
                 {
                     this.PressedHandler = p =>
                     {
-                        this.TransformationScaling = 0.95;
-                        this.TransformationCenter = new Point(this.Size.Width/2, this.Size.Height/2);
+                        this.Transformation = new DGTransformation()
+                        {
+                            ScalingX = 0.9f,
+                            ScalingY = 0.9f,
+                            ScalingCenter = new Point(this.Size.Width/2, this.Size.Height/2),
+                        };
                         if (FleuxSettings.HapticFeedbackMode == FleuxSettings.HapticOptions.FeedbackEnabledPress)
                         {
                             FleuxApplication.Led.Vibrate();
@@ -212,7 +211,7 @@
                     };
                     this.ReleasedHandler = () =>
                     {
-                        this.TransformationScaling = 1.0;
+                        this.Transformation = null;
                         this.Update();
                         return false;
                     };
@@ -246,6 +245,9 @@
             }
         }
 
+        /// <summary>
+        /// ????????????
+        /// </summary>
         public virtual Point ApplyTransformation(Point source)
         {
             return source;
