@@ -172,6 +172,7 @@
 
         public static void Log(Exception e)
         {
+            System.Console.WriteLine("Fleux exception: " + e.Message);
             System.Console.WriteLine(e.StackTrace);
         }
     }
