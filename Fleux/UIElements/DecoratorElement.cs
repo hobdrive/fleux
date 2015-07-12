@@ -36,14 +36,15 @@ namespace Fleux.UIElements
             {
                 FleuxApplication.Log(e);
             }
-            Target.Draw(drawingGraphics.CreateChild(Target.Location));
+            if (Target.Visible)
+                Target.Draw(drawingGraphics.CreateChild(Target.Location));
             try{
                 if (DecorateAfter != null)
                     DecorateAfter(drawingGraphics);
             }catch(Exception e)
             {
                 FleuxApplication.Log(e);
-           }
+            }
         }
     }
 }
