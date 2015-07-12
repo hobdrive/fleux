@@ -79,8 +79,8 @@
                     onAnimateCompleted();
                     this.animationThread = null;
                 });
-                at.Start();
                 this.animationThread = at;
+                at.Start();
             }
         }
 
