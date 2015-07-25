@@ -22,7 +22,7 @@
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <AssemblyName>Fleux</AssemblyName>
     <MonoAndroidVersion>v2.1</MonoAndroidVersion>
-    <TargetFrameworkVersion>v2.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v2.3</TargetFrameworkVersion>
     <BaseIntermediateOutputPath>obj_android</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Env)' == 'alone' ">
