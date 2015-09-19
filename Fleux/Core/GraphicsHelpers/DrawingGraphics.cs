@@ -245,7 +245,8 @@ namespace Fleux.Core.GraphicsHelpers
 
         public IDrawingGraphics DrawLine(int x1, int y1, int x2, int y2)
         {
-            this.Graphics.DrawLine(this.state.CurrentPen, this.CalculateX(x1), this.CalculateY(y1), this.CalculateX(x2), this.CalculateY(y2));
+            if (this.state.CurrentPen.Width > 0)
+                this.Graphics.DrawLine(this.state.CurrentPen, this.CalculateX(x1), this.CalculateY(y1), this.CalculateX(x2), this.CalculateY(y2));
             this.MoveTo(x2, y2);
             this.ValidateExtends(this.CalculateX(x2), this.CalculateY(y2));
             return this;
@@ -266,7 +267,8 @@ namespace Fleux.Core.GraphicsHelpers
             {
                 Swap(ref y1, ref y2);
             }
-            this.Graphics.DrawRectangle(this.state.CurrentPen,
+            if (this.state.CurrentPen.Width > 0)
+                this.Graphics.DrawRectangle(this.state.CurrentPen,
                                         this.CalculateX(x1),
                                         this.CalculateY(y1),
                                         this.CalculateWidth(x2 - x1),
@@ -277,7 +279,8 @@ namespace Fleux.Core.GraphicsHelpers
 
         public IDrawingGraphics DrawRectangle(System.Drawing.Rectangle r)
         {
-            this.Graphics.DrawRectangle(this.state.CurrentPen,
+            if (this.state.CurrentPen.Width > 0)
+                this.Graphics.DrawRectangle(this.state.CurrentPen,
                                         this.CalculateX(r.X),
                                         this.CalculateY(r.Y),
                                         this.CalculateWidth(r.Width),
@@ -332,7 +335,8 @@ namespace Fleux.Core.GraphicsHelpers
             {
                 Swap(ref y1, ref y2);
             }
-            this.Graphics.DrawEllipse(this.state.CurrentPen,
+            if (this.state.CurrentPen.Width > 0)
+                this.Graphics.DrawEllipse(this.state.CurrentPen,
                                       this.CalculateX(x1),
                                       this.CalculateY(y1),
                                       this.CalculateWidth(x2 - x1),
@@ -343,7 +347,8 @@ namespace Fleux.Core.GraphicsHelpers
 
         public IDrawingGraphics DrawEllipse(System.Drawing.Rectangle r)
         {
-            this.Graphics.DrawEllipse(this.state.CurrentPen,
+            if (this.state.CurrentPen.Width > 0)
+                this.Graphics.DrawEllipse(this.state.CurrentPen,
                                       this.CalculateX(r.X),
                                       this.CalculateY(r.Y),
                                       this.CalculateWidth(r.Width),
