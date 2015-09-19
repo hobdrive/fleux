@@ -62,7 +62,8 @@
 
         public void AddAnimation(IAnimation a)
         {
-            this.animations.Add(a);
+            lock(animations)
+                this.animations.Add(a);
             if (this.animationThread != null)
             {
                 a.Reset();
@@ -91,13 +92,18 @@
 
         public void AnimateSync()
         {
-            this.animations.ForEach(a => a.Reset());
+            IAnimation[] lanimations = null;
+            lock(this.animations)
+                lanimations = this.animations.ToArray();
+            
+            foreach(var a in lanimations)
+                a.Reset();
             var keepAnimating = true;
             while (!this.stopAnimation && keepAnimating)
             {
                 lock (this)
                 {
-                    keepAnimating = this.animations.Aggregate(false, (current, animation) => (animation.Animate() || current));
+                    keepAnimating = lanimations.Aggregate(false, (current, animation) => (animation.Animate() || current));
                 }
                 // why that???
                 //System.Windows.Forms.Application.DoEvents();
