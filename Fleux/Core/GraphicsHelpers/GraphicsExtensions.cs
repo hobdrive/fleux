@@ -26,6 +26,32 @@ namespace Fleux.Core.GraphicsHelpers
         }
 #endif
 
+        /// <summary>
+        /// Fills the rounded rectangle with roundings in "roundings"
+        /// </summary>
+        public static IDrawingGraphics FillRoundedRectangle(this IDrawingGraphics dg, System.Drawing.Rectangle rect, int l, int r, int lb, int rb)
+        {
+            int ix, iy, ix2, iy2;
+            ix = rect.X + Math.Max(l, lb);
+            iy = rect.Y + Math.Max(l, r);
+            ix2 = rect.Right - Math.Max(r, rb);
+            iy2 = rect.Bottom - Math.Max(lb, rb);
+                
+            dg.FillRectangle(ix, iy, ix2, iy2);
+
+            dg.FillRectangle(ix, rect.Y, ix2, iy);
+            dg.FillRectangle(rect.X, iy, ix, iy2);
+            dg.FillRectangle(ix, iy2, ix2, rect.Bottom);//!!!!
+            dg.FillRectangle(ix2, iy, rect.Right, iy2);
+
+            dg.FillEllipse(rect.X, rect.Y, ix+l, iy+l);
+            dg.FillEllipse(rect.X, rect.Bottom, ix+lb, iy2-lb);
+            dg.FillEllipse(ix2-r, rect.Y, rect.Right, iy+r);
+            dg.FillEllipse(rect.Right, rect.Bottom, ix2-rb, iy2-rb);
+
+            return dg;
+        }
+
         public static Graphics DrawPng(this Graphics gr, IImageWrapper pngImage, Rectangle destRect)
         {
 #if WINCE
