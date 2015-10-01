@@ -156,7 +156,12 @@
 
         public static int ScaleToLogic(int value)
         {
+#if XNA
+            // Will this help?
+            return (int)Math.Ceiling(value / FleuxApplication.DpiFactor);
+#else
             return (int)(value / FleuxApplication.DpiFactor);
+#endif
         }
 
         public static void Initialize(System.Drawing.Graphics graphics)
