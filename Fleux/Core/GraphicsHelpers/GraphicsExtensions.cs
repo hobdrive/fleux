@@ -44,10 +44,10 @@ namespace Fleux.Core.GraphicsHelpers
 
             dg.FillRectangle(ix, iy, ix2, iy2);
 
-            dg.FillRectangle(ix, rect.Y, ix2, iy);
-            dg.FillRectangle(rect.X, iy, ix, iy2);
-            dg.FillRectangle(ix, iy2, ix2, rect.Bottom);//!!!!
-            dg.FillRectangle(ix2, iy, rect.Right, iy2);
+            dg.FillRectangle(ix, rect.Y, ix2, iy+1);
+            dg.FillRectangle(rect.X, iy, ix+1, iy2);
+            dg.FillRectangle(ix, iy2-1, ix2, rect.Bottom);//!!!!
+            dg.FillRectangle(ix2-1, iy, rect.Right, iy2);
 
             return dg;
         }
