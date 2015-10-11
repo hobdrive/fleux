@@ -19,6 +19,12 @@ namespace Fleux.Core.GraphicsHelpers
         {
             return new Rectangle(r.Left, r.Top, r.Right, r.Bottom);
         }
+
+        public static Rectangle Translate(this Rectangle r, int x, int y)
+        {
+            return new Rectangle(r.Left+x, r.Top+y, r.Width, r.Height);
+        }
+
 #if WINCE
         /// for code compatibility
         public static void Flush(this Graphics gr)

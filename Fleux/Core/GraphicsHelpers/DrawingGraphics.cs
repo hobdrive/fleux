@@ -1,31 +1,41 @@
-﻿using Fleux.Controls;
+﻿using System;
+using System.Drawing;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Windows.Forms;
 using System.Drawing.Imaging;
+
+using Fleux.Controls;
+using Fleux.Core.NativeHelpers;
+using Fleux.Core.Dim;
+using Fleux.Core.Scaling;
+using Fleux.Styles;
 
 namespace Fleux.Core.GraphicsHelpers
 {
-    using System;
-    using System.Drawing;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
-    using System.Windows.Forms;
-    using Core.NativeHelpers;
-    using Dim;
-    using Scaling;
-    using Styles;
 
     public class DGTransformation
     {
-        public float Rotation;
-        public Point RotationCenter;
+        public float Rotation = 0;
+        public Point RotationCenter = Point.Empty;
 
-        public float ScalingX, ScalingY;
-        public Point ScalingCenter;
+        public float ScalingX = 1, ScalingY = 1;
+        public Point ScalingCenter = Point.Empty;
 
-        public float SkewX, SkewY;
-        public float Transparency;
-        public string Effect;
-        
+        public float Transparency = 0;
+        public string Effect = null;
+
+        public DGTransformation()
+        {
+        }
+
+        public float Scaling{
+            set{
+                ScalingX = ScalingY = value;
+            }
+        }
+
         public static DGTransformation Empty {
             get { return new DGTransformation{ ScalingX = 1, ScalingY = 1 }; }
         }
@@ -75,20 +85,6 @@ namespace Fleux.Core.GraphicsHelpers
         public Graphics Graphics { get; private set; }
 
         private DGTransformation transformation;
-
-        // Rectangle to be used on the Graphics
-        // Expressed in pixels
-        public Rectangle ScaledBounds
-        {
-            get
-            {
-                return new Rectangle(this.drawingExtends.Left, this.drawingExtends.Top, FleuxApplication.ScaleFromLogic(this.MaxWidth), this.drawingExtends.Height);
-            }
-
-            set
-            {
-            }
-        }
 
         public int X
         {
@@ -666,29 +662,59 @@ namespace Fleux.Core.GraphicsHelpers
             var childMaxWidth = this.MaxWidth - (childLocation.X - this.Location.X);
 
             var g = this.Graphics;
-            if (t != null)
-            {
-                // ???
-            }
             var child = FromGraphicsLocationMaxWidth(g, this.canvasImage, childLocation.X, childLocation.Y, childMaxWidth);
             if (t != null)
-                child.transformation = this.transformation.Mix(t);
-            //child.transformation.Apply(g);
-
+                child.transformation = t;
             return child;
-        }
-
-        public IDrawingGraphics CreateChild(Point innerlocation, float scalingTransformation, Point transformationCenter)
-        {
-            return CreateChild(innerlocation, new DGTransformation{
-                //Scaling = this.transformation.Scaling * scalingTransformation,
-                ScalingCenter = transformationCenter,
-            });
         }
 
         public IDrawingGraphics CreateChild(Point innerlocation)
         {
             return this.CreateChild(innerlocation, null);
+        }
+
+        public void BatchDraw(Action<IDrawingGraphics> drawer)
+        {
+            var omatrix = this.Graphics.Transform;
+            var oloc = Location;
+            #if XNA
+            var otrans = this.Graphics.Transparency;
+            #endif
+
+            Location = Point.Empty;
+
+            try{
+
+                this.Graphics.TranslateTransform(oloc.X, oloc.Y);
+
+                if (transformation != null)
+                {
+                    this.Graphics.TranslateTransform(CalculateWidth(transformation.ScalingCenter.X),
+                        CalculateHeight(transformation.ScalingCenter.Y));
+                    this.Graphics.ScaleTransform(transformation.ScalingX == 0 ? 0.001f : transformation.ScalingX,
+                                                 transformation.ScalingY == 0 ? 0.001f : transformation.ScalingY);
+                    this.Graphics.TranslateTransform(-CalculateWidth(transformation.ScalingCenter.X),
+                        -CalculateHeight(transformation.ScalingCenter.Y));
+                    
+                    this.Graphics.TranslateTransform(CalculateWidth(transformation.RotationCenter.X),
+                        CalculateHeight(transformation.RotationCenter.Y));
+                    this.Graphics.RotateTransform(transformation.Rotation);
+                    this.Graphics.TranslateTransform(-CalculateWidth(transformation.RotationCenter.X),
+                        -CalculateHeight(transformation.RotationCenter.Y));
+                    #if XNA
+                    this.Graphics.Transparency = transformation.Transparency;
+                    #endif
+                }
+
+                drawer(this);
+
+            }finally{
+                Location = oloc;
+                this.Graphics.Transform = omatrix;
+                #if XNA
+                this.Graphics.Transparency = otrans;
+                #endif
+            }
         }
 
         public ClipBuffer GetClipBuffer(Rectangle region, Bitmap bitmap)
@@ -719,24 +745,22 @@ namespace Fleux.Core.GraphicsHelpers
 
         public int CalculateWidth(int logicalWidth)
         {
-            return (int)(Math.Abs(logicalWidth).ToPixels() * this.transformation.ScalingX);
+            return (int)(Math.Abs(logicalWidth).ToPixels());
         }
 
         public int CalculateHeight(int logicalHeight)
         {
-            return (int)(Math.Abs(logicalHeight).ToPixels() * this.transformation.ScalingY);
+            return (int)(Math.Abs(logicalHeight).ToPixels());
         }
 
         public int CalculateX(int x)
         {
-            return this.ScaledBounds.Left + 
-                ((int)(this.transformation.ScalingCenter.X + ((x - this.transformation.ScalingCenter.X) * this.transformation.ScalingX))).ToPixels();
+            return this.drawingExtends.Left + x.ToPixels();
         }
 
         public int CalculateY(int y)
         {
-            return this.ScaledBounds.Top +
-                ((int)(this.transformation.ScalingCenter.Y + ((y - this.transformation.ScalingCenter.Y) * this.transformation.ScalingY))).ToPixels();
+            return this.drawingExtends.Top + y.ToPixels();
         }
 
         public Rectangle CalculateRect(Rectangle logicalRect)
@@ -745,6 +769,16 @@ namespace Fleux.Core.GraphicsHelpers
                                  this.CalculateY(logicalRect.Y),
                                  this.CalculateWidth(logicalRect.Width),
                                  this.CalculateHeight(logicalRect.Height));
+        }
+
+        public void Translate(int x, int y)
+        {
+            this.Graphics.TranslateTransform(CalculateX(x), CalculateY(y));
+        }
+
+        public void Rotate(float f)
+        {
+            this.Graphics.RotateTransform(f);
         }
 
         private static void Swap(ref int v1, ref int v2)
@@ -779,4 +813,5 @@ namespace Fleux.Core.GraphicsHelpers
         }
 
     }
+
 }

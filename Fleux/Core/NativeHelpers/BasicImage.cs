@@ -60,7 +60,8 @@ public class BasicImage : IImage
     
     public uint Release()
     {
-	throw new NotImplementedException();
+        bitmap = null;
+        return 0;
     }
 }
 
