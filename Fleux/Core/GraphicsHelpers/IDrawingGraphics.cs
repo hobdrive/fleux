@@ -1,4 +1,6 @@
-﻿namespace Fleux.Core.GraphicsHelpers
+﻿using System;
+
+namespace Fleux.Core.GraphicsHelpers
 {
     using System.Drawing;
     using System.Collections.Generic;
@@ -183,6 +185,12 @@
         IDrawingGraphics CreateChild(Point innerlocation);
         
         IDrawingGraphics CreateChild(Point innerlocation, DGTransformation transformation);
+
+        void BatchDraw(Action<IDrawingGraphics> drawer);
+
+        void Translate(int x, int y);
+
+        void Rotate(float f);
 
         void Dispose();
         
