@@ -32,6 +32,11 @@ namespace Fleux.Core.GraphicsHelpers
         }
 #endif
 
+        public static IDrawingGraphics FillRoundedRectangle(this IDrawingGraphics dg, System.Drawing.Rectangle rect, int r)
+        {
+            return FillRoundedRectangle(dg, rect, r,r,r,r);
+        }
+
         /// <summary>
         /// Fills the rounded rectangle with roundings in "roundings"
         /// </summary>
