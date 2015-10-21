@@ -87,7 +87,7 @@
 
             public static Func<double, double> BounceEntranceSin = x => Math.Sin(Math.Sqrt(x) * 2) / Math.Sin(2);
 
-            public static Func<double, double> BounceExitSin = x => (-Math.Sin(Math.Sqrt(x) * 2) / Math.Sin(2)) + (x * 2);
+            public static Func<double, double> BounceExitSin = x => 1-BounceEntranceSin(1-x);
 
             public static Func<double, double> Linear = x => x;
         }
