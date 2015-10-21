@@ -611,10 +611,8 @@ namespace Fleux.Core.GraphicsHelpers
 
         public IDrawingGraphics DrawMultiLineText(string text, int width, int height)
         {
-            this.Graphics.DrawString(text,
-                                     this.state.CurrenFont,
-                                     this.state.CurrentBrush,
-                                     new RectangleF(this.CalculateX(this.state.CurrentX), this.CalculateY(this.state.CurrentY), this.CalculateWidth(width), this.CalculateHeight(height)));
+            var rect = new RectangleF(this.CalculateX(this.state.CurrentX), this.CalculateY(this.state.CurrentY), this.CalculateWidth(width), this.CalculateHeight(height));
+            this.Graphics.DrawString(text, this.state.CurrenFont, this.state.CurrentBrush, rect);
             this.ValidateExtends(this.CalculateX(this.state.CurrentX + width), this.CalculateY(this.state.CurrentY + height));
             return this;
         }
