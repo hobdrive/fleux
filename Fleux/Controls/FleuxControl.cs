@@ -206,6 +206,12 @@
             }
         }
 
+        public void Activated()
+        {
+            // to show entrance animation
+            active = false;
+        }
+
         protected override void Draw(System.Windows.Forms.PaintEventArgs e)
         {
             if (this.active)
