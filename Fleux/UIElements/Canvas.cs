@@ -84,7 +84,7 @@ namespace Fleux.UIElements
             //if (lastVisibleRect != drawingGraphics.VisibleRect
             int ctime = System.Environment.TickCount;
 
-            var visible = this.SafeChildren.Where(i => i.Visible && i.Bounds.IntersectsWith(drawingGraphics.VisibleRect)).ToList();
+            var visible = this.SafeChildren.Where(i => i.Visible && i.Bounds.IntersectsWith(drawingGraphics.VisibleRect));
 #if xDEBUG
 			if (this is Fleux.UIElements.Panorama.PanoramaSection)
 			{
