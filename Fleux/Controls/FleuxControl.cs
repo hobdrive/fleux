@@ -219,7 +219,7 @@
                 e.Graphics.Clear(this.SafeBackColor);
                 var gr = DrawingGraphics.FromGraphicsAndRect(this.offGr, this.offBmp, new Rectangle(0, 0, this.offBmp.Width, this.offBmp.Height));
                 try{
-                    this.elements.ForEach(element => element.Draw(gr.CreateChild(element.Location, element.Transformation)));
+                    this.elements.ToArray().ForEach(element => element.Draw(gr.CreateChild(element.Location, element.Transformation)));
                 }catch(Exception ex){
 #if DEBUG
 	                  // TODO drawing exception because of
