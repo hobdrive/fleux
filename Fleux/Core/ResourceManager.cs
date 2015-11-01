@@ -254,7 +254,8 @@
 
         private void CleanUpResources()
         {
-            CleanUpMap(this.iimagesMap, 15);
+            // TODO: Thats a bad design. We getting lots of unexpected invalid image object. How to handle that?
+            //CleanUpMap(this.iimagesMap, 15);
         }
     }
 
