@@ -11,13 +11,15 @@ But the original code was abadoned.
 
 This fork is a continuation of the original project.
 
-The main difference points are:
+The main improvement is that Fleux runs on:
 
-- Fleux now runs on Windows Mobile, WindowsCE, Windows XP/Vista/7 and Linux seamlessly.
-  This means you don't have to change a single line in your code to create a truly portable app.
+- Windows Mobile, WindowsCE, Windows XP/Vista/7 and Linux seamlessly.
+- Android, Windows Phone and iOS (on top of great Xamarin product)
+- There exist an XNA based adaptation, giving fleux a real boost in performance.
 
-- Fleux runs on Android (on top of great Xamarin's Mono Android product)
-  With minimal hooks this allows you to have a single codebase for your app, running on multiple platforms.
+This means you don't have to change a single line in your code to create a truly portable app.
+
+With minimal hooks this allows you to have a single codebase for your app, running on multiple platforms.
 
 The main application of this framework is github.com/cail/hobd project for now.
 
