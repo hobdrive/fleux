@@ -14,6 +14,7 @@ namespace Fleux.Controls
         protected Graphics offGr;
         protected bool offUpdated;
         protected bool resizing;
+        Rectangle srect, drect;
 
         internal int totime;
         internal int updcnt;
@@ -21,6 +22,9 @@ namespace Fleux.Controls
         internal int updcntflush;
         
         public static bool PerfData = false;
+
+        /// Main Canvas scaledown resolution
+        public float DownScale = 1f;
         
         public virtual void Draw(Action<Graphics> drawAction)
         {
@@ -46,7 +50,7 @@ namespace Fleux.Controls
                         this.offUpdated = true;
                     }
 
-                    this.controlGr.DrawImage(this.offBmp, 0, 0);
+                    this.controlGr.DrawImage(this.offBmp, drect, srect, GraphicsUnit.Pixel);
  
                     ctime = System.Environment.TickCount - ctime;
                     this.totime += ctime;
@@ -87,9 +91,11 @@ namespace Fleux.Controls
                         this.controlGr = CreateGraphics();
                     }
 
-                    this.offBmp = new Bitmap(Width, Height);
+                    this.offBmp = new Bitmap((int)(Width / DownScale), (int)(Height / DownScale));
                     this.offGr = Graphics.FromImage(this.offBmp);
                     FleuxApplication.ApplyGraphicsSettings(this.offGr);
+                    srect = new Rectangle(0, 0, offBmp.Width, offBmp.Height);
+                    drect = new Rectangle(0, 0, Width, Height);
                     this.offUpdated = false;
                 }
             }
@@ -192,8 +198,9 @@ namespace Fleux.Controls
                 /*
                 */
                 try{
-                    this.controlGr.DrawImage(this.offBmp, 0, 0);
-                }catch(Exception){}
+                    this.controlGr.DrawImage(this.offBmp, drect, srect, GraphicsUnit.Pixel);
+                }catch(Exception e){
+                }
                 
                 ctime = System.Environment.TickCount - ctime;
                 this.totime += ctime;

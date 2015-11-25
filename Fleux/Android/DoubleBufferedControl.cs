@@ -41,7 +41,7 @@ namespace Fleux.Controls
         public static bool PerfData = false;
         
         /// Main Canvas scaledown resolution
-        public int DownScale = 1;
+        public float DownScale = 1f;
 
         public class HostView : View
         {
@@ -173,11 +173,11 @@ namespace Fleux.Controls
                 base.Touch += (v, te) => {
                     MotionEvent e = te.Event;
                     if (((int)e.Action&0xFF) == (int)MotionEventActions.Down)
-                        Control.OnMouseDown(new MouseEventArgs((int)e.GetX()/Control.DownScale, (int)e.GetY()/Control.DownScale));
+                        Control.OnMouseDown(new MouseEventArgs(e.GetX(), e.GetY()));
                     if (((int)e.Action&0xFF) == (int)MotionEventActions.Move)
-                        Control.OnMouseMove(new MouseEventArgs((int)e.GetX()/Control.DownScale, (int)e.GetY()/Control.DownScale));
+                        Control.OnMouseMove(new MouseEventArgs(e.GetX(), e.GetY()));
                     if (((int)e.Action&0xFF) == (int)MotionEventActions.Up)
-                        Control.OnMouseUp(new MouseEventArgs((int)e.GetX()/Control.DownScale, (int)e.GetY()/Control.DownScale));
+                        Control.OnMouseUp(new MouseEventArgs(e.GetX(), e.GetY()));
 
                 };
             }
@@ -244,8 +244,8 @@ namespace Fleux.Controls
         {
             var Control  = this;
             if (Control.offBmp == null && this.AndroidView != null){
-                offBmpWidth = AndroidView.MeasuredWidth/DownScale;
-                offBmpHeight = AndroidView.MeasuredHeight/DownScale;
+                offBmpWidth = (int)(AndroidView.MeasuredWidth/DownScale);
+                offBmpHeight = (int)(AndroidView.MeasuredHeight/DownScale);
                 
                 if (offBmpWidth > 0 && offBmpHeight > 0)
                 {

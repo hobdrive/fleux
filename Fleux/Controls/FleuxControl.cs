@@ -244,7 +244,8 @@
 
         protected override void OnMouseDown(MouseEventArgs e)
         {
-            var p = e.Point();
+            var p = new Point((int)(e.Point().X / DownScale), (int)(e.Point().Y / DownScale));
+
             if (FleuxApplication.HorizontalMirror)
             {
                 p.X = offBmpWidth - p.X - 1;
@@ -263,7 +264,8 @@
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            var p = e.Point();
+            var p = new Point((int)(e.Point().X / DownScale), (int)(e.Point().Y / DownScale));
+
             if (FleuxApplication.HorizontalMirror)
             {
                 p.X = offBmpWidth - p.X - 1;
@@ -278,7 +280,8 @@
 
         protected override void OnMouseUp(MouseEventArgs e)
         {
-            var p = e.Point();
+            var p = new Point((int)(e.Point().X / DownScale), (int)(e.Point().Y / DownScale));
+
             if (FleuxApplication.HorizontalMirror)
             {
                 p.X = offBmpWidth - p.X - 1;
