@@ -173,11 +173,11 @@ namespace Fleux.Controls
                 base.Touch += (v, te) => {
                     MotionEvent e = te.Event;
                     if (((int)e.Action&0xFF) == (int)MotionEventActions.Down)
-                        Control.OnMouseDown(new MouseEventArgs(e.GetX(), e.GetY()));
+                        Control.OnMouseDown(new MouseEventArgs((int)e.GetX(), (int)e.GetY()));
                     if (((int)e.Action&0xFF) == (int)MotionEventActions.Move)
-                        Control.OnMouseMove(new MouseEventArgs(e.GetX(), e.GetY()));
+                        Control.OnMouseMove(new MouseEventArgs((int)e.GetX(), (int)e.GetY()));
                     if (((int)e.Action&0xFF) == (int)MotionEventActions.Up)
-                        Control.OnMouseUp(new MouseEventArgs(e.GetX(), e.GetY()));
+                        Control.OnMouseUp(new MouseEventArgs((int)e.GetX(), (int)e.GetY()));
 
                 };
             }
