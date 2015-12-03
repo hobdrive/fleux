@@ -603,7 +603,7 @@ namespace Fleux.Core.GraphicsHelpers
                 if (maxArea.Height > newArea.Height && maxArea.Width > newArea.Width)
                     break;
 
-                current -= 3;
+                current -= 1;
             }
 
             return current;

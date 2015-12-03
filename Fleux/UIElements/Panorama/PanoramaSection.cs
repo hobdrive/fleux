@@ -30,9 +30,26 @@
 
         public Canvas Body { get; private set; }
 
+        public bool AdaptFontSize = true;
+        bool FontSizeAdapted = false;
+        int NewFontSize;
+
         public override void Draw(IDrawingGraphics drawingGraphics)
         {
-            drawingGraphics.Style(this.Style)
+            drawingGraphics.Style(this.Style);
+            if(AdaptFontSize)
+            {
+                if(!FontSizeAdapted)
+                {
+                    Size targetSize;
+                    NewFontSize = drawingGraphics.CalculateFontSizeForArea(this.title, new Size(this.Width, Body.Location.Y), out targetSize);
+                    FontSizeAdapted = true;
+                }
+            } else {
+                NewFontSize = Style.FontSize;
+            }
+            drawingGraphics
+                .FontSize(NewFontSize)
                 .DrawText(this.title)
                 .MoveTo(0, 0);
 
