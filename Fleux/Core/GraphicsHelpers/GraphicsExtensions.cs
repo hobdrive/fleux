@@ -65,16 +65,21 @@ namespace Fleux.Core.GraphicsHelpers
 
         public static Graphics DrawPng(this Graphics gr, IImageWrapper pngImage, Rectangle destRect)
         {
+            return DrawPng(gr, pngImage, destRect, new Rectangle(0, 0, pngImage.Size.Width, pngImage.Size.Height));
+        }
+
+        public static Graphics DrawPng(this Graphics gr, IImageWrapper pngImage, Rectangle destRect, Rectangle sourceRect)
+        {
 #if WINCE
             var hDc = gr.GetHdc();
-            pngImage.Draw(hDc, destRect, new Rectangle(0, 0, pngImage.Size.Width, pngImage.Size.Height));
+            pngImage.Draw(hDc, destRect, sourceRect);
             gr.ReleaseHdc(hDc);
 #endif
 #if __ANDROID__
             if (pngImage.Image is AImage)
             {
                 gr.DrawImage( ((AImage)pngImage.Image).bitmap,
-                    destRect, new Rectangle(0, 0, pngImage.Size.Width, pngImage.Size.Height),
+                    destRect, sourceRect,
                     GraphicsUnit.Pixel);
             }
 #endif
@@ -82,7 +87,7 @@ namespace Fleux.Core.GraphicsHelpers
             if (pngImage.Image is BasicImage)
             {
                 gr.DrawImage( ((BasicImage)pngImage.Image).bitmap,
-                              destRect, new Rectangle(0, 0, pngImage.Size.Width, pngImage.Size.Height),
+                              destRect, sourceRect,
                               GraphicsUnit.Pixel);
             }
 #endif

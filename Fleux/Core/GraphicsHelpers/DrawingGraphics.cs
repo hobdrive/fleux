@@ -472,21 +472,28 @@ namespace Fleux.Core.GraphicsHelpers
             return this.DrawAlphaImage(image, new Rectangle(x1, y1, width, height));
         }
 
-        public IDrawingGraphics DrawAlphaImage(IImageWrapper image, System.Drawing.Rectangle r)
+        public IDrawingGraphics DrawAlphaImage(IImageWrapper image, System.Drawing.Rectangle destRect)
         {
-            var destScaledRect = this.CalculateRect(r);
+            var destScaledRect = this.CalculateRect(destRect);
             if (image != null)
             {
                 this.Graphics.DrawPng(image, destScaledRect);
             }
-            this.state.CurrentX = r.Right;
+            this.state.CurrentX = destRect.Right;
             this.ValidateExtends(0, destScaledRect.Bottom);
             return this;
         }
 
         public IDrawingGraphics DrawAlphaImage(IImageWrapper image, System.Drawing.Rectangle destRect, System.Drawing.Rectangle sourceRect)
         {
-            throw new NotImplementedException();
+            var destScaledRect = this.CalculateRect(destRect);
+            if (image != null)
+            {
+                this.Graphics.DrawPng(image, destScaledRect, sourceRect);
+            }
+            this.state.CurrentX = destRect.Right;
+            this.ValidateExtends(0, destScaledRect.Bottom);
+            return this;
         }
 
         public IDrawingGraphics DrawAlphaImage(string resourceName, int x, int y)

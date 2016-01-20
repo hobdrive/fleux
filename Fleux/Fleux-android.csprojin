@@ -98,7 +98,7 @@ include(hobd/lib/fleuxdesktop2/Fleux/_fleux_common.csprojin)
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\hobdrive-android\AndroidDrawing\AndroidDrawing.csproj">
+    <ProjectReference Include="..\..\..\..\hobdrive-android\lib\AndroidDrawing\AndroidDrawing.csproj">
       <Project>{2259B653-DF8D-4ABD-941E-5551D3D3780F}</Project>
       <Name>AndroidDrawing</Name>
     </ProjectReference>
