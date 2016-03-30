@@ -246,6 +246,22 @@
         }
 
         /// <summary>
+        /// Calculate location of child in depth hierarchy.
+        /// </summary>
+        /// <returns>The location of child agains "this" parent</returns>
+        /// <param name="child">Child to calculate</param>
+        public Point ChildLocation(UIElement child)
+        {
+            Point cloc = Point.Empty;
+            while (child.Parent != null && child != this)
+            {
+                cloc = cloc.Add(child.Location);
+                child = child.Parent;
+            }
+            return cloc;
+        }
+
+        /// <summary>
         /// ????????????
         /// </summary>
         public virtual Point ApplyTransformation(Point source)
