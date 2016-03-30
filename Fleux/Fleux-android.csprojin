@@ -4,8 +4,8 @@ include(hobd/_hobd_header.csprojin)
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <Platform>AnyCPU</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{64840E96-92D7-42FC-9C56-285D6525269F}</ProjectGuid>
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -14,8 +14,8 @@ include(hobd/_hobd_header.csprojin)
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <AssemblyName>Fleux</AssemblyName>
-    <MonoAndroidVersion>v2.1</MonoAndroidVersion>
-    <TargetFrameworkVersion>v2.3</TargetFrameworkVersion>
+    <AndroidUseLatestPlatformSdk>False</AndroidUseLatestPlatformSdk>
+    <TargetFrameworkVersion>v4.4</TargetFrameworkVersion>
     <BaseIntermediateOutputPath>obj_android</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Env)' == 'alone' ">
@@ -45,7 +45,6 @@ include(hobd/_hobd_header.csprojin)
     <WarningLevel>4</WarningLevel>
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
     <ConsolePause>False</ConsolePause>
-    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
   </PropertyGroup>
   <ItemGroup>
   </ItemGroup>
@@ -77,8 +76,8 @@ include(hobd/lib/fleuxdesktop2/Fleux/_fleux_common.csprojin)
     <Compile Include="Android\FleuxControlPage.cs" />
     <Compile Include="Android\StringHelpers.cs">
     </Compile>
-    <Compile Include="Android\AndroidImageProvider.cs"/>
-    <Compile Include="Android\AndroidImagingFactory.cs"/>
+    <Compile Include="Android\AndroidImageProvider.cs" />
+    <Compile Include="Android\AndroidImagingFactory.cs" />
     <Compile Include="Android\Led.cs">
       <Link>Android\Led.cs</Link>
     </Compile>
@@ -97,6 +96,7 @@ include(hobd/lib/fleuxdesktop2/Fleux/_fleux_common.csprojin)
       <Link>Images\verticalscrollbar.png</Link>
     </None>
   </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\hobdrive-android\lib\AndroidDrawing\AndroidDrawing.csproj">
       <Project>{2259B653-DF8D-4ABD-941E-5551D3D3780F}</Project>
