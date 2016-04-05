@@ -341,6 +341,27 @@ namespace Fleux.Core.GraphicsHelpers
             return this;
         }
 
+        public IDrawingGraphics DrawArc(int x1, int y1, int x2, int y2, float startAngle, float sweepAngle)
+        {
+            if (x1 > x2)
+            {
+                Swap(ref x1, ref x2);
+            }
+            if (y1 > y2)
+            {
+                Swap(ref y1, ref y2);
+            }
+            if (this.state.CurrentPen.Width > 0)
+                this.Graphics.DrawArc(this.state.CurrentPen,
+                                      this.CalculateX(x1),
+                                      this.CalculateY(y1),
+                                      this.CalculateWidth(x2 - x1),
+                                      this.CalculateHeight(y2 - y1),
+                                      startAngle, sweepAngle);
+            this.ValidateExtends(this.CalculateX(x2), this.CalculateY(y2));
+            return this;
+        }
+
         public IDrawingGraphics DrawEllipse(System.Drawing.Rectangle r)
         {
             if (this.state.CurrentPen.Width > 0)

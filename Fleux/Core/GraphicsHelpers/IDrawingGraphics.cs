@@ -96,6 +96,8 @@ namespace Fleux.Core.GraphicsHelpers
         
         IDrawingGraphics FillEllipse(Rectangle r);
 
+        IDrawingGraphics DrawArc(int x1, int y1, int x2, int y2, float startAngle, float sweepAngle);
+
         // Images
         IDrawingGraphics DrawImage(Image image, int x, int y);
         
