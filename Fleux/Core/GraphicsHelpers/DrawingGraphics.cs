@@ -351,6 +351,8 @@ namespace Fleux.Core.GraphicsHelpers
             {
                 Swap(ref y1, ref y2);
             }
+            startAngle = startAngle * 180 / (float)Math.PI;
+            sweepAngle = sweepAngle * 180 / (float)Math.PI;
             if (this.state.CurrentPen.Width > 0)
                 this.Graphics.DrawArc(this.state.CurrentPen,
                                       this.CalculateX(x1),
