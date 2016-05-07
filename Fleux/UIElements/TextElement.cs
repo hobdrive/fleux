@@ -73,7 +73,7 @@ namespace Fleux.UIElements
             }
         }
 
-        public TextStyle Style { get; set; }
+        public virtual TextStyle Style { get; set; }
 
         public override void ResizeForWidth(int width)
         {

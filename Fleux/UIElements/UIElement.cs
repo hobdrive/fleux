@@ -134,7 +134,7 @@
         /// <summary>
         /// Gets or sets boolean indicating whether the UIElememt can respond to user interaction.
         /// </summary>
-        public bool Enabled
+        public virtual bool Enabled
         {
             get { return _enabled; }
             set
