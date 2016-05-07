@@ -69,6 +69,11 @@
                 this.verticalInertia = null;
                 this.HorizontalOffset = 0;
                 this.VerticalOffset = 0;
+                this.Content.SizeChanged += (sender, e) => {
+                    this.horizontalInertia = null;
+                    this.verticalInertia = null;
+                    TryCreateInertia();
+                };
             }
         }
 
