@@ -223,6 +223,10 @@ namespace Fleux.Controls
             a();
         }
 
+        public virtual void AttachEffect(string effect, Dictionary<string, object> p)
+        {
+        }
+
         public virtual void Draw(Action<Graphics> drawAction)
         {
             //if (!IsDisposed && this.offGr != null)
