@@ -112,6 +112,7 @@ namespace Fleux.Controls
 		                updcnt++;
 		            }
 		        }
+                Control.offUpdated = false;
 		        
                 lock(Control.offBmp)
                 {
@@ -131,7 +132,6 @@ namespace Fleux.Controls
 
                     canvas.DrawBitmap(Control.offBmp.ABitmap, Control.srect, Control.drect, paint);
 
-                    Control.offUpdated = false;
                     updcntflush++;
                 }
                 if (PerfData)
@@ -199,22 +199,23 @@ namespace Fleux.Controls
 
         protected virtual void OnMouseUp(MouseEventArgs e){}
 
-        System.Timers.Timer lastRedraw;
+        long lastRedraw;
 
         protected virtual void ForcedInvalidate(){
             if (IsDisposed)
                 return;
 
-            if (!offUpdated)
+            if (!offUpdated || (DateTime.Now.Ticks - lastRedraw > 1*1000*1000*100))
             {
+                lastRedraw = DateTime.Now.Ticks;
                 offUpdated = true;
                 // AndroidView in java may occasionally be already dead!
                 try{
                     AndroidView.PostInvalidate();
+                    AndroidView.updcntinval++;
                 }catch(Exception e){
                     System.Console.WriteLine(e.StackTrace);
                 }
-                AndroidView.updcntinval++;
             }
         }
 
