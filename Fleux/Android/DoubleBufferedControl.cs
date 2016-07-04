@@ -1,21 +1,22 @@
+using System;
 using System.Threading;
 using System.Timers;
-using Android.Graphics;
+using System.Collections.Generic;
+using System.Timers;
+using System.Windows.Forms;
+using System.Drawing;
+
+using Android.App;
+using Android.Content;
+using Android.Runtime;
+using Android.Views;
+using Android.Widget;
+using Android.OS;
+
+using Fleux.Core;
 
 namespace Fleux.Controls
 {
-    using System;
-    using System.Timers;
-    using System.Windows.Forms;
-    using System.Drawing;
-    using Android.App;
-    using Android.Content;
-    using Android.Runtime;
-    using Android.Views;
-    using Android.Widget;
-    using Android.OS;
-    using Core;
-
     public class DoubleBufferedControl : IDisposable
     {
         protected HostView AndroidView;
