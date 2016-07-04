@@ -186,14 +186,7 @@ namespace Fleux.Controls
             private void SetSoftwareLayer ( )
             {
                 // TODO: Figure out what causes flickering
-
-                const int layerTypeSoftware = 1;
-
-                if ((int) Build.VERSION.SdkInt >= 11)
-                {
-                    var method = JNIEnv.GetMethodID (JNIEnv.GetObjectClass (Handle), "setLayerType", "(ILandroid/graphics/Paint;)V");
-                    JNIEnv.CallVoidMethod (Handle, method, new JValue (layerTypeSoftware), new JValue (null));
-                }
+                this.SetLayerType(LayerType.Software, null);
             }
         }
 
