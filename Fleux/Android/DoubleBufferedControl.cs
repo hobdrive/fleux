@@ -1,21 +1,22 @@
+using System;
 using System.Threading;
 using System.Timers;
-using Android.Graphics;
+using System.Collections.Generic;
+using System.Timers;
+using System.Windows.Forms;
+using System.Drawing;
+
+using Android.App;
+using Android.Content;
+using Android.Runtime;
+using Android.Views;
+using Android.Widget;
+using Android.OS;
+
+using Fleux.Core;
 
 namespace Fleux.Controls
 {
-    using System;
-    using System.Timers;
-    using System.Windows.Forms;
-    using System.Drawing;
-    using Android.App;
-    using Android.Content;
-    using Android.Runtime;
-    using Android.Views;
-    using Android.Widget;
-    using Android.OS;
-    using Core;
-
     public class DoubleBufferedControl : IDisposable
     {
         protected HostView AndroidView;
@@ -112,6 +113,7 @@ namespace Fleux.Controls
 		                updcnt++;
 		            }
 		        }
+                Control.offUpdated = false;
 		        
                 lock(Control.offBmp)
                 {
@@ -131,7 +133,6 @@ namespace Fleux.Controls
 
                     canvas.DrawBitmap(Control.offBmp.ABitmap, Control.srect, Control.drect, paint);
 
-                    Control.offUpdated = false;
                     updcntflush++;
                 }
                 if (PerfData)
@@ -186,14 +187,7 @@ namespace Fleux.Controls
             private void SetSoftwareLayer ( )
             {
                 // TODO: Figure out what causes flickering
-
-                const int layerTypeSoftware = 1;
-
-                if ((int) Build.VERSION.SdkInt >= 11)
-                {
-                    var method = JNIEnv.GetMethodID (JNIEnv.GetObjectClass (Handle), "setLayerType", "(ILandroid/graphics/Paint;)V");
-                    JNIEnv.CallVoidMethod (Handle, method, new JValue (layerTypeSoftware), new JValue (null));
-                }
+                this.SetLayerType(LayerType.Software, null);
             }
         }
 
@@ -206,28 +200,33 @@ namespace Fleux.Controls
 
         protected virtual void OnMouseUp(MouseEventArgs e){}
 
-        System.Timers.Timer lastRedraw;
+        long lastRedraw;
 
         protected virtual void ForcedInvalidate(){
             if (IsDisposed)
                 return;
 
-            if (!offUpdated)
+            if (!offUpdated || (DateTime.Now.Ticks - lastRedraw > 1*1000*1000*100))
             {
+                lastRedraw = DateTime.Now.Ticks;
                 offUpdated = true;
                 // AndroidView in java may occasionally be already dead!
                 try{
                     AndroidView.PostInvalidate();
+                    AndroidView.updcntinval++;
                 }catch(Exception e){
                     System.Console.WriteLine(e.StackTrace);
                 }
-                AndroidView.updcntinval++;
             }
         }
 
         public void Invoke(Action a)
         {
             a();
+        }
+
+        public virtual void AttachEffect(string effect, Dictionary<string, object> p)
+        {
         }
 
         public virtual void Draw(Action<Graphics> drawAction)
