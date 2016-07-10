@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using System.Collections.Generic;
 
 namespace Fleux.Controls
 {
@@ -65,6 +66,10 @@ namespace Fleux.Controls
         }
 
         protected virtual void Draw(PaintEventArgs e)
+        {
+        }
+
+        public virtual void AttachEffect(string effect, Dictionary<string, object> p)
         {
         }
 
