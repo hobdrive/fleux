@@ -200,9 +200,11 @@
             exitSb.AnimateSync();
             this.shadowImageX = int.MaxValue;
             this.active = false;
-            if (this.OnExitAnimationCompleted != null)
+
+            var handler = this.OnExitAnimationCompleted;
+            if (handler != null)
             {
-                this.OnExitAnimationCompleted();
+                handler();
             }
         }
 
