@@ -24,14 +24,20 @@ namespace Fleux.UIElements
             this.image = ResourceManager.Instance.GetIImage(resourceName);
             KeepAspect = keepAspect;
 
-            this.ImageSize = new Size(image.Size.Width.ToLogic(), image.Size.Height.ToLogic());
-            this.Size = ImageSize;
+            if (image != null)
+            {
+                this.ImageSize = new Size(image.Size.Width.ToLogic(), image.Size.Height.ToLogic());
+                this.Size = ImageSize;
+            }
         }
 
         public override void Draw(IDrawingGraphics drawingGraphics)
         {
             var size = Size;
             var trect = new Rectangle(0,0, size.Width, size.Height);
+
+            if (image == null)
+                return;
 
             if (KeepAspect)
             {
@@ -43,7 +49,6 @@ namespace Fleux.UIElements
                                      (Size.Height - size.Height)/2,
                                      size.Width, size.Height);
             }
-
             drawingGraphics.DrawAlphaImage(this.image, trect);
         }
     }

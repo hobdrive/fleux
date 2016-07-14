@@ -206,7 +206,7 @@
             }
         }
 
-        public void Activated()
+        public void Reactivate()
         {
             // to show entrance animation
             active = false;
