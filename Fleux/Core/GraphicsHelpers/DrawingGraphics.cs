@@ -739,6 +739,8 @@ namespace Fleux.Core.GraphicsHelpers
             }finally{
                 Location = oloc;
                 this.Graphics.Transform = omatrix;
+                if (omatrix is IDisposable) // Leak on ugly 2001 GREF devices.
+                    (omatrix as IDisposable).Dispose();
                 #if XNA
                 this.Graphics.Transparency = otrans;
                 #endif
