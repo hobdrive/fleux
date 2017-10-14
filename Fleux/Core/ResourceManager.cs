@@ -241,7 +241,8 @@
             {
                 try{
                     T val = creator();
-                    source.Add(key, val);
+                    if (val != null)
+                        source.Add(key, val);
                 }catch(Exception e){
 #if DEBUG
                     System.Console.WriteLine("CreateOrGet failed key="+key + " " + e.Message + "\n" + e.StackTrace);
