@@ -17,6 +17,7 @@ include(hobd/_hobd_header.csprojin)
     <AndroidUseLatestPlatformSdk>False</AndroidUseLatestPlatformSdk>
     <TargetFrameworkVersion>v5.1</TargetFrameworkVersion>
     <BaseIntermediateOutputPath>obj_android</BaseIntermediateOutputPath>
+    <DebugType>full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Env)' == 'alone' ">
     <MSBuildExtensionsPath>D:\projects\MonoAndroid</MSBuildExtensionsPath>
@@ -27,7 +28,6 @@ include(hobd/_hobd_header.csprojin)
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
-    <DebugType>full</DebugType>
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_android</OutputPath>
     <DefineConstants>DEBUG;__ANDROID__</DefineConstants>
@@ -37,7 +37,6 @@ include(hobd/_hobd_header.csprojin)
     <AndroidLinkMode>None</AndroidLinkMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
     <Optimize>False</Optimize>
     <OutputPath>bin\Release_android</OutputPath>
     <DefineConstants>__ANDROID__</DefineConstants>
