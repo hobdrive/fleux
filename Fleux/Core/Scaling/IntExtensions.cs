@@ -11,5 +11,15 @@
         {
             return FleuxApplication.ScaleFromLogic(logic);
         }
+
+        public static double ToLogic(this double scaled)
+        {
+            return FleuxApplication.ScaleToLogic(scaled);
+        }
+
+        public static double ToPixels(this double logic)
+        {
+            return FleuxApplication.ScaleFromLogic(logic);
+        }
     }
 }

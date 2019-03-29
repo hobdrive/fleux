@@ -164,6 +164,16 @@
 #endif
         }
 
+        public static double ScaleFromLogic(double logicValue)
+        {
+            return (logicValue * FleuxApplication.DpiFactor);
+        }
+
+        public static double ScaleToLogic(double value)
+        {
+            return (value / FleuxApplication.DpiFactor);
+        }
+
         public static void Initialize(System.Drawing.Graphics graphics)
         {
             FleuxApplication.DeviceDpi = graphics.DpiX;
