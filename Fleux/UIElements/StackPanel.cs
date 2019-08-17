@@ -97,6 +97,10 @@ namespace Fleux.UIElements
 
         private void ResizeChild(UIElement child)
         {
+            if (child.Size.Width == 0)
+            {
+                child.Size = new Size((int)GetChildColumnSize(), child.Size.Height);
+            }
             if (IsVertical)
             {
                 child.ResizeForWidth((int) GetChildColumnSize());

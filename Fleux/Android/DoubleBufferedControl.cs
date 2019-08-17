@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using System.Timers;
 using System.Collections.Generic;
-using System.Timers;
 using System.Windows.Forms;
 using System.Drawing;
 
