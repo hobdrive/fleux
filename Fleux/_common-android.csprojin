@@ -1,0 +1,9 @@
+
+include(hobd/lib/fleuxdesktop2/Fleux/_fleux_common.csprojin)
+
+m4inc(Android/DoubleBufferedControl.cs)
+m4inc(Android/FleuxControlPage.cs)
+m4inc(Android/StringHelpers.cs)
+m4inc(Android/AndroidImageProvider.cs)
+m4inc(Android/AndroidImagingFactory.cs)
+m4inc(Android/Led.cs)
