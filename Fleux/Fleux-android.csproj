@@ -25,13 +25,6 @@
     <TargetFrameworkVersion>v9.0</TargetFrameworkVersion>
     <BaseIntermediateOutputPath>obj_android</BaseIntermediateOutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Env)' == 'alone' ">
-    <MSBuildExtensionsPath>D:\projects\MonoAndroid</MSBuildExtensionsPath>
-    <AndroidSdkDirectory>D:\android-sdk-windows</AndroidSdkDirectory>
-    <JavaSdkDirectory>D:\programs\jdk</JavaSdkDirectory>
-    <MonoAndroidToolsDirectory>$(MSBuildExtensionsPath)\Novell</MonoAndroidToolsDirectory>
-    <TargetFrameworkDirectory>$(MSBuildExtensionsPath)\Reference Assemblies\v2.2</TargetFrameworkDirectory>
-  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
