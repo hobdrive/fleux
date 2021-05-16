@@ -1,7 +1,5 @@
 namespace Fleux.Core
 {
-    using System;
-    using System.Collections.Generic;
     using System.Drawing;
     using System.IO;
     using System.Linq;
@@ -10,8 +8,9 @@ namespace Fleux.Core
 
     public class AndroidImageProvider : IImageResourceProvider
 	{
-		private readonly IImagingFactory _factory;
-	    public AndroidImageProvider()
+		protected readonly IImagingFactory _factory;
+
+		public AndroidImageProvider()
 		{
 			_factory = new AndroidImagingFactory();
 		}
@@ -46,14 +45,14 @@ namespace Fleux.Core
             return new Bitmap(asm.GetManifestResourceStream(keyName));
 		}
 
-		public IImageWrapper GetIImage(string imagePath)
+		virtual public IImageWrapper GetIImage(string imagePath)
 		{
 			IImage image;
 			_factory.CreateImageFromFile(imagePath, out image);
 			return new IImageWrapper(image);
 		}
 
-		public Bitmap GetBitmap(string imagePath)
+		virtual public Bitmap GetBitmap(string imagePath)
 		{
 			return new Bitmap(imagePath);
 		}

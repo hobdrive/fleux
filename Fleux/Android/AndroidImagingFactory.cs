@@ -71,12 +71,12 @@ namespace Fleux.Core.NativeHelpers
         {
         }
         
-        
-        public uint CreateImageFromStream()
+        public uint CreateImageFromStream(Stream input, out IImage image)
         {
-            throw new NotImplementedException();
+            image = new AImage(new Bitmap(input));
+            return 0;
         }
-        
+
         public uint CreateImageFromFile(string filename, out IImage image)
         {
             image = new AImage(new Bitmap(filename));

@@ -60,7 +60,7 @@
 #endif
     public interface IImagingFactory
     {
-        uint CreateImageFromStream(); // This is a place holder, note the lack of arguments
+        uint CreateImageFromStream(System.IO.Stream input, out IImage image);
 
         uint CreateImageFromFile(string filename, out IImage image);
 
