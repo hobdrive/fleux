@@ -243,7 +243,13 @@
                     T val = creator();
                     if (val != null)
                         source.Add(key, val);
-                }catch(Exception e){
+                    else
+                    {
+                        System.Console.WriteLine("CreateOrGet failed object key=" + key);
+                        return default(T);
+                    }
+                }
+                catch(Exception e){
 #if DEBUG
                     System.Console.WriteLine("CreateOrGet failed key="+key + " " + e.Message + "\n" + e.StackTrace);
 #endif
