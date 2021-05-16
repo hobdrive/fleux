@@ -12,9 +12,10 @@ public class Win32ImagingFactory : IImagingFactory
     }
     
     
-    public uint CreateImageFromStream()
+    public uint CreateImageFromStream(Stream stream, out IImage image)
     {
-        throw new NotImplementedException();
+        image = new BasicImage(new Bitmap(stream));
+        return 0;
     }
     
     public uint CreateImageFromFile(string filename, out IImage image)
