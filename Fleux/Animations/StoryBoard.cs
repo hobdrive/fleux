@@ -122,7 +122,12 @@
                 {
                     // If the animation thread takes longer
                     // than 1 sec to stop, then we kill it
-                    at.Abort();
+                    try
+                    {
+                        at.Abort();
+                    }catch (Exception) {
+                        // Some platforms do not support this
+                    }
                     this.stopAnimation = false;
                 }
                 this.animationThread = null;
