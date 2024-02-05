@@ -620,11 +620,14 @@ namespace Fleux.Core.GraphicsHelpers
             if (text == null)
                 throw new ArgumentNullException("text");
 
+            var current = state.CurrenFont.Size;
+            newArea = new Size();
+
+            if (text.Length == 0 && maxArea.IsEmpty)
+                return current;
+
             if (maxArea.IsEmpty)
                 throw new ArgumentException("maxArea can't be empty");
-
-            var current = (int) (state.CurrenFont.Size*0.95);
-            newArea = new Size();
 
             while (current > 0)
             {
