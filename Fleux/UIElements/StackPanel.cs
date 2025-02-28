@@ -5,12 +5,17 @@ namespace Fleux.UIElements
 {
     using System.Drawing;
 
+    /// <summary>
+    /// If AutoSize=true, panel will expect already sized children, and will adapt its own size.
+    /// if AutoSize=False, panel should get its size fixed from outside, children will be equally autofitted into panel.
+    /// Column width is anyway always forced (child width for vertical, height for horizontal panel)
+    /// </summary>
     public class StackPanel : Canvas
     {
         private bool _noNeedReloyout;
 
         public int Padding{ get; set; }
-        
+
         int columns = 1;
         private bool _isVertical;
 
@@ -97,16 +102,31 @@ namespace Fleux.UIElements
 
         private void ResizeChild(UIElement child)
         {
-            if (child.Size.Width == 0)
-            {
-                child.Size = new Size((int)GetChildColumnSize(), child.Size.Height);
-            }
+            var rows = base.Children.Count(child => child.Visible) / Columns;
+            if (rows == 0)
+                rows = 1;
             if (IsVertical)
             {
+                if (!AutoResize)
+                {
+                    child.Size = new Size(child.Size.Width, this.Size.Height / rows - Padding);
+                }
+                if (child.Size.Width == 0)
+                {
+                    child.Size = new Size((int)GetChildColumnSize(), child.Size.Height);
+                }
                 child.ResizeForWidth((int) GetChildColumnSize());
             }
             else
             {
+                if (!AutoResize)
+                {
+                    child.Size = new Size(this.Size.Width / rows - Padding, child.Size.Height);
+                }
+                if (child.Size.Height == 0)
+                {
+                    child.Size = new Size(child.Size.Width, (int)GetChildColumnSize());
+                }
                 child.ResizeForHeight((int) GetChildColumnSize());
             }
         }
@@ -124,6 +144,7 @@ namespace Fleux.UIElements
             }
             else
             {
+                /*
                 if (IsVertical)
                 {
                     if (desiredSize.Height > Size.Height)
@@ -136,6 +157,7 @@ namespace Fleux.UIElements
                         Width = desiredSize.Width;
 
                 }
+                */
             }
         }
 

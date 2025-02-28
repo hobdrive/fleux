@@ -15,7 +15,7 @@ namespace Fleux.UIElements
     public class Canvas : UIElement
     {
         public event Action ContentChanged;
-        
+
         public bool AutoResize{ get; set; }
 
         object child_lock = new object();
