@@ -144,6 +144,12 @@
             var locator = string.Format("{0}|{1}|{2}", resourceName, width, height);
             var original = this.GetBitmapFromEmbeddedResource(resourceName, asm);
 
+            if (original == null)
+            {
+                System.Console.WriteLine("GetBitmapFromEmbeddedResource failed for " + resourceName);
+                return null;
+            }
+
             return this.CreateOrGet(this.bitmapSizedMap,
                                     locator,
                                     () =>
@@ -224,7 +230,7 @@
 
         private static void ReleaseAllFromDictionary<T>(Dictionary<string, T> source, Action<T> releaseAction)
         {
-            source.Values.ToList().ForEach(releaseAction);
+            source.Values.Where(v => v != null).ToList().ForEach(releaseAction);
             source.Clear();
         }
 
@@ -245,7 +251,8 @@
                         source.Add(key, val);
                     else
                     {
-                        System.Console.WriteLine("CreateOrGet failed object key=" + key);
+                        System.Console.WriteLine("CreateOrGet NULL object key=" + key);
+                        source.Add(key, val);
                         return default(T);
                     }
                 }
@@ -253,6 +260,7 @@
 #if DEBUG
                     System.Console.WriteLine("CreateOrGet failed key="+key + " " + e.Message + "\n" + e.StackTrace);
 #endif
+                    source.Add(key, default(T));
                     return default(T);
                 }
             }
