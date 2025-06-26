@@ -168,6 +168,10 @@ namespace Fleux.UIElements
                     case AutoSizeModeOptions.WrapText:
                         height = dg.Style(this.Style)
                             .CalculateMultilineTextHeight(text, this.Size.Width);
+#if xxDEBUG
+                        System.Console.WriteLine("TextElement: Relayout text={0} width={1} height={2}",
+                            text, this.Size.Width, height);
+#endif
                         this.Size = new Size(this.Size.Width, height);
                         break;
                 }

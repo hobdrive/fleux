@@ -108,7 +108,7 @@
 
         public static Image DummyImage { get; private set; }
 
-        private static double DpiFactor
+        public static double DpiFactor
         {
             get
             {
@@ -172,6 +172,16 @@
         public static double ScaleToLogic(double value)
         {
             return (value / FleuxApplication.DpiFactor);
+        }
+
+        public static float ScaleFromLogic(float logicValue)
+        {
+            return (logicValue * (float)FleuxApplication.DpiFactor);
+        }
+
+        public static float ScaleToLogic(float value)
+        {
+            return (value / (float)FleuxApplication.DpiFactor);
         }
 
         public static void Initialize(System.Drawing.Graphics graphics)

@@ -40,8 +40,8 @@
             this.shadowImageX = int.MaxValue; // TODO: Review this field initialization.
         }
 
-        Color SafeBackColor = Color.Black;
-        public override Color BackColor{
+        System.Drawing.Color SafeBackColor = Color.Black;
+        public override System.Drawing.Color BackColor{
             set{
                 base.BackColor = value;
                 this.SafeBackColor = value;
@@ -214,7 +214,7 @@
             active = false;
         }
 
-        protected override void Draw(System.Windows.Forms.PaintEventArgs e)
+        protected override void Draw(PaintEventArgs e)
         {
             if (this.active)
             {
@@ -228,6 +228,7 @@
 	                  //     System.InvalidOperationException: Collection was modified;
 	                  // on elements
 					System.Console.WriteLine(ex.ToString());
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
 #endif
                 }
                 if (this.ShadowedAnimationMode != ShadowedAnimationOptions.None

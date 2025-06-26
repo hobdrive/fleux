@@ -78,6 +78,7 @@ namespace Fleux.UIElements
 
         //Rectangle lastVisibleRect;
         public static int drawtime;
+        public static int CanvasDrawExceptions;
 
         public override void Draw(IDrawingGraphics drawingGraphics)
         {
@@ -100,11 +101,10 @@ namespace Fleux.UIElements
             }
 #endif
 
-            ctime = System.Environment.TickCount-ctime;
-            drawtime += ctime;
-            foreach(var e in visible)
+            foreach (var e in visible)
             {
-                try{
+                try
+                {
 #if xDEBUG
                     System.Console.WriteLine("Canvas draw " + e.GetType().ToString() + " vis: "+visible.Count + "tot: "+this.ChildrenCount);
 #endif
@@ -117,15 +117,24 @@ namespace Fleux.UIElements
                         //b.Dispose();
                         //g.Dispose();
                     }else*/
-                        e.Draw(drawingGraphics.CreateChild(e.Location, e.Transformation));
-#if xDEBUG
-					drawingGraphics.Color(Color.Red);
-                    drawingGraphics.DrawRectangle(e.Location.X, e.Location.Y, e.Size.Width, e.Size.Height);
-#endif
-                }catch(Exception ex){
-                    System.Console.WriteLine("Canvas draw exception " + ex);
+                    e.Draw(drawingGraphics.CreateChild(e.Location, e.Transformation));
                 }
-            };
+                catch (Exception ex)
+                {
+                    System.Console.WriteLine("Canvas draw exception " + ex);
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                    CanvasDrawExceptions++;
+                }
+            }
+            ctime = System.Environment.TickCount - ctime;
+#if xxDEBUG
+            drawingGraphics.Color(Color.Red);
+            drawingGraphics.MoveTo(0,0);
+            drawingGraphics.DrawRectangle(0, 0, this.Size.Width, this.Size.Height);
+            drawingGraphics.MoveTo(0,10);
+            drawingGraphics.DrawText("ctime: " + ctime);
+#endif
+            drawtime += ctime;
         }
 
         /// <summary>

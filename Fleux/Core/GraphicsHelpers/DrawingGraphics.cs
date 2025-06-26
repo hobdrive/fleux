@@ -595,10 +595,8 @@ namespace Fleux.Core.GraphicsHelpers
 
         public int CalculateMultilineTextHeight(string text, int width)
         {
-            return StringHelpers.MeasureString(this.Graphics,
-                                                                      this.state.CurrenFont,
-                                                                      text,
-                                                                      width.ToPixels()).Height.ToLogic();
+            return this.Graphics.MeasureStringWidth(text, this.state.CurrenFont,
+                                                    width.ToPixels()).Height.ToLogic();
         }
 
         public Size CalculateTextSize(string text)

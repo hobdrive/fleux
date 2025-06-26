@@ -74,23 +74,23 @@ namespace Fleux.Core.GraphicsHelpers
             var hDc = gr.GetHdc();
             pngImage.Draw(hDc, destRect, sourceRect);
             gr.ReleaseHdc(hDc);
+            return gr;
 #endif
-#if __ANDROID__
+#if __ANDROID__ && !__MAUI__
             if (pngImage.Image is AImage)
             {
                 gr.DrawImage( ((AImage)pngImage.Image).bitmap,
                     destRect, sourceRect,
                     GraphicsUnit.Pixel);
+                return gr;
             }
 #endif
-#if WIN32 || XNA
             if (pngImage.Image is BasicImage)
             {
                 gr.DrawImage( ((BasicImage)pngImage.Image).bitmap,
                               destRect, sourceRect,
                               GraphicsUnit.Pixel);
             }
-#endif
             return gr;
         }
 

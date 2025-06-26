@@ -40,6 +40,7 @@
     //
     // Release
     // The user has removed his finger from the screen
+    // TODO: User exceptions are not visible and disappearing. Should add handlers.
     public class GesturesEngine
     {
         private readonly GestureDetectionParameters parameters;
@@ -53,14 +54,15 @@
         private Point prevDownPoint;
         private Timer holdTimer;
         private bool CancelLastAction = false;
-        
+
         public int LastTapDuration;
 
         public GesturesEngine()
         {
             this.parameters = GestureDetectionParameters.Current;
             this.holdTimer = new Timer();
-            this.holdTimer.Tick += (obj, ev) => {
+            this.holdTimer.Tick += (obj, ev) =>
+            {
                 this.holdTimer.Enabled = false;
                 if (this.canBeHold)
                 {
@@ -133,7 +135,7 @@
                 CancelLastAction = false;
                 return;
             }
-            
+
             // Check for tap or double tap
             if (this.canBeTap && this.mouseDownPoint.IsCloseTo(point, this.parameters.TapDistance)
                 && LastTapDuration <= this.parameters.TapTimePeriod)
@@ -158,7 +160,14 @@
         {
             if (this.Hold != null)
             {
-                this.Hold.Invoke(this.mouseDownPoint);
+                try
+                {
+                    this.Hold.Invoke(this.mouseDownPoint);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("GestureEngine: Hold action exception: " + ex.Message);
+                }
             }
         }
 
@@ -166,7 +175,14 @@
         {
             if (this.Pan != null)
             {
-                this.Pan.Invoke(from, to, done);
+                try
+                {
+                    this.Pan.Invoke(from, to, done);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("GestureEngine: Pan action exception: " + ex.Message);
+                }
             }
         }
 
@@ -219,7 +235,7 @@
                 this.Released.Invoke(start, end);
             }
         }
-        
+
         public void CancelCurrentAction()
         {
             this.CancelLastAction = true;
