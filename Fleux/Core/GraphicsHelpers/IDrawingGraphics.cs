@@ -188,6 +188,9 @@ namespace Fleux.Core.GraphicsHelpers
         
         IDrawingGraphics CreateChild(Point innerlocation, DGTransformation transformation);
 
+        /**
+        TODO: For some legacy reason, we use Transform object only on BatchDraw
+        */
         void BatchDraw(Action<IDrawingGraphics> drawer);
 
         void Translate(int x, int y);

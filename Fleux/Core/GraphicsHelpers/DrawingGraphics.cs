@@ -23,6 +23,8 @@ namespace Fleux.Core.GraphicsHelpers
         public float ScalingX = 1, ScalingY = 1;
         public Point ScalingCenter = Point.Empty;
 
+        public float OffsetX = 0, OffsetY = 0;
+
         public float Transparency = 0;
         public string Effect = null;
 
@@ -39,15 +41,26 @@ namespace Fleux.Core.GraphicsHelpers
         public static DGTransformation Empty {
             get { return new DGTransformation{ ScalingX = 1, ScalingY = 1 }; }
         }
-        
+
+        public static DGTransformation Concat(DGTransformation one, DGTransformation two)
+        {
+            return one.Mix(two);
+        }
+
         public DGTransformation Mix(DGTransformation other)
         {
+            // VEEERY questionable.
             return new DGTransformation()
             {
+                OffsetX = this.OffsetX + other.OffsetX,
+                OffsetY = this.OffsetY + other.OffsetY,
                 ScalingX = this.ScalingX * other.ScalingX,
                 ScalingY = this.ScalingY * other.ScalingY,
                 ScalingCenter = other.ScalingCenter.ClientTo(this.ScalingCenter),
                 Transparency = this.Transparency * other.Transparency,
+                Rotation = this.Rotation + other.Rotation,
+                RotationCenter = other.RotationCenter.ClientTo(this.RotationCenter),
+                Effect = other.Effect ?? this.Effect,
             };
         }
     }
@@ -702,51 +715,61 @@ namespace Fleux.Core.GraphicsHelpers
             return this.CreateChild(innerlocation, null);
         }
 
+        /**
+        TODO: For some legacy reason, we use Transform object only on BatchDraw
+        */
         public void BatchDraw(Action<IDrawingGraphics> drawer)
         {
             var omatrix = this.Graphics.Transform;
             var oloc = Location;
-            #if XNA
+#if XNA || __MAUI__
             var otrans = this.Graphics.Transparency;
-            #endif
-
+#endif
             Location = Point.Empty;
 
-            try{
+            try
+            {
 
                 this.Graphics.TranslateTransform(oloc.X, oloc.Y);
 
                 if (transformation != null)
                 {
+                    // TODO: Thats all very ugly. We should use a matrix to apply all transformations at once.
+
+                    this.Graphics.TranslateTransform(CalculateWidth((int)transformation.OffsetX),
+                        CalculateHeight((int)transformation.OffsetY));
+
                     this.Graphics.TranslateTransform(CalculateWidth(transformation.ScalingCenter.X),
                         CalculateHeight(transformation.ScalingCenter.Y));
                     this.Graphics.ScaleTransform(transformation.ScalingX == 0 ? 0.001f : transformation.ScalingX,
                                                  transformation.ScalingY == 0 ? 0.001f : transformation.ScalingY);
                     this.Graphics.TranslateTransform(-CalculateWidth(transformation.ScalingCenter.X),
                         -CalculateHeight(transformation.ScalingCenter.Y));
-                    
+
                     this.Graphics.TranslateTransform(CalculateWidth(transformation.RotationCenter.X),
                         CalculateHeight(transformation.RotationCenter.Y));
                     this.Graphics.RotateTransform(transformation.Rotation);
                     this.Graphics.TranslateTransform(-CalculateWidth(transformation.RotationCenter.X),
                         -CalculateHeight(transformation.RotationCenter.Y));
-                    #if XNA
+#if XNA || __MAUI__
                     this.Graphics.Transparency = transformation.Transparency;
-                    #endif
+#endif
                 }
 
                 drawer(this);
 
-            }finally{
+            }
+            finally
+            {
                 Location = oloc;
                 this.Graphics.Transform = omatrix;
-                #if !XNA
+#if !XNA
                 if (omatrix is IDisposable) // Leak on ugly 2001 GREF devices.
                     (omatrix as IDisposable).Dispose();
-                #endif
-                #if XNA
+#endif
+#if XNA || __MAUI__
                 this.Graphics.Transparency = otrans;
-                #endif
+#endif
             }
         }
 
