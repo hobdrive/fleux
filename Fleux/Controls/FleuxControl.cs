@@ -251,11 +251,11 @@
 
             if (FleuxApplication.HorizontalMirror)
             {
-                p.X = offBmpWidth - p.X - 1;
+                p.X = OffBmpWidth - p.X - 1;
             }
             if (FleuxApplication.VerticalMirror)
             {
-                p.Y = offBmpHeight - p.Y - 1;
+                p.Y = OffBmpHeight - p.Y - 1;
             }
             this.gestures.MouseDown(p.ToLogic());
             if (FleuxSettings.HapticFeedbackMode == FleuxSettings.HapticOptions.AnyPress)
@@ -271,11 +271,11 @@
 
             if (FleuxApplication.HorizontalMirror)
             {
-                p.X = offBmpWidth - p.X - 1;
+                p.X = OffBmpWidth - p.X - 1;
             }
             if (FleuxApplication.VerticalMirror)
             {
-                p.Y = offBmpHeight - p.Y - 1;
+                p.Y = OffBmpHeight - p.Y - 1;
             }
             this.gestures.MouseMove(p.ToLogic());
             base.OnMouseDown(e);
@@ -287,11 +287,11 @@
 
             if (FleuxApplication.HorizontalMirror)
             {
-                p.X = offBmpWidth - p.X - 1;
+                p.X = OffBmpWidth - p.X - 1;
             }
             if (FleuxApplication.VerticalMirror)
             {
-                p.Y = offBmpHeight - p.Y - 1;
+                p.Y = OffBmpHeight - p.Y - 1;
             }
             this.gestures.MouseUp(p.ToLogic());
             base.OnMouseDown(e);

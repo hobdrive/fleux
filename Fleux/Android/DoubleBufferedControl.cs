@@ -24,7 +24,7 @@ namespace Fleux.Controls
         protected bool offBmpDraw = false;
         Android.Graphics.Rect srect, drect;
         
-        public int offBmpWidth, offBmpHeight;
+        public int OffBmpWidth, OffBmpHeight;
 
         /// <summary>
         /// If true, means invalidate request was send and still pending.
@@ -244,15 +244,15 @@ namespace Fleux.Controls
         {
             var Control  = this;
             if (Control.offBmp == null && this.AndroidView != null){
-                offBmpWidth = (int)(AndroidView.MeasuredWidth/DownScale);
-                offBmpHeight = (int)(AndroidView.MeasuredHeight/DownScale);
+                OffBmpWidth = (int)(AndroidView.MeasuredWidth/DownScale);
+                OffBmpHeight = (int)(AndroidView.MeasuredHeight/DownScale);
                 
-                if (offBmpWidth > 0 && offBmpHeight > 0)
+                if (OffBmpWidth > 0 && OffBmpHeight > 0)
                 {
-                    Control.offBmp = new Bitmap(offBmpWidth, offBmpHeight);
+                    Control.offBmp = new Bitmap(OffBmpWidth, OffBmpHeight);
                     Control.offGr = new Graphics(Control.offBmp);
                 }
-                srect = new Android.Graphics.Rect(0,0, offBmpWidth, offBmpHeight);
+                srect = new Android.Graphics.Rect(0,0, OffBmpWidth, OffBmpHeight);
                 drect = new Android.Graphics.Rect(0,0, AndroidView.MeasuredWidth, AndroidView.MeasuredHeight);
             }
         }
