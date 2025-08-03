@@ -7,3 +7,7 @@ Samples/WindowsPhone7Sample/bin/*
 Samples/WindowsPhone7Sample/obj/*
 *.user
 *.pidb
+
+FleuxMaui/bin/*
+FleuxMaui/obj/*
+.DS_Store
