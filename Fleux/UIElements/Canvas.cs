@@ -20,6 +20,8 @@ namespace Fleux.UIElements
 
         object child_lock = new object();
 
+        public static bool PerfData = false;
+
         public Canvas()
         {
             AutoResize = true;
@@ -42,15 +44,20 @@ namespace Fleux.UIElements
                 }
             }
         }
-             
+        
+        void OnElementVisibleChanged(object sender, EventArgs e)
+        {
+            changedChildren = true;
+        }
 
         public virtual void AddElement(UIElement element)
         {
-            lock(child_lock)
+            lock (child_lock)
             {
                 if (this.Children.Contains(element))
                     return;
                 this.Children.Add(element);
+                element.VisibleChanged += OnElementVisibleChanged;
             }
             element.Parent = this;
             if (AutoResize)
@@ -64,6 +71,7 @@ namespace Fleux.UIElements
             lock(child_lock)
             {
                 this.Children.Remove(element);
+                element.VisibleChanged -= OnElementVisibleChanged;
             }
             element.Parent = null;
             /*
@@ -76,16 +84,26 @@ namespace Fleux.UIElements
             if (ContentChanged != null) ContentChanged();
         }
 
-        //Rectangle lastVisibleRect;
         public static int drawtime;
         public static int CanvasDrawExceptions;
 
+        List<UIElement> visibleChildren = null;
+        Rectangle lastVisibleRect;
+        bool changedChildren = false;
+        List<UIElement> GetVisibleCachedChindren(Rectangle visibleRect)
+        {
+            if (lastVisibleRect == visibleRect && visibleChildren != null && !changedChildren)
+                return visibleChildren;
+            lastVisibleRect = visibleRect;
+            visibleChildren = this.SafeChildren.Where(i => i.Visible && i.Bounds.IntersectsWith(visibleRect)).ToList();
+            changedChildren = false;
+            return visibleChildren;
+        }
+
         public override void Draw(IDrawingGraphics drawingGraphics)
         {
-            //if (lastVisibleRect != drawingGraphics.VisibleRect
-            int ctime = System.Environment.TickCount;
-
-            var visible = this.SafeChildren.Where(i => i.Visible && i.Bounds.IntersectsWith(drawingGraphics.VisibleRect));
+            // Optimized
+            var visible = GetVisibleCachedChindren(drawingGraphics.VisibleRect);
 #if xDEBUG
 			if (this is Fleux.UIElements.Panorama.PanoramaSection)
 			{
@@ -103,20 +121,12 @@ namespace Fleux.UIElements
 
             foreach (var e in visible)
             {
+                int ctime = System.Environment.TickCount;
                 try
                 {
 #if xDEBUG
                     System.Console.WriteLine("Canvas draw " + e.GetType().ToString() + " vis: "+visible.Count + "tot: "+this.ChildrenCount);
 #endif
-                    /*if (e.Transformation != null)
-                    {
-                        //Bitmap b = new Bitmap(e.Size.Width, e.Size.Height);
-                        //Graphics g =  Graphics.FromImage(b);
-                        //var cdg = DrawingGraphics.FromGraphicsAndRect(g, b, new Rectangle(e.Location.X, e.Location.Y, e.Size.Width, e.Size.Height));
-                        e.Draw(cdg);
-                        //b.Dispose();
-                        //g.Dispose();
-                    }else*/
                     e.Draw(drawingGraphics.CreateChild(e.Location, e.Transformation));
                 }
                 catch (Exception ex)
@@ -125,16 +135,17 @@ namespace Fleux.UIElements
                     System.Diagnostics.Debug.WriteLine(ex.Message);
                     CanvasDrawExceptions++;
                 }
+                ctime = System.Environment.TickCount - ctime;
+                if (PerfData)
+                {
+                    drawingGraphics.Color(Color.Red);
+                    drawingGraphics.DrawRectangle(e.Location.X, e.Location.Y, e.Location.X + e.Size.Width, e.Location.Y + e.Size.Height);
+                    drawingGraphics.MoveTo(e.Location.X, e.Location.Y);
+                    drawingGraphics.FontSize(8.ToPixels());
+                    drawingGraphics.DrawText("ct: " + ctime);
+                }
+                drawtime += ctime;
             }
-            ctime = System.Environment.TickCount - ctime;
-#if xxDEBUG
-            drawingGraphics.Color(Color.Red);
-            drawingGraphics.MoveTo(0,0);
-            drawingGraphics.DrawRectangle(0, 0, this.Size.Width, this.Size.Height);
-            drawingGraphics.MoveTo(0,10);
-            drawingGraphics.DrawText("ctime: " + ctime);
-#endif
-            drawtime += ctime;
         }
 
         /// <summary>
