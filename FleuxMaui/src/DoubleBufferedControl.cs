@@ -58,6 +58,13 @@ public class DoubleBufferedControl : SKGLView
     internal int updcntflush = 0;
     internal int updcntinval = 0;
 
+    SKPaint CanvasPaint = new SKPaint
+    {
+        IsAntialias = true,
+        FilterQuality = SKFilterQuality.High,
+        Style = SKPaintStyle.Fill
+    };
+
     void OnCanvasViewPaintSurface(object? sender, SKPaintGLSurfaceEventArgs args)
     {
         SKImageInfo info = args.Info;
@@ -111,7 +118,7 @@ public class DoubleBufferedControl : SKGLView
             var cPaint = currentEffect?.GetState() as SKPaint;
             if (cPaint == null)
             {
-                cPaint = new SKPaint();
+                cPaint = CanvasPaint;
             }
             canvas.DrawBitmap(offBmp.skBitmap,
                     new SKRect(0, 0, info.Width, info.Height), cPaint);
@@ -126,19 +133,24 @@ public class DoubleBufferedControl : SKGLView
                 totime += ctime;
             }
             var cavg = totime / (updcnt + 1);
+            if (updcnt > 1000)
+            {
+                updcnt = 0;
+                totime = 0;
+            }
 
             using (SKPaint paint = new SKPaint())
-            {
-                paint.Color = SKColors.Black;
-                paint.TextAlign = SKTextAlign.Left;
-                paint.TextSize = (int)Fleux.Core.FleuxApplication.ScaleFromLogic(10);
+                {
+                    paint.Color = SKColors.Black;
+                    paint.TextAlign = SKTextAlign.Left;
+                    paint.TextSize = (int)Fleux.Core.FleuxApplication.ScaleFromLogic(8);
 
-                var y = paint.FontMetrics.Descent - paint.FontMetrics.Ascent; // normalize
+                    var y = paint.FontMetrics.Descent - paint.FontMetrics.Ascent; // normalize
 
-                canvas.DrawRect(new SKRect(0, 0, 300, y), new SKPaint { Color = SKColors.White.WithAlpha(200), Style = SKPaintStyle.Fill, });
-                canvas.DrawText("" + updcnt + ":" + updcntflush + ":" + updcntinval + " ctime: " + ctime + " cavg:" + cavg + " canv: " + Fleux.UIElements.Canvas.drawtime, 0, y, paint);
-                //canvas.DrawText("PERF", 10, 10, paint);
-            }
+                    canvas.DrawRect(new SKRect(0, 0, 300, y), new SKPaint { Color = SKColors.White.WithAlpha(200), Style = SKPaintStyle.Fill, });
+                    canvas.DrawText("" + updcnt + "" + " ctime: " + ctime + " cavg:" + cavg + " canv: " + Fleux.UIElements.Canvas.drawtime, 0, y, paint);
+                    //canvas.DrawText("PERF", 10, 10, paint);
+                }
         }
     }
 

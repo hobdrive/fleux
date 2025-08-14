@@ -5,12 +5,16 @@ namespace System.Drawing;
 
 public class Graphics : IDisposable
 {
+    static bool DebugIgnorePrivitives = false;
+    static bool DebugIgnoreText = false;
+    static bool DebugIgnoreImages = false;
 
     protected Image Image;
     SKCanvas canvas;
     SKPaint skPaint = new SKPaint
     {
         IsAntialias = true,
+        FilterQuality = SKFilterQuality.High,
         Style = SKPaintStyle.Stroke,
         StrokeWidth = 1
     };
@@ -40,6 +44,8 @@ public class Graphics : IDisposable
 
     public void DrawImage(Image image, Rectangle target, Rectangle source, GraphicsUnit gu)
     {
+        if (DebugIgnoreImages)
+            return;
         skPaint.Color = SKColors.White;
         skPaint.Style = SKPaintStyle.Fill;
 
@@ -51,6 +57,8 @@ public class Graphics : IDisposable
 
     public void DrawImage(Image image, int x, int y)
     {
+        if (DebugIgnoreImages)
+            return;
         skPaint.Color = SKColors.White;
         skPaint.Style = SKPaintStyle.Fill;
 
@@ -59,6 +67,8 @@ public class Graphics : IDisposable
 
     public void DrawImage(Image image, int x, int y, Rectangle source, GraphicsUnit gu)
     {
+        if (DebugIgnoreImages)
+            return;
         skPaint.Color = SKColors.White;
         skPaint.Style = SKPaintStyle.Fill;
 
@@ -68,6 +78,8 @@ public class Graphics : IDisposable
 
     public void DrawImage(Image image, Rectangle to, int fromx, int fromy, int fromw, int fromh, GraphicsUnit gu, ImageAttributes ia)
     {
+        if (DebugIgnoreImages)
+            return;
         skPaint.Color = SKColors.White;
         skPaint.Style = SKPaintStyle.Fill;
         // take ia.GetColorMatrix().Matrix[3][3] as transparency
@@ -85,6 +97,8 @@ public class Graphics : IDisposable
 
     public void DrawLine(Pen pen, int x1, int y1, int x2, int y2)
     {
+        if (DebugIgnorePrivitives)
+            return;
         skPaint.Color = pen.Color.ToSKColor();
         skPaint.StrokeWidth = pen.Width;
         canvas.DrawLine(x1, y1, x2, y2, skPaint);
@@ -92,6 +106,8 @@ public class Graphics : IDisposable
 
     public void DrawRectangle(Pen pen, int x1, int y1, int w, int h)
     {
+        if (DebugIgnorePrivitives)
+            return;
         skPaint.Color = pen.Color.ToSKColor();
         skPaint.Style = SKPaintStyle.Stroke;
         skPaint.StrokeWidth = pen.Width;
@@ -100,6 +116,8 @@ public class Graphics : IDisposable
 
     public void DrawEllipse(Pen pen, int x, int y, int w, int h)
     {
+        if (DebugIgnorePrivitives)
+            return;
         skPaint.Color = pen.Color.ToSKColor();
         skPaint.Style = SKPaintStyle.Stroke;
         skPaint.StrokeWidth = pen.Width;
@@ -108,6 +126,8 @@ public class Graphics : IDisposable
 
     public void DrawArc(Pen pen, int x, int y, int w, int h, float sw, float swa)
     {
+        if (DebugIgnorePrivitives)
+            return;
         skPaint.Color = pen.Color.ToSKColor();
         skPaint.Style = SKPaintStyle.Stroke;
         skPaint.StrokeWidth = pen.Width;
@@ -117,6 +137,8 @@ public class Graphics : IDisposable
 
     public void FillRectangle(Brush brush, int x1, int y1, int w, int h)
     {
+        if (DebugIgnorePrivitives)
+            return;
         skPaint.Color = brush.Color.ToSKColor();
         skPaint.Style = SKPaintStyle.Fill;
         skPaint.StrokeWidth = 1;
@@ -126,6 +148,8 @@ public class Graphics : IDisposable
 
     public void FillPolygon(Brush brush, Point[] points)
     {
+        if (DebugIgnorePrivitives)
+            return;
         skPaint.Color = brush.Color.ToSKColor();
         skPaint.Style = SKPaintStyle.Fill;
         skPaint.StrokeWidth = 1;
@@ -141,6 +165,8 @@ public class Graphics : IDisposable
 
     public void FillEllipse(Brush brush, int x, int y, int w, int h)
     {
+        if (DebugIgnorePrivitives)
+            return;
         skPaint.Color = brush.Color.ToSKColor();
         skPaint.Style = SKPaintStyle.Fill;
         skPaint.StrokeWidth = 1;
@@ -155,6 +181,8 @@ public class Graphics : IDisposable
 
     public void DrawString(string text, Font font, Brush brush, int x, int y)
     {
+        if (DebugIgnoreText)
+            return;
         skPaint.Color = brush.Color.ToSKColor();
         skPaint.TextSize = font.Size;
         skPaint.Typeface = font.GetSKTypeface();
@@ -176,6 +204,8 @@ public class Graphics : IDisposable
 
     public void DrawString(string text, Font font, Brush brush, RectangleF rect)
     {        
+        if (DebugIgnoreText)
+            return;
         skPaint.Color = brush.Color.ToSKColor();
         skPaint.TextSize = font.Size;
         skPaint.Typeface = font.GetSKTypeface();
