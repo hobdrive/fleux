@@ -223,13 +223,7 @@
                 try{
                     this.elements.ToArray().ForEach(element => element.Draw(gr.CreateChild(element.Location, element.Transformation)));
                 }catch(Exception ex){
-#if DEBUG
-	                  // TODO drawing exception because of
-	                  //     System.InvalidOperationException: Collection was modified;
-	                  // on elements
-					System.Console.WriteLine(ex.ToString());
-                    System.Diagnostics.Debug.WriteLine(ex.Message);
-#endif
+                    FleuxApplication.Log(ex.Message, ex);
                 }
                 if (this.ShadowedAnimationMode != ShadowedAnimationOptions.None
                     && this.shadowImageX < this.offBmp.Width

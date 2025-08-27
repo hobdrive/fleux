@@ -195,10 +195,28 @@
             return (int)((points * FleuxApplication.deviceDpi) / 50);
         }
 
+        public static Action<string, Exception> Logger;
+
+        public static void Log(string msg, Exception e)
+        {
+            if (Logger != null)
+            {
+                Logger(msg, e);
+                return;
+            }
+            System.Console.WriteLine($"Fleux exception:{msg}: {e?.Message}");
+            if (e != null)
+                System.Console.WriteLine(e.StackTrace);
+        }
+
+        public static void Log(string msg)
+        {
+            Log(msg, null);
+        }
+
         public static void Log(Exception e)
         {
-            System.Console.WriteLine("Fleux exception: " + e.Message);
-            System.Console.WriteLine(e.StackTrace);
+            Log("", e);
         }
     }
 }

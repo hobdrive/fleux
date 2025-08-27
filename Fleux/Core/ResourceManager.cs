@@ -251,15 +251,13 @@
                         source.Add(key, val);
                     else
                     {
-                        System.Console.WriteLine("CreateOrGet NULL object key=" + key);
+                        FleuxApplication.Log("CreateOrGet NULL object key=" + key, null);
                         source.Add(key, val);
                         return default(T);
                     }
                 }
                 catch(Exception e){
-#if DEBUG
-                    System.Console.WriteLine("CreateOrGet failed key="+key + " " + e.Message + "\n" + e.StackTrace);
-#endif
+                    FleuxApplication.Log("CreateOrGet NULL object key=" + key, e);
                     source.Add(key, default(T));
                     return default(T);
                 }

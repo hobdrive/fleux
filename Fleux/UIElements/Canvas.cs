@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using Fleux.Core.GraphicsHelpers;
+using Fleux.Core.Scaling;
 
 namespace Fleux.UIElements
 {

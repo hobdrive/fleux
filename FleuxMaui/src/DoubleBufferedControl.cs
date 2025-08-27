@@ -225,16 +225,7 @@ public class DoubleBufferedControl : SKGLView
             }
             catch (Exception e)
             {
-                System.Console.WriteLine(e.Message);
-                System.Console.WriteLine(e.StackTrace);
-                System.Diagnostics.Debug.WriteLine(e.Message);
-                //Microsoft.Extensions.Logging.Logger<Microsoft.Maui.Controls.Application>.Default.LogError("Failed to invalidate surface: " + e.Message);
-                // handle with Microsoft.Extensions.Logging
-                /*
-                Microsoft.Extensions.Logging.LoggerFactory.Create(builder => builder.AddConsole())
-                    .CreateLogger<DoubleBufferedControl>()
-                    .LogError(e, "Exception occurred during surface invalidation.");
-                */
+                FleuxApplication.Log(e.Message, e);
             }
         }
     }

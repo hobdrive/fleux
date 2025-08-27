@@ -216,7 +216,7 @@ namespace Fleux.Controls
                     AndroidView.PostInvalidate();
                     AndroidView.updcntinval++;
                 }catch(Exception e){
-                    System.Console.WriteLine(e.StackTrace);
+                    FleuxApplication.Log(e.Message, e.StackTrace);
                 }
             }
         }

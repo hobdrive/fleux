@@ -26,7 +26,7 @@ public class SkImageResourceProvider : IImageResourceProvider
         {
             if (stream == null)
             {
-                System.Console.WriteLine($"Failed to load embedded resource: {resourceName}");
+                FleuxApplication.Log($"Failed to load embedded resource: {resourceName}");
                 return null;
             }
             var bitmap = SKBitmap.Decode(stream);
@@ -67,7 +67,7 @@ public class SkImageResourceProvider : IImageResourceProvider
         
         if (bmp == null)
         {
-            System.Console.WriteLine($"Failed to create bitmap from image path: {imagePath}");
+            FleuxApplication.Log($"Failed to create bitmap from image path: {imagePath}");
             return null;
         }
 
@@ -80,7 +80,7 @@ public class SkImageResourceProvider : IImageResourceProvider
         var skBitmap = SKBitmap.Decode(imagePath);
         if (skBitmap == null)
         {
-            System.Console.WriteLine($"Failed to decode image from path: {imagePath}");
+            FleuxApplication.Log($"Failed to decode image from path: {imagePath}");
             return null;
         }
         return new Bitmap(skBitmap);
