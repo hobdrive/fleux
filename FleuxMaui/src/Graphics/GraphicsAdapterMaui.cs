@@ -1,4 +1,5 @@
 using System.Drawing.Imaging;
+using Fleux.Core;
 using SkiaSharp;
 
 namespace System.Drawing;
@@ -91,6 +92,10 @@ public class Graphics : IDisposable
 
         var srcRect = new SKRect(fromx, fromy, fromx + fromw, fromy + fromh);
         var dstRect = new SKRect(to.X, to.Y, to.X + to.Width, to.Y + to.Height);
+
+#if xDEBUG
+        FleuxApplication.Log($"DB {this.GetHashCode()} DrawImage: from {srcRect.ToString()} to {dstRect.ToString()} canvas Matrix {canvas.TotalMatrix.ToString()}");
+#endif
 
         canvas.DrawBitmap(image.skBitmap, srcRect, dstRect, skPaint);
     }

@@ -92,6 +92,7 @@ namespace Fleux.Core.GraphicsHelpers
         // Expressed in pixels
         public int MaxWidth { get; set; }
 
+        // Expressed in pixels
         public int MaxHeight { get; set; }
 
         // Graphics where the actions will be performed
@@ -109,6 +110,7 @@ namespace Fleux.Core.GraphicsHelpers
             get { return this.state.CurrentY; }
         }
 
+        // Expressed in pixels
         public Point Location
         {
             get
@@ -123,11 +125,13 @@ namespace Fleux.Core.GraphicsHelpers
             }
         }
 
+        // Expressed in pixels
         public int Right
         {
             get { return FleuxApplication.ScaleToLogic(this.drawingExtends.Width); }
         }
 
+        // Expressed in pixels
         public int Width
         {
             get { return FleuxApplication.ScaleToLogic(this.MaxWidth - this.location.X); }
@@ -755,6 +759,10 @@ namespace Fleux.Core.GraphicsHelpers
                     this.Graphics.Transparency = transformation.Transparency;
 #endif
                 }
+                
+#if xxDEBUG
+                FleuxApplication.Log($"DG {this.GetHashCode()} DrawBatch: oloc {oloc}");
+#endif
 
                 drawer(this);
 
