@@ -9,7 +9,7 @@
         private readonly Rectangle region;
         private readonly Graphics ownerGraphics;
         private readonly Graphics graphics;
-        private readonly IDrawingGraphics drawingGraphics;
+        private readonly DrawingGraphics drawingGraphics;
 
         public ClipBuffer(Image image, Graphics imageGraphics, Rectangle region, Graphics ownerGraphics)
         {
@@ -22,7 +22,7 @@
                 new Rectangle(0, 0, this.image.Width, this.image.Height));
         }
 
-        public IDrawingGraphics DrawingGr
+        public DrawingGraphics DrawingGr
         {
             get
             {
@@ -39,7 +39,9 @@
         public void Apply()
         {
             graphics.Flush();
-            this.ownerGraphics.DrawImage(this.image, this.region.X, this.region.Y);
+            var srcRect = new Rectangle(0, 0, this.region.Width, this.region.Height);
+            this.ownerGraphics.DrawImage(this.image, this.region.X, this.region.Y, srcRect, GraphicsUnit.Pixel);
+            //this.ownerGraphics.DrawImage(this.image, this.region.X, this.region.Y);
         }
     }
 }
