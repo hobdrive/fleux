@@ -213,12 +213,17 @@ namespace System.Drawing
             else
                 return null;
         }
-        
+
         public SKTypeface GetSKTypeface()
         {
             return SKTypeface.FromFamilyName(Name, (Style == FontStyle.Bold) ? SKFontStyleWeight.Bold : SKFontStyleWeight.Normal,
                 SKFontStyleWidth.Normal,
                 (Style == FontStyle.Italic) ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright);
+        }
+        
+        public SKFont ToSKFont()
+        {
+            return new SKFont(GetSKTypeface(), Size);
         }
 
     }

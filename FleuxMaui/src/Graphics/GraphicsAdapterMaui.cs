@@ -17,7 +17,7 @@ public class Graphics : IDisposable
         IsAntialias = true,
         FilterQuality = SKFilterQuality.High,
         Style = SKPaintStyle.Stroke,
-        StrokeWidth = 1
+        StrokeWidth = 1,
     };
 
     public Graphics(Image image)
@@ -189,21 +189,21 @@ public class Graphics : IDisposable
         if (DebugIgnoreText)
             return;
         skPaint.Color = brush.Color.ToSKColor();
-        skPaint.TextSize = font.Size;
-        skPaint.Typeface = font.GetSKTypeface();
         skPaint.Style = SKPaintStyle.Fill;
+
+        var skLineSpacing = font.ToSKFont().GetFontMetrics(out var fontMetrics);
 
         var lines = text.Split('\n', StringSplitOptions.RemoveEmptyEntries);
 
         foreach (var line in lines)
         {
-            var bounds = new SKRect();
+            //var bounds = new SKRect();
             //skPaint.MeasureText(line, ref bounds);
             //y += (int)bounds.Height;
-            y += (int)-skPaint.FontMetrics.Ascent;
+            y += (int)-fontMetrics.Ascent;
 
-            canvas.DrawText(line, x, y, SKTextAlign.Left, skPaint.ToFont(), skPaint);
-            y += (int)skPaint.FontMetrics.Descent;
+            canvas.DrawText(line, x, y, SKTextAlign.Left, font.ToSKFont(), skPaint);
+            y += (int)fontMetrics.Descent;
         }
     }
 
@@ -212,43 +212,40 @@ public class Graphics : IDisposable
         if (DebugIgnoreText)
             return;
         skPaint.Color = brush.Color.ToSKColor();
-        skPaint.TextSize = font.Size;
-        skPaint.Typeface = font.GetSKTypeface();
         skPaint.Style = SKPaintStyle.Fill;
 
-        float lineHeight = skPaint.FontMetrics.Descent - skPaint.FontMetrics.Ascent;
-        float y = rect.Top - skPaint.FontMetrics.Ascent;
+        var skLineSpacing = font.ToSKFont().GetFontMetrics(out var fontMetrics);
+
+        float lineHeight = fontMetrics.Descent - fontMetrics.Ascent;
+        float y = rect.Top - fontMetrics.Ascent;
         float maxWidth = rect.Width;
 
-        var multiLine = new MultiLine((int)rect.Width, MeasureTextCRLF, text);
+        var multiLine = new MultiLine((int)rect.Width, (t) => MeasureTextCRLF(t, font.ToSKFont()), text);
         DrawString(multiLine.Text, font, brush, rect.X, rect.Y);
     }
 
     public Size MeasureStringWidth(string text, Font font, int width)
     {
-        skPaint.TextSize = font.Size;
-        skPaint.Typeface = font.GetSKTypeface();
-
-        skPaint.TextSize = font.Size;
-        skPaint.Typeface = font.GetSKTypeface();
         skPaint.Style = SKPaintStyle.Fill;
 
-        float lineHeight = skPaint.FontMetrics.Descent - skPaint.FontMetrics.Ascent;
+        var skLineSpacing = font.ToSKFont().GetFontMetrics(out var fontMetrics);
+
+        float lineHeight = fontMetrics.Descent - fontMetrics.Ascent;
 
         if (width == 0)
             return new Size(0, 0);
 
         // Shortcut for single line text
-        var simpleSize = MeasureTextCRLF(text);
+        var simpleSize = MeasureTextCRLF(text, font.ToSKFont());
         if (simpleSize.Width < width)
             return simpleSize;
 
-        var multiLine = new MultiLine(width,  MeasureTextCRLF, text);
+        var multiLine = new MultiLine(width, (t) => MeasureTextCRLF(t, font.ToSKFont()), text);
 
         return multiLine.Size;
     }
 
-    internal Size MeasureTextCRLF(string text)
+    internal Size MeasureTextCRLF(string text, SKFont font)
     {
         var lines = text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
         int maxWidth = 0;
@@ -257,7 +254,7 @@ public class Graphics : IDisposable
         foreach (var line in lines)
         {
             var bounds = new SKRect();
-            skPaint.MeasureText(line, ref bounds);
+            font.MeasureText(line, out bounds, skPaint);
             maxWidth = Math.Max(maxWidth, (int)bounds.Width);
             totalHeight += (int)bounds.Height;
         }
@@ -267,13 +264,12 @@ public class Graphics : IDisposable
 
     public Size MeasureString(string text, Font font)
     {
-        skPaint.TextSize = font.Size;
-        skPaint.Typeface = font.GetSKTypeface();
-
         var bounds = new SKRect();
-        skPaint.MeasureText(text, ref bounds);
+        font.ToSKFont().MeasureText(text, out bounds, skPaint);
 
-        var y = skPaint.FontMetrics.Descent - skPaint.FontMetrics.Ascent;
+        var skLineSpacing = font.ToSKFont().GetFontMetrics(out var fontMetrics);
+        float lineHeight = fontMetrics.Descent - fontMetrics.Ascent;
+        var y = fontMetrics.Descent - fontMetrics.Ascent;
 
         return new Size((int)bounds.Width, Math.Max((int)bounds.Height, (int)y));
     }
