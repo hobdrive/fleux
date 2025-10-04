@@ -10,7 +10,9 @@
 
         private int currentX;
         private int currentY;
-        private string fontName = "Tahoma";
+        private string fontName = DefaultFontName;
+
+        public static string DefaultFontName = "Tahoma";
 
         public DrawingHelperState(Action<int, int> calculateExtendsAction)
         {
