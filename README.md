@@ -15,7 +15,8 @@ The main improvement is that Fleux runs on:
 
 - Windows Mobile, WindowsCE, Windows XP/Vista/7 and Linux seamlessly.
 - Android, Windows Phone and iOS (on top of great Xamarin product)
-- There exist an XNA based adaptation, giving fleux a real boost in performance.
+- XNA-based adaptation, giving fleux a real boost in performance. XNA port is abandoned because of Xamarin deprecation and other problems.
+- dotnet MAUI + Skiasharp port - the latest generation.
 
 This means you don't have to change a single line in your code to create a truly portable app.
 
