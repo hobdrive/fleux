@@ -32,9 +32,8 @@ public class DoubleBufferedControl : SKGLView
     /// </summary>
     protected bool offUpdated;
     /// <summary>
-    /// If true, means next invalidate flush should also invoke full redraw
     /// </summary>
-    protected bool offNeedExtraDraw = false;
+    protected bool offUpdateInProgress = false;
 
     protected bool resizing;
     bool IsDisposed = false;
@@ -82,7 +81,11 @@ public class DoubleBufferedControl : SKGLView
         {
             lock (offBmp)
             {
+                // TODO: we should optimize this: not necessarily to do this on UI THREAD!!!
+                // Can do multithread!
+                offUpdateInProgress = true;
                 Draw(new PaintEventArgs(offGr, new Rectangle(0, 0, offBmp.Width, offBmp.Height)));
+                offUpdateInProgress = false;
                 updcnt++;
             }
         }
@@ -215,6 +218,10 @@ public class DoubleBufferedControl : SKGLView
         if (IsDisposed)
             return;
 
+        if (offUpdateInProgress)
+            return;
+
+        // TODO: should we check if drawing is in progress???
         if (!offUpdated || (DateTime.Now.Ticks - lastRedraw > MaxNoUpdate))
         {
             lastRedraw = DateTime.Now.Ticks;
