@@ -17,8 +17,11 @@ namespace Fleux.Controls
     public class FleuxControlPage : IDisposable
     {
         public FleuxControl Control = new Fleux.Controls.FleuxControl();
-
-        public virtual void Dispose(){
+        public Form TheForm;
+        public Size Size;
+        
+        public virtual void Dispose()
+        {
             Control.Dispose();
         }
         public virtual void Close(){
