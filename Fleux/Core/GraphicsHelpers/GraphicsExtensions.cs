@@ -25,16 +25,14 @@ namespace Fleux.Core.GraphicsHelpers
             return new Rectangle(r.Left+x, r.Top+y, r.Width, r.Height);
         }
 
-#if WINCE
-        /// for code compatibility
-        public static void Flush(this Graphics gr)
-        {
-        }
-#endif
-
         public static IDrawingGraphics FillRoundedRectangle(this IDrawingGraphics dg, System.Drawing.Rectangle rect, int r)
         {
             return FillRoundedRectangle(dg, rect, r,r,r,r);
+        }
+
+        public static IDrawingGraphics DrawRoundedRectangle(this IDrawingGraphics dg, System.Drawing.Rectangle rect, int r)
+        {
+            return DrawRoundedRectangle(dg, rect, r,r,r,r);
         }
 
         /// <summary>
@@ -63,6 +61,31 @@ namespace Fleux.Core.GraphicsHelpers
             return dg;
         }
 
+        /// <summary>
+        /// Fills the rounded rectangle with roundings in "roundings"
+        /// </summary>
+        public static IDrawingGraphics DrawRoundedRectangle(this IDrawingGraphics dg, System.Drawing.Rectangle rect, int l, int r, int lb, int rb)
+        {
+            int ix, iy, ix2, iy2;
+            ix = rect.X + Math.Max(l, lb);
+            iy = rect.Y + Math.Max(l, r);
+            ix2 = rect.Right - Math.Max(r, rb);
+            iy2 = rect.Bottom - Math.Max(lb, rb);
+
+            dg.DrawArc(rect.X, rect.Y, ix+l, iy+l, (float)Math.PI, (float)Math.PI/2);
+            dg.DrawArc(rect.X, rect.Bottom, ix+lb, iy2-lb, (float)Math.PI, -(float)Math.PI/2);
+            dg.DrawArc(ix2-r, rect.Y, rect.Right, iy+r, (float)0, -(float)Math.PI/2);
+            dg.DrawArc(rect.Right, rect.Bottom, ix2-rb, iy2-rb, 0, (float)Math.PI/2);
+
+            dg.DrawLine(ix, rect.Y, ix2, rect.Y);
+            dg.DrawLine(ix, rect.Bottom, ix2, rect.Bottom);
+
+            dg.DrawLine(rect.X, iy, rect.X, iy2);
+            dg.DrawLine(rect.Right, iy, rect.Right, iy2);
+
+            return dg;
+        }
+
         public static Graphics DrawPng(this Graphics gr, IImageWrapper pngImage, Rectangle destRect)
         {
             return DrawPng(gr, pngImage, destRect, new Rectangle(0, 0, pngImage.Size.Width, pngImage.Size.Height));
@@ -70,13 +93,7 @@ namespace Fleux.Core.GraphicsHelpers
 
         public static Graphics DrawPng(this Graphics gr, IImageWrapper pngImage, Rectangle destRect, Rectangle sourceRect)
         {
-#if WINCE
-            var hDc = gr.GetHdc();
-            pngImage.Draw(hDc, destRect, sourceRect);
-            gr.ReleaseHdc(hDc);
-            return gr;
-#endif
-#if __ANDROID__ && !__MAUI__
+#if __ANDROID__
             if (pngImage.Image is AImage)
             {
                 gr.DrawImage( ((AImage)pngImage.Image).bitmap,
@@ -103,25 +120,6 @@ namespace Fleux.Core.GraphicsHelpers
 
         public static Graphics AlphaBlend(this Graphics gr, Bitmap b, Rectangle to, Rectangle from, float opacity)
         {
-#if WINCE
-            byte bopacity = unchecked((byte)(255 * opacity));
-
-            using (Graphics gxSrc = Graphics.FromImage(b))
-            {
-              IntPtr hdcDst = gr.GetHdc();
-              IntPtr hdcSrc = gxSrc.GetHdc();
-              BlendFunction blendFunction = new BlendFunction();
-              blendFunction.BlendOp = (byte)BlendOperation.AC_SRC_OVER;
-              blendFunction.BlendFlags = (byte)BlendFlags.Zero;
-              blendFunction.SourceConstantAlpha = bopacity;
-              blendFunction.AlphaFormat = (byte)0;
-              try{
-                  PlatformAPI.AlphaBlend(hdcDst, to.X, to.Y, to.Width, to.Height, hdcSrc, from.X, from.Y, from.Width, from.Height, blendFunction);
-              }catch(Exception e){}
-              gr.ReleaseHdc(hdcDst);
-              gxSrc.ReleaseHdc(hdcSrc);
-            }
-#else
             var ia = new ImageAttributes();
             float[][] ptsArray = {
                         new float[] {1, 0, 0, 0, 0},
@@ -131,7 +129,7 @@ namespace Fleux.Core.GraphicsHelpers
                         new float[] {0, 0, 0, 0, 1}}; 
             ia.SetColorMatrix(new ColorMatrix(ptsArray));
             gr.DrawImage(b, to, from.X, from.Y, from.Width, from.Height, GraphicsUnit.Pixel, ia);
-#endif
+
             return gr;
         }
     }
@@ -164,11 +162,4 @@ namespace Fleux.Core.GraphicsHelpers
     {
       AC_SRC_ALPHA = 0x01
     }
-#if WINCE
-    public class PlatformAPI
-    {
-      [DllImport("coredll.dll")]
-      extern public static Int32 AlphaBlend(IntPtr hdcDest, Int32 xDest, Int32 yDest, Int32 cxDest, Int32 cyDest, IntPtr hdcSrc, Int32 xSrc, Int32 ySrc, Int32 cxSrc, Int32 cySrc, BlendFunction blendFunction);         
-    }
-#endif
 }

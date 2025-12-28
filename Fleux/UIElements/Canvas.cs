@@ -120,8 +120,16 @@ namespace Fleux.UIElements
             }
 #endif
 
+#if xDEBUG                
+            if (visible.Count > 118)
+                return;
+#endif
             foreach (var e in visible)
             {
+#if xDEBUG                
+                //if (e.GetType().Name.Contains("BackgroundElement"))
+                //    continue;
+#endif
                 int ctime = System.Environment.TickCount;
                 try
                 {
@@ -137,6 +145,9 @@ namespace Fleux.UIElements
                     CanvasDrawExceptions++;
                 }
                 ctime = System.Environment.TickCount - ctime;
+#if xDEBUG
+                PerfData = true;
+#endif
                 if (PerfData)
                 {
                     drawingGraphics.Color(Color.Red);
