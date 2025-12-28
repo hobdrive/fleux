@@ -14,8 +14,8 @@ public class Graphics : IDisposable
     SKCanvas canvas;
     SKPaint skPaint = new SKPaint
     {
-        IsAntialias = true,
-        FilterQuality = SKFilterQuality.High,
+        IsAntialias = false,
+        FilterQuality = SKFilterQuality.Low,
         Style = SKPaintStyle.Stroke,
         StrokeWidth = 1,
     };

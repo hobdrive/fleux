@@ -10,6 +10,7 @@ using SkiaSharp.Views.Maui;
 using SkiaSharp.Views.Maui.Controls;
 
 using Fleux.Core;
+using Fleux.Core.Scaling;
 
 namespace Fleux.Controls;
 
@@ -59,7 +60,7 @@ public class DoubleBufferedControl : SKGLView
 
     SKPaint CanvasPaint = new SKPaint
     {
-        IsAntialias = true,
+        IsAntialias = false,
         FilterQuality = SKFilterQuality.High,
         Style = SKPaintStyle.Fill
     };
@@ -150,8 +151,10 @@ public class DoubleBufferedControl : SKGLView
 
                     var y = paint.FontMetrics.Descent - paint.FontMetrics.Ascent; // normalize
 
-                    canvas.DrawRect(new SKRect(0, 0, 300, y), new SKPaint { Color = SKColors.White.WithAlpha(200), Style = SKPaintStyle.Fill, });
-                    canvas.DrawText("" + updcnt + "" + " ctime: " + ctime + " cavg:" + cavg + " canv: " + Fleux.UIElements.Canvas.drawtime, 0, y, paint);
+                    int offset = 150;
+
+                    canvas.DrawRect(new SKRect(offset, 0, 300.ToPixels(), y), new SKPaint { Color = SKColors.White.WithAlpha(200), Style = SKPaintStyle.Fill, });
+                    canvas.DrawText("" + updcnt + "" + " ctime: " + ctime + " cavg:" + cavg + " canv: " + Fleux.UIElements.Canvas.drawtime, offset, y, paint);
                     //canvas.DrawText("PERF", 10, 10, paint);
                 }
         }
