@@ -13,7 +13,12 @@
     using Gestures;
     using UIElements;
 
-    public class FleuxControl : DoubleBufferedControl
+    public class FleuxControl :
+#if SIMU_DEBUG
+     DoubleBufferedControlCPU
+#else
+     DoubleBufferedControl
+#endif
     {
         protected int shadowImageX;
 

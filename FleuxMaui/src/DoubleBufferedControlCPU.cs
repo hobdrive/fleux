@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Windows.Forms;
 using System.Threading;
+using System.Windows.Forms;
 
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
@@ -14,7 +14,11 @@ using Fleux.Core.Scaling;
 
 namespace Fleux.Controls;
 
-public class DoubleBufferedControl : SKGLView
+/// <summary>
+/// CPU-based rendering control - faster on iOS simulator than OpenGL
+/// Use this variant on iOS Simulator for better performance
+/// </summary>
+public class DoubleBufferedControlCPU : SKCanvasView
 {
     protected Bitmap? offBmp;
     protected Graphics? offGr;
@@ -28,12 +32,7 @@ public class DoubleBufferedControl : SKGLView
 
     public event EventHandler? CanvasSizeChanged;
 
-    /// <summary>
-    /// If true, means invalidate request was send and still pending.
-    /// </summary>
     protected bool offUpdated;
-    /// <summary>
-    /// </summary>
     protected bool offUpdateInProgress = false;
 
     protected bool resizing;
@@ -41,16 +40,16 @@ public class DoubleBufferedControl : SKGLView
 
     public static bool PerfData = false;
 
-    /// Main Canvas scaledown resolution
     public float DownScale = 1f;
 
-    public DoubleBufferedControl()
+    public DoubleBufferedControlCPU()
     {
         this.PaintSurface += OnCanvasViewPaintSurface;
         this.EnableTouchEvents = true;
-        // This causes 1x1 pixel mapping. Need to account performance!
         this.IgnorePixelScaling = false;
         this.Touch += OnTouch;
+        
+        Fleux.Core.FleuxApplication.Log("DoubleBufferedControlCPU: Using CPU rendering (faster on simulator)");
     }
 
     internal int totime;
@@ -65,7 +64,7 @@ public class DoubleBufferedControl : SKGLView
         Style = SKPaintStyle.Fill
     };
 
-    void OnCanvasViewPaintSurface(object? sender, SKPaintGLSurfaceEventArgs args)
+    void OnCanvasViewPaintSurface(object? sender, SKPaintSurfaceEventArgs args)
     {
         var t0 = System.Environment.TickCount;
         SKImageInfo info = args.Info;
@@ -77,7 +76,7 @@ public class DoubleBufferedControl : SKGLView
         var tClear = System.Environment.TickCount - t1;
 
         var t2 = System.Environment.TickCount;
-        CreateGraphicBuffers(info, args.Surface.Context);
+        CreateGraphicBuffers(info);
         var tCreateBuffer = System.Environment.TickCount - t2;
 
         var ctime = System.Environment.TickCount;
@@ -90,10 +89,7 @@ public class DoubleBufferedControl : SKGLView
             {
                 offUpdateInProgress = true;
                 var t3 = System.Environment.TickCount;
-                
                 Draw(new PaintEventArgs(offGr, new Rectangle(0, 0, offBmp.Width, offBmp.Height)));
-                offBmp.InvalidateSnapshot();
-
                 tDraw = System.Environment.TickCount - t3;
                 offUpdateInProgress = false;
                 updcnt++;
@@ -113,33 +109,15 @@ public class DoubleBufferedControl : SKGLView
         var tBitmapDraw = 0;
         lock (offBmp)
         {
-            /*
-            TODO: handle mirroring here
-            if (Fleux.Core.FleuxApplication.HorizontalMirror)
-            {
-                canvas.Save();
-                canvas.Scale(-1, 1);
-                canvas.Translate(-(float)Control.drect.Width(), 0);
-            }
-            else if (Fleux.Core.FleuxApplication.VerticalMirror)
-            {
-                canvas.Save();
-                canvas.Scale(1, -1);
-                canvas.Translate(0, -(float)Control.drect.Height());
-            }
-            offGr.Flush();
-            */
-
             var cPaint = currentEffect?.GetState() as SKPaint;
             if (cPaint == null)
             {
                 cPaint = CanvasPaint;
             }
             var t4 = System.Environment.TickCount;
-            
-            var skImage = offBmp.GetSkImage();
+            var skImage = offBmp.GetSkImage();  // Don't dispose - owned by image
             canvas.DrawImage(skImage,
-                new SKRect(0, 0, info.Width, info.Height), cPaint);
+                    new SKRect(0, 0, info.Width, info.Height), cPaint);
             tBitmapDraw = System.Environment.TickCount - t4;
 
             updcntflush++;
@@ -165,16 +143,16 @@ public class DoubleBufferedControl : SKGLView
                     paint.TextAlign = SKTextAlign.Left;
                     paint.TextSize = (int)Fleux.Core.FleuxApplication.ScaleFromLogic(8);
 
-                    var y = paint.FontMetrics.Descent - paint.FontMetrics.Ascent; // normalize
+                    var y = paint.FontMetrics.Descent - paint.FontMetrics.Ascent;
 
                     int offset = 10;
                     int lineHeight = (int)(y * 1.2f);
 
-                    canvas.DrawRect(new SKRect(offset, 0, 500.ToPixels(), lineHeight * 4), new SKPaint { Color = SKColors.White.WithAlpha(200), Style = SKPaintStyle.Fill, });
-                    canvas.DrawText($"Frame #{updcnt} Total:{tTotal}ms Clear:{tClear}ms Buf:{tCreateBuffer}ms", offset, y, paint);
+                    canvas.DrawRect(new SKRect(offset, 0, 520.ToPixels(), lineHeight * 4), new SKPaint { Color = SKColors.White.WithAlpha(200), Style = SKPaintStyle.Fill, });
+                    canvas.DrawText($"CPU Frame #{updcnt} Total:{tTotal}ms Clear:{tClear}ms Buf:{tCreateBuffer}ms", offset, y, paint);
                     canvas.DrawText($"Draw:{tDraw}ms BmpDraw:{tBitmapDraw}ms Canvas:{Fleux.UIElements.Canvas.drawtime}ms", offset, y + lineHeight, paint);
                     canvas.DrawText($"Size:{info.Width}x{info.Height} OffBmp:{OffBmpWidth}x{OffBmpHeight} Scale:{DownScale}", offset, y + lineHeight * 2, paint);
-                    canvas.DrawText($"GLView Avg:{cavg}ms", offset, y + lineHeight * 3, paint);
+                    canvas.DrawText($"IgnorePixelScaling:{IgnorePixelScaling} SKCanvasView Avg:{cavg}ms", offset, y + lineHeight * 3, paint);
                 }
         }
     }
@@ -183,8 +161,8 @@ public class DoubleBufferedControl : SKGLView
     {
         bool touchPointMoved = false;
 
-        int sx = (int)(e.Location.X / DownScale); //* this.Width / this.OffBmpWidth
-        int sy = (int)(e.Location.Y / DownScale); //* this.Height / this.OffBmpHeight
+        int sx = (int)(e.Location.X / DownScale);
+        int sy = (int)(e.Location.Y / DownScale);
 
         if (e.ActionType == SKTouchAction.Pressed)
         {
@@ -203,19 +181,6 @@ public class DoubleBufferedControl : SKGLView
         {
             var mouseEventArgs = new MouseEventArgs(sx, sy);
             OnMouseUp(mouseEventArgs);
-        }
-        else if (e.ActionType == SKTouchAction.WheelChanged)
-        {
-            // Handle mouse wheel events if needed
-            // var mouseEventArgs = new MouseEventArgs(MouseButtons.None, 0, sx, sy);
-            // OnMouseWheel(mouseEventArgs);
-        }
-        else if (e.ActionType == SKTouchAction.Entered || e.ActionType == SKTouchAction.Exited)
-        {
-            // Handle mouse enter/leave events if needed
-            // var mouseEventArgs = new MouseEventArgs(MouseButtons.None, 0, sx, sy);
-            // OnMouseEnter(mouseEventArgs);
-            // OnMouseLeave(mouseEventArgs);
         }
 
         e.Handled = true;
@@ -243,16 +208,15 @@ public class DoubleBufferedControl : SKGLView
         if (offUpdateInProgress)
             return;
 
-        // TODO: should we check if drawing is in progress???
         if (!offUpdated || (DateTime.Now.Ticks - lastRedraw > MaxNoUpdate))
         {
             lastRedraw = DateTime.Now.Ticks;
-                        offUpdated = true;
-                        try
-                        {
-                            Microsoft.Maui.Controls.Device.BeginInvokeOnMainThread(() => base.InvalidateSurface());
-                        }
-                        catch (Exception e)
+            offUpdated = true;
+            try
+            {
+                Microsoft.Maui.Controls.Device.BeginInvokeOnMainThread(() => base.InvalidateSurface());
+            }
+            catch (Exception e)
             {
                 FleuxApplication.Log(e.Message, e);
             }
@@ -292,28 +256,20 @@ public class DoubleBufferedControl : SKGLView
         invalidateThread.Start();
     }
 
-    protected virtual void CreateGraphicBuffers(SKImageInfo info, GRRecordingContext grContext)
+    protected virtual void CreateGraphicBuffers(SKImageInfo info)
     {
-        if (offBmp != null && offBmp.OffscreenSurface.Context != grContext)
-        {
-            // Context changed - need to recreate
-            FleuxApplication.Log("DoubleBufferedControl: Graphics context changed - recreating buffers");
-            ReleaseGraphicBuffers();
-        }
-
         if (info.Width > 0 && info.Height > 0 && !IsDisposed && offBmp == null)
         {
             OffBmpWidth = (int)(info.Width / DownScale);
             OffBmpHeight = (int)(info.Height / DownScale);
 
-            this.offBmp = new Bitmap(grContext, OffBmpWidth, OffBmpHeight);
+            this.offBmp = new Bitmap(OffBmpWidth, OffBmpHeight);
 
             this.offGr = Graphics.FromImage(offBmp);
 
             CanvasSizeChanged?.Invoke(this, EventArgs.Empty);
         }
     }
-
 
     public virtual void Dispose()
     {
@@ -327,15 +283,12 @@ public class DoubleBufferedControl : SKGLView
         {
             if (this.offBmp != null)
             {
-                // Dispose resources
-                this.offGr.Dispose();
-                this.offBmp.Dispose();
+                // this.offGr.Dispose();
+                // this.offBmp.Dispose();
                 OffBmpWidth = OffBmpHeight = 0;
                 this.offBmp = null;
                 this.offGr = null;
             }
         }
     }
-
-
 }
