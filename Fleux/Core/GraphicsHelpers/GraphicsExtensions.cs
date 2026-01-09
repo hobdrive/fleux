@@ -93,7 +93,7 @@ namespace Fleux.Core.GraphicsHelpers
 
         public static Graphics DrawPng(this Graphics gr, IImageWrapper pngImage, Rectangle destRect, Rectangle sourceRect)
         {
-#if __ANDROID__
+#if __ANDROID__ && !__SKIA__
             if (pngImage.Image is AImage)
             {
                 gr.DrawImage( ((AImage)pngImage.Image).bitmap,

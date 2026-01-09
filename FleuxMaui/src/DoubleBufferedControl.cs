@@ -294,7 +294,7 @@ public class DoubleBufferedControl : SKGLView
 
     protected virtual void CreateGraphicBuffers(SKImageInfo info, GRRecordingContext grContext)
     {
-        if (offBmp != null && offBmp.OffscreenSurface.Context != grContext)
+        if (offBmp != null && offBmp.GetSurface().Context != grContext)
         {
             // Context changed - need to recreate
             FleuxApplication.Log("DoubleBufferedControl: Graphics context changed - recreating buffers");

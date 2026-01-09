@@ -140,31 +140,34 @@
             var dg = drawingGraphics;
             if (this.clipBitmap == null)
             {
-                this.clipBitmap = new Bitmap(this.Size.Width.ToPixels(), this.Size.Height.ToPixels()-1); // TODO roundup errors!
+                this.clipBitmap = drawingGraphics.Graphics.CreateBitmap(
+                    this.Size.Width.ToPixels(), this.Size.Height.ToPixels()-1); // GPU-accelerated when possible
             }
             if (CachePanning && panInProgress && this.clipBitmap != null)
             {
                 drawingGraphics.Graphics.DrawImage(this.clipBitmap, drawingGraphics.CalculateX(this.HorizontalOffset - this.panH), drawingGraphics.CalculateY(this.VerticalOffset - this.panV));
             }else
             {
-            using (var clipBuffer = drawingGraphics.GetClipBuffer(new Rectangle(0, 0, this.Size.Width, this.Size.Height), this.clipBitmap))
-            {
+                var clipBuffer = drawingGraphics.GetClipBuffer(new Rectangle(0, 0, this.Size.Width, this.Size.Height), this.clipBitmap);
+            
                 /* Do shadows */
                 if (this.DrawShadows)
                 {
                     if (TopShadow == null)
                     {
-                        TopShadow = new Bitmap(this.Size.Width.ToPixels(), drawingGraphics.CalculateHeight(ShadowHeight));
-                        BottomShadow = new Bitmap(this.Size.Width.ToPixels(), drawingGraphics.CalculateHeight(ShadowHeight+1));
+                        TopShadow = drawingGraphics.Graphics.CreateBitmap(
+                            this.Size.Width.ToPixels(), drawingGraphics.CalculateHeight(ShadowHeight));
+                        BottomShadow = drawingGraphics.Graphics.CreateBitmap(
+                            this.Size.Width.ToPixels(), drawingGraphics.CalculateHeight(ShadowHeight+1));
                     }
                     if (this.VerticalOffset < 0)
                     {
-                        drawingGraphics.GetOpaqueClipBuffer(new Rectangle(0, 0, this.Size.Width, this.ShadowHeight), TopShadow).Dispose();
+                        drawingGraphics.GetOpaqueClipBuffer(new Rectangle(0, 0, this.Size.Width, this.ShadowHeight), TopShadow).Apply();
                     }
                     if (this.VerticalOffset > Math.Min(0, -this.Content.Size.Height + this.Size.Height))
                     {
                         drawingGraphics.GetOpaqueClipBuffer(new Rectangle(0, this.Size.Height - ShadowHeight,
-                                                                          this.Size.Width, ShadowHeight+1), BottomShadow).Dispose();
+                                                            this.Size.Width, ShadowHeight+1), BottomShadow).Apply();
                     }
                 }
                 
@@ -174,7 +177,9 @@
                 {
                     this.DrawScrollBar(clipBuffer.DrawingGr);
                 }
-            }
+
+                clipBuffer.Apply();
+
             }
 
             if (this.DrawShadows)
