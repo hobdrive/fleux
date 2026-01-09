@@ -170,11 +170,10 @@ public class DoubleBufferedControl : SKGLView
                     int offset = 10;
                     int lineHeight = (int)(y * 1.2f);
 
-                    canvas.DrawRect(new SKRect(offset, 0, 500.ToPixels(), lineHeight * 4), new SKPaint { Color = SKColors.White.WithAlpha(200), Style = SKPaintStyle.Fill, });
-                    canvas.DrawText($"Frame #{updcnt} Total:{tTotal}ms Clear:{tClear}ms Buf:{tCreateBuffer}ms", offset, y, paint);
-                    canvas.DrawText($"Draw:{tDraw}ms BmpDraw:{tBitmapDraw}ms Canvas:{Fleux.UIElements.Canvas.drawtime}ms", offset, y + lineHeight, paint);
+                    canvas.DrawRect(new SKRect(offset, 0, 200.ToPixels(), lineHeight * 4), new SKPaint { Color = SKColors.White.WithAlpha(200), Style = SKPaintStyle.Fill, });
+                    canvas.DrawText($"Frame #{updcnt} Total:{tTotal.ToString().PadLeft(3)}ms Clear:{tClear}ms Buf:{tCreateBuffer}ms", offset, y, paint);
+                    canvas.DrawText($"Avg1K:{cavg.ToString().PadLeft(3)}ms Draw:{tDraw.ToString().PadLeft(3)}ms BmpDraw:{tBitmapDraw}ms Canvas:{Fleux.UIElements.Canvas.drawtime.ToString().PadLeft(3)}ms", offset, y + lineHeight, paint);
                     canvas.DrawText($"Size:{info.Width}x{info.Height} OffBmp:{OffBmpWidth}x{OffBmpHeight} Scale:{DownScale}", offset, y + lineHeight * 2, paint);
-                    canvas.DrawText($"GLView Avg:{cavg}ms", offset, y + lineHeight * 3, paint);
                 }
         }
     }
