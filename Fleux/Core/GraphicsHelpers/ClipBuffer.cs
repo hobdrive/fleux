@@ -3,6 +3,9 @@
     using System;
     using System.Drawing;
 
+    /// <summary>
+    /// Helper class to perform clipped drawing using offscreen bitmap
+    /// </summary>
     public class ClipBuffer : IDisposable
     {
         private readonly Image image;
@@ -32,8 +35,6 @@
 
         public void Dispose()
         {
-            this.Apply();
-            this.graphics.Dispose();
         }
 
         public void Apply()
@@ -41,7 +42,6 @@
             graphics.Flush();
             var srcRect = new Rectangle(0, 0, this.region.Width, this.region.Height);
             this.ownerGraphics.DrawImage(this.image, this.region.X, this.region.Y, srcRect, GraphicsUnit.Pixel);
-            //this.ownerGraphics.DrawImage(this.image, this.region.X, this.region.Y);
         }
     }
 }
