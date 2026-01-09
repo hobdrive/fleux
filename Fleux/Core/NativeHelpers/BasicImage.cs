@@ -5,6 +5,8 @@ using System.IO;
 namespace Fleux.Core.NativeHelpers
 {
 
+// mark deprecated
+[Obsolete("Use SkiaSharp based image implementation")]
 public class BasicImage : IImage
 {
     public Bitmap bitmap;

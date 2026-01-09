@@ -11,7 +11,9 @@ public class Graphics : IDisposable
     static bool DebugIgnoreImages = false;
 
     protected Image Image;
+    
     SKCanvas canvas;
+
     SKPaint skPaint = new SKPaint
     {
         IsAntialias = false,
@@ -20,10 +22,20 @@ public class Graphics : IDisposable
         StrokeWidth = 1,
     };
 
+    // GPU context for creating GPU-accelerated bitmaps (internal)
+    internal GRRecordingContext GRContext => Image?.GetSurface()?.Context;
+
     public Graphics(Image image)
     {
         Image = image;
-        canvas = new SKCanvas(image.skBitmap);
+        if (image.GetSurface() != null)
+        {
+            canvas = image.GetSurface()?.Canvas;
+        }
+        else
+        {
+            throw new ArgumentException("Image must have OffscreenSurface initialized");
+        }
     }
 
     void Init()
@@ -32,11 +44,22 @@ public class Graphics : IDisposable
 
     public void Flush()
     {
+        canvas.Flush();
+        Image.InvalidateSnapshot();
     }
 
     public static Graphics FromImage(Image image)
     {
         return new Graphics(image);
+    }
+
+    // Factory method to create GPU-accelerated bitmaps when possible
+    public Bitmap CreateBitmap(int width, int height)
+    {
+        var grContext = this.GRContext;
+        return grContext != null
+            ? new Bitmap(grContext, width, height)
+            : new Bitmap(width, height);  // Fallback to CPU if no GPU context
     }
 
     public SKPaint Paint { get { return skPaint; } }
@@ -53,7 +76,8 @@ public class Graphics : IDisposable
         var srcRect = new SKRect(source.X, source.Y, source.X + source.Width, source.Y + source.Height);
         var dstRect = new SKRect(target.X, target.Y, target.X + target.Width, target.Y + target.Height);
 
-        canvas.DrawBitmap(image.skBitmap, srcRect, dstRect, skPaint);
+        var skImage = image.GetSkImage();  // Don't dispose - owned by image
+        canvas.DrawImage(skImage, srcRect, dstRect, skPaint);
     }
 
     public void DrawImage(Image image, int x, int y)
@@ -63,7 +87,8 @@ public class Graphics : IDisposable
         skPaint.Color = SKColors.White;
         skPaint.Style = SKPaintStyle.Fill;
 
-        canvas.DrawBitmap(image.skBitmap, x, y, skPaint);
+        var skImage = image.GetSkImage();  // Don't dispose - owned by image
+        canvas.DrawImage(skImage, x, y, skPaint);
     }
 
     public void DrawImage(Image image, int x, int y, Rectangle source, GraphicsUnit gu)
@@ -74,7 +99,8 @@ public class Graphics : IDisposable
         skPaint.Style = SKPaintStyle.Fill;
 
         var srcRect = new SKRect(source.X, source.Y, source.X + source.Width, source.Y + source.Height);
-        canvas.DrawBitmap(image.skBitmap, srcRect, new SKRect(x, y, x + source.Width, y + source.Height), skPaint);
+        var skImage = image.GetSkImage();  // Don't dispose - owned by image
+        canvas.DrawImage(skImage, srcRect, new SKRect(x, y, x + source.Width, y + source.Height), skPaint);
     }
 
     public void DrawImage(Image image, Rectangle to, int fromx, int fromy, int fromw, int fromh, GraphicsUnit gu, ImageAttributes ia)
@@ -97,7 +123,8 @@ public class Graphics : IDisposable
         FleuxApplication.Log($"DB {this.GetHashCode()} DrawImage: from {srcRect.ToString()} to {dstRect.ToString()} canvas Matrix {canvas.TotalMatrix.ToString()}");
 #endif
 
-        canvas.DrawBitmap(image.skBitmap, srcRect, dstRect, skPaint);
+        var skImage = image.GetSkImage();  // Don't dispose - owned by image
+        canvas.DrawImage(skImage, srcRect, dstRect, skPaint);
     }
 
     public void DrawLine(Pen pen, int x1, int y1, int x2, int y2)
@@ -226,6 +253,8 @@ public class Graphics : IDisposable
 
     public Size MeasureStringWidth(string text, Font font, int width)
     {
+        if (DebugIgnoreText)
+            return Size.Empty;
         skPaint.Style = SKPaintStyle.Fill;
 
         var skLineSpacing = font.ToSKFont().GetFontMetrics(out var fontMetrics);
@@ -264,6 +293,9 @@ public class Graphics : IDisposable
 
     public Size MeasureString(string text, Font font)
     {
+        if (DebugIgnoreText)
+            return Size.Empty;
+
         var bounds = new SKRect();
         font.ToSKFont().MeasureText(text, out bounds, skPaint);
 

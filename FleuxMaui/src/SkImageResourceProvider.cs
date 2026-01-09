@@ -29,8 +29,14 @@ public class SkImageResourceProvider : IImageResourceProvider
                 FleuxApplication.Log($"Failed to load embedded resource: {resourceName}");
                 return null;
             }
-            var bitmap = SKBitmap.Decode(stream);
-            return new Bitmap(bitmap);
+            //var bitmap = SKBitmap.Decode(stream);
+            var skImage = SKImage.FromEncodedData(stream);
+            if (skImage == null)
+            {
+                FleuxApplication.Log($"Failed to decode image from embedded resource: {resourceName}");
+                return null;
+            }
+            return new Bitmap(skImage);
         }
     }
 
@@ -50,15 +56,13 @@ public class SkImageResourceProvider : IImageResourceProvider
             int width = (int)bounds.Width;
             int height = (int)bounds.Height;
 
-            // 3. Create a bitmap and draw the picture into it
-            var skbmp = new SKBitmap(width, height);
-            using (var canvas = new SKCanvas(skbmp))
-            {
-                canvas.Clear(SKColors.Transparent);
-                canvas.DrawPicture(picture);
-                canvas.Flush();
-            }
-            bmp = new Bitmap(skbmp);
+            var info = new SKImageInfo(width, height, SKColorType.Rgba8888, SKAlphaType.Premul);
+            using var surface = SKSurface.Create(info);
+            surface.Canvas.Clear(SKColors.Transparent);
+            surface.Canvas.DrawPicture(picture);
+            surface.Canvas.Flush();
+            var image = surface.Snapshot();  // Immutable image
+            bmp = new Bitmap(image);  // Thread-safe, GPU-friendly
         }
         else
         {
@@ -77,13 +81,13 @@ public class SkImageResourceProvider : IImageResourceProvider
 
     public Bitmap GetBitmap(string imagePath)
     {
-        var skBitmap = SKBitmap.Decode(imagePath);
-        if (skBitmap == null)
+        var skImage = SKImage.FromEncodedData(imagePath);
+        if (skImage == null)
         {
             FleuxApplication.Log($"Failed to decode image from path: {imagePath}");
             return null;
         }
-        return new Bitmap(skBitmap);
+        return new Bitmap(skImage);
     }
 
 }
