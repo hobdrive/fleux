@@ -68,6 +68,8 @@ namespace Fleux.Core.GraphicsHelpers
         IDrawingGraphics MoveRel(int dx, int dy);
         
         IDrawingGraphics Style(TextStyle style);
+
+        DrawingHelperState State { get; }
         
         // Standard Graphics Drawing actions
         

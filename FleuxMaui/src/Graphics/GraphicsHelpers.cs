@@ -50,6 +50,11 @@ namespace System.Drawing
             return Color.FromArgb(c.Alpha, c.Red, c.Green, c.Blue);
         }
 
+        public static Color Invert(this Color c)
+        {
+            return Color.FromArgb(c.A, (byte)(255 - c.R), (byte)(255 - c.G), (byte)(255 - c.B));
+        }
+
     }
 
     public abstract class Image : IDisposable
@@ -239,11 +244,20 @@ namespace System.Drawing
     public class Brush : IDisposable
     {
         public Color Color;
+        public bool Solid = false;
+        public bool Stroke = false;
+        public int StrokeWidth = 1;
 
         public Brush(Color c)
         {
             this.Color = c;
         }
+
+        public virtual Brush Clone()
+        {
+            return new Brush(this.Color);
+        }
+
         public void Dispose()
         {
         }
@@ -253,6 +267,12 @@ namespace System.Drawing
     {
         public SolidBrush(Color c) : base(c)
         {
+            Solid = true;
+        }
+
+        public override Brush Clone()
+        {
+            return new SolidBrush(this.Color);
         }
     }
 

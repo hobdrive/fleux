@@ -218,6 +218,12 @@ public class Graphics : IDisposable
         skPaint.Color = brush.Color.ToSKColor();
         skPaint.Style = SKPaintStyle.Fill;
 
+        if (brush.Stroke)
+        {
+            skPaint.Style = SKPaintStyle.Stroke;
+            skPaint.StrokeWidth = brush.StrokeWidth;
+        }
+
         var skLineSpacing = font.ToSKFont().GetFontMetrics(out var fontMetrics);
 
         var lines = text.Split('\n', StringSplitOptions.RemoveEmptyEntries);
@@ -238,8 +244,6 @@ public class Graphics : IDisposable
     {        
         if (DebugIgnoreText)
             return;
-        skPaint.Color = brush.Color.ToSKColor();
-        skPaint.Style = SKPaintStyle.Fill;
 
         var skLineSpacing = font.ToSKFont().GetFontMetrics(out var fontMetrics);
 

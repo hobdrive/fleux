@@ -89,6 +89,8 @@ namespace Fleux.Core.GraphicsHelpers
             
         }
 
+        public DrawingHelperState State { get { return this.state; } }
+
         // Expressed in pixels
         public int MaxWidth { get; set; }
 
