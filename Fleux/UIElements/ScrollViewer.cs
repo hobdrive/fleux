@@ -20,7 +20,7 @@
         private int panH = 0;
 
         public static int ShadowHeightDefault = 15;
-        public static int ShadowStepsDefault = 3;
+        public static int ShadowStepsDefault = 5;
         public static bool DrawShadowsDefault = true;
 
         public bool DrawShadows { get; set; }
