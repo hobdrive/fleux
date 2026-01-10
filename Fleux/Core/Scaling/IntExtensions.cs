@@ -17,9 +17,9 @@
             return FleuxApplication.ScaleToLogic(scaled);
         }
 
-        public static double ToPixels(this double logic)
+        public static int ToPixels(this double logic)
         {
-            return FleuxApplication.ScaleFromLogic(logic);
+            return (int)FleuxApplication.ScaleFromLogic(logic);
         }
     }
 }
