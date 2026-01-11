@@ -165,8 +165,13 @@ namespace Fleux.UIElements
         /// </summary>
         public virtual void AddElementAfter(UIElement element, UIElement sibling)
         {
-            if (!base.Children.Contains(element))
+            lock (child_lock)
             {
+                if (this.Children.Contains(element))
+                    return;
+                    
+                element.VisibleChanged += OnElementVisibleChanged;
+
                 int index = base.Children.IndexOf(sibling);
                 if (index == -1)
                 {
