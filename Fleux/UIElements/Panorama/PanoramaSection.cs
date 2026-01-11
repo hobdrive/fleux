@@ -9,6 +9,9 @@
         private string title;
         public TextStyle Style{ get; set; }
 
+        public int TitleX { get; set; } = 0;
+        public int TitleY { get; set; } = 0;
+
         public PanoramaSection()
         {
             this.Body = new Canvas { Size = new Size(380, 480), Location = new Point(0, 100) };
@@ -50,6 +53,7 @@
             }
             drawingGraphics
                 .FontSize(NewFontSize)
+                .MoveTo(TitleX, TitleY)
                 .DrawText(this.title)
                 .MoveTo(0, 0);
 
