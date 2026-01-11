@@ -1,4 +1,6 @@
 ﻿using Fleux.Core.NativeHelpers;
+using SkiaSharp;
+
 namespace Fleux.Core.GraphicsHelpers
 {
     using System;
@@ -40,23 +42,38 @@ namespace Fleux.Core.GraphicsHelpers
         /// </summary>
         public static IDrawingGraphics FillRoundedRectangle(this IDrawingGraphics dg, System.Drawing.Rectangle rect, int l, int r, int lb, int rb)
         {
-            int ix, iy, ix2, iy2;
-            ix = rect.X + Math.Max(l, lb);
-            iy = rect.Y + Math.Max(l, r);
-            ix2 = rect.Right - Math.Max(r, rb);
-            iy2 = rect.Bottom - Math.Max(lb, rb);
-                
-            dg.FillEllipse(rect.X, rect.Y, ix+l, iy+l);
-            dg.FillEllipse(rect.X, rect.Bottom, ix+lb, iy2-lb);
-            dg.FillEllipse(ix2-r, rect.Y, rect.Right, iy+r);
-            dg.FillEllipse(rect.Right, rect.Bottom, ix2-rb, iy2-rb);
+            // Use Skia path for uniform filling without pixel-matching issues
+            using (var path = new SKPath())
+            {
+                // Calculate transformed coordinates
+                float x = dg.CalculateX(rect.X);
+                float y = dg.CalculateY(rect.Y);
+                float right = dg.CalculateX(rect.Right);
+                float bottom = dg.CalculateY(rect.Bottom);
 
-            dg.FillRectangle(ix, iy, ix2, iy2);
+                // Calculate scaled corner radii (using CalculateWidth for scaling)
+                float lt = dg.CalculateWidth(l);
+                float rt = dg.CalculateWidth(r);
+                float lbr = dg.CalculateWidth(lb);
+                float rbr = dg.CalculateWidth(rb);
 
-            dg.FillRectangle(ix, rect.Y, ix2, iy+1);
-            dg.FillRectangle(rect.X, iy, ix+1, iy2);
-            dg.FillRectangle(ix, iy2-1, ix2, rect.Bottom);//!!!!
-            dg.FillRectangle(ix2-1, iy, rect.Right, iy2);
+                // Create rounded rectangle path with proper corner arcs
+                path.MoveTo(x + lt, y);
+                path.LineTo(right - rt, y);
+                path.ArcTo(new SKRect(right - rt * 2, y, right, y + rt * 2), -90, 90, false);
+                path.LineTo(right, bottom - rbr);
+                path.ArcTo(new SKRect(right - rbr * 2, bottom - rbr * 2, right, bottom), 0, 90, false);
+                path.LineTo(x + lbr, bottom);
+                path.ArcTo(new SKRect(x, bottom - lbr * 2, x + lbr * 2, bottom), 90, 90, false);
+                path.LineTo(x, y + lt);
+                path.ArcTo(new SKRect(x, y, x + lt * 2, y + lt * 2), 180, 90, false);
+                path.Close();
+
+                // Fill the path using Skia canvas directly
+                dg.Graphics.Paint.Color = dg.State.CurrentBrush.Color.ToSKColor();
+                dg.Graphics.Paint.Style = SKPaintStyle.Fill;
+                dg.Graphics.Canvas.DrawPath(path, dg.Graphics.Paint);
+            }
 
             return dg;
         }

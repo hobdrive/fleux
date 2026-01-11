@@ -13,7 +13,7 @@ namespace Fleux.Core.GraphicsHelpers
     /// or dimension calculators.
     /// It provides a Fluent API
     /// </summary>
-    public interface IDrawingGraphics
+    public interface xxxxxxIDrawingGraphics
     {
         // Getters
         // Bounds (may change while it's drawing)
@@ -99,6 +99,8 @@ namespace Fleux.Core.GraphicsHelpers
         IDrawingGraphics FillEllipse(Rectangle r);
 
         IDrawingGraphics DrawArc(int x1, int y1, int x2, int y2, float startAngle, float sweepAngle);
+
+        IDrawingGraphics FillArc(int x1, int y1, int x2, int y2, float startAngle, float sweepAngle);
 
         // Images
         IDrawingGraphics DrawImage(Image image, int x, int y);

@@ -11,6 +11,7 @@ using Fleux.Core.NativeHelpers;
 using Fleux.Core.Dim;
 using Fleux.Core.Scaling;
 using Fleux.Styles;
+using SkiaSharp;
 
 namespace Fleux.Core.GraphicsHelpers
 {
@@ -67,6 +68,13 @@ namespace Fleux.Core.GraphicsHelpers
 
     public class DrawingGraphics : IDrawingGraphics
     {
+        public DrawingGraphics(Graphics gr, Image canvasImage) : base(gr, canvasImage)
+        {
+        }
+    }
+
+    public class IDrawingGraphics 
+    {
         // The state (not scaled) used for the drawing primitives
         public readonly DrawingHelperState state;
 
@@ -77,7 +85,7 @@ namespace Fleux.Core.GraphicsHelpers
 
         private Image canvasImage;
 
-        public DrawingGraphics(Graphics gr, Image canvasImage)
+        public IDrawingGraphics(Graphics gr, Image canvasImage)
         {
             this.Graphics = gr;
             this.canvasImage = canvasImage;
@@ -85,8 +93,7 @@ namespace Fleux.Core.GraphicsHelpers
             this.drawingExtends = new Rectangle();
             this.MaxWidth = canvasImage.Width;
             this.MaxHeight = canvasImage.Height;
-            this.transformation = DGTransformation.Empty;
-            
+            this.transformation = DGTransformation.Empty;            
         }
 
         public DrawingHelperState State { get { return this.state; } }
@@ -379,6 +386,32 @@ namespace Fleux.Core.GraphicsHelpers
                                       this.CalculateWidth(x2 - x1),
                                       this.CalculateHeight(y2 - y1),
                                       startAngle, sweepAngle);
+            this.ValidateExtends(this.CalculateX(x2), this.CalculateY(y2));
+            return this;
+        }
+
+        public IDrawingGraphics FillArc(int x1, int y1, int x2, int y2, float startAngle, float sweepAngle)
+        {
+            if (x1 > x2)
+            {
+                Swap(ref x1, ref x2);
+            }
+            if (y1 > y2)
+            {
+                Swap(ref y1, ref y2);
+            }
+            startAngle = startAngle * 180 / (float)Math.PI;
+            sweepAngle = sweepAngle * 180 / (float)Math.PI;
+
+            this.Graphics.Paint.Color = this.state.CurrentBrush.Color.ToSKColor();
+            this.Graphics.Paint.Style = SKPaintStyle.Fill;
+            this.Graphics.Paint.StrokeWidth = 1;
+            var rect = new SKRect(this.CalculateX(x1),
+                                    this.CalculateY(y1),
+                                    this.CalculateX(x2),
+                                    this.CalculateY(y2));
+            this.Graphics.Canvas.DrawArc(rect, startAngle, sweepAngle, true, this.Graphics.Paint);
+
             this.ValidateExtends(this.CalculateX(x2), this.CalculateY(y2));
             return this;
         }
@@ -807,23 +840,31 @@ namespace Fleux.Core.GraphicsHelpers
 
         public int CalculateWidth(int logicalWidth)
         {
-            return (int)(Math.Abs(logicalWidth).ToPixels());
+            return Math.Abs(logicalWidth).ToPixels() + this.PixelCorrectionW;
         }
 
         public int CalculateHeight(int logicalHeight)
         {
-            return (int)(Math.Abs(logicalHeight).ToPixels());
+            return Math.Abs(logicalHeight).ToPixels() + this.PixelCorrectionH;
         }
 
         public int CalculateX(int x)
         {
-            return this.drawingExtends.Left + x.ToPixels();
+            return this.drawingExtends.Left + x.ToPixels() + this.PixelCorrectionX;
         }
 
         public int CalculateY(int y)
         {
-            return this.drawingExtends.Top + y.ToPixels();
+            return this.drawingExtends.Top + y.ToPixels() + this.PixelCorrectionY;
         }
+
+        /// <summary>
+        /// These are used to adjust pixel-perfect drawings, when scaling causes pixel imperfections.
+        /// </summary>
+        public int PixelCorrectionX { get; set; }
+        public int PixelCorrectionY { get; set; }
+        public int PixelCorrectionW { get; set; }
+        public int PixelCorrectionH { get; set; }
 
         public Rectangle CalculateRect(Rectangle logicalRect)
         {
