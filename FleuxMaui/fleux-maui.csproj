@@ -17,6 +17,9 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
     <DefineConstants>$(DefineConstants);__MAUI__;__SKIA__</DefineConstants>
 
+    <!-- Define SIMU_DEBUG for ios simulator debug builds - to speedup graphics on simulator -->
+    <DefineConstants Condition="'$(Configuration)' == 'Debug' AND '$(TargetFramework)' == 'net9.0-ios'">$(DefineConstants);SIMU_DEBUG</DefineConstants>
+
 		<NoWarn>$(NoWarn);CS8625;CS8618;CS8602;CS8603;CS8600;CS8604;CS8601;CS8618;CS8622</NoWarn>
 
 	</PropertyGroup>

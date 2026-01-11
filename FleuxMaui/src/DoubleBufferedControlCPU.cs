@@ -90,6 +90,7 @@ public class DoubleBufferedControlCPU : SKCanvasView
                 offUpdateInProgress = true;
                 var t3 = System.Environment.TickCount;
                 Draw(new PaintEventArgs(offGr, new Rectangle(0, 0, offBmp.Width, offBmp.Height)));
+                offBmp.InvalidateSnapshot();
                 tDraw = System.Environment.TickCount - t3;
                 offUpdateInProgress = false;
                 updcnt++;
