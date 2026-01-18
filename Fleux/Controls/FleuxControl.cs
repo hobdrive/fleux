@@ -13,11 +13,18 @@
     using Gestures;
     using UIElements;
 
+
+    // TODO: Not nice inheritance chain here, fix it later
+
     public class FleuxControl :
 #if SIMU_DEBUG
-     DoubleBufferedControlCPU
+    // iOS simulator slowness workaround
+    DoubleBufferedControlCPU
+#elif __ANDROID__
+    DoubleBufferedControlAGLView
 #else
-     DoubleBufferedControl
+    // ios / maui
+    DoubleBufferedControl
 #endif
     {
         protected int shadowImageX;
@@ -32,7 +39,11 @@
 
         public int LastTapDuration = 0;
 
+#if __ANDROID__
+        public FleuxControl(Android.App.Activity activity) : base(activity)
+#else
         public FleuxControl()
+#endif
         {
             this.EntranceDuration = 600;
             this.gestures.Tap = this.Tap;
