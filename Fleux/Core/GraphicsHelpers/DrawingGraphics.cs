@@ -11,7 +11,9 @@ using Fleux.Core.NativeHelpers;
 using Fleux.Core.Dim;
 using Fleux.Core.Scaling;
 using Fleux.Styles;
+#if __SKIA__
 using SkiaSharp;
+#endif
 
 namespace Fleux.Core.GraphicsHelpers
 {
@@ -402,7 +404,7 @@ namespace Fleux.Core.GraphicsHelpers
             }
             startAngle = startAngle * 180 / (float)Math.PI;
             sweepAngle = sweepAngle * 180 / (float)Math.PI;
-
+#if __SKIA__
             this.Graphics.Paint.Color = this.state.CurrentBrush.Color.ToSKColor();
             this.Graphics.Paint.Style = SKPaintStyle.Fill;
             this.Graphics.Paint.StrokeWidth = 1;
@@ -411,7 +413,7 @@ namespace Fleux.Core.GraphicsHelpers
                                     this.CalculateX(x2),
                                     this.CalculateY(y2));
             this.Graphics.Canvas.DrawArc(rect, startAngle, sweepAngle, true, this.Graphics.Paint);
-
+#endif
             this.ValidateExtends(this.CalculateX(x2), this.CalculateY(y2));
             return this;
         }

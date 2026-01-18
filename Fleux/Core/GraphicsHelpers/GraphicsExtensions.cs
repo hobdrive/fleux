@@ -1,5 +1,7 @@
 ﻿using Fleux.Core.NativeHelpers;
+#if __SKIA__
 using SkiaSharp;
+#endif
 
 namespace Fleux.Core.GraphicsHelpers
 {
@@ -27,16 +29,19 @@ namespace Fleux.Core.GraphicsHelpers
             return new Rectangle(r.Left+x, r.Top+y, r.Width, r.Height);
         }
 
+#if __SKIA__
         public static IDrawingGraphics FillRoundedRectangle(this IDrawingGraphics dg, System.Drawing.Rectangle rect, int r)
         {
             return FillRoundedRectangle(dg, rect, r,r,r,r);
         }
+#endif
 
         public static IDrawingGraphics DrawRoundedRectangle(this IDrawingGraphics dg, System.Drawing.Rectangle rect, int r)
         {
             return DrawRoundedRectangle(dg, rect, r,r,r,r);
         }
 
+#if __SKIA__
         /// <summary>
         /// Fills the rounded rectangle with roundings in "roundings"
         /// </summary>
@@ -77,6 +82,7 @@ namespace Fleux.Core.GraphicsHelpers
 
             return dg;
         }
+#endif
 
         /// <summary>
         /// Fills the rounded rectangle with roundings in "roundings"
