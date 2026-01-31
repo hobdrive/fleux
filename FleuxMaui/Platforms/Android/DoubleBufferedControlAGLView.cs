@@ -97,6 +97,10 @@ public class DoubleBufferedControlAGLView : SKGLSurfaceView
         SKCanvas canvas = surface.Canvas;
         if (canvas == null)
             return;
+        
+        GRRecordingContext grContext = surface.Context;
+        if (grContext == null)
+            return;
 
         var t0 = System.Environment.TickCount;
 
@@ -114,7 +118,7 @@ public class DoubleBufferedControlAGLView : SKGLSurfaceView
         var tClear = System.Environment.TickCount - t1;
 
         var t2 = System.Environment.TickCount;
-        CreateGraphicBuffers(info, args.Surface.Context);
+        CreateGraphicBuffers(info, grContext);
         var tCreateBuffer = System.Environment.TickCount - t2;
 
         // Check if buffers are ready after CreateGraphicBuffers
@@ -142,8 +146,8 @@ public class DoubleBufferedControlAGLView : SKGLSurfaceView
                     updcnt++;
                 }
             }
+            offUpdated = false;
         }
-        offUpdated = false;
 
         if (currentEffect?.Process() ?? false)
         {
@@ -305,7 +309,11 @@ public class DoubleBufferedControlAGLView : SKGLSurfaceView
             try
             {
                 // Use Android's Handler to post to UI thread
-                Post(() => base.Invalidate());
+                Post(() => {
+                    if (IsDisposed)
+                        return;
+                    base.Invalidate();
+                });
             }
             catch (Exception e)
             {
@@ -364,8 +372,10 @@ public class DoubleBufferedControlAGLView : SKGLSurfaceView
             {
                 try
                 {
-                    // Check if context changed
-                    if (offBmp.GetSurface()?.Context != grContext)
+                    var currentContext = offBmp.GetSurface()?.Context;
+                    
+                    // Check if context changed (happens on pause/resume)
+                    if (currentContext == null || currentContext.Handle != grContext.Handle)
                     {
                         FleuxApplication.Log("DoubleBufferedControl: Graphics context changed - recreating buffers");
                         needsRecreate = true;
@@ -377,9 +387,10 @@ public class DoubleBufferedControlAGLView : SKGLSurfaceView
                         needsRecreate = true;
                     }
                 }
-                catch (ObjectDisposedException)
+                catch (Exception ex)
                 {
-                    // Surface was already disposed, release and recreate
+                    // Surface was disposed or invalid, release and recreate
+                    FleuxApplication.Log($"DoubleBufferedControl: Buffer validation failed - {ex.Message}");
                     needsRecreate = true;
                 }
 
@@ -400,6 +411,13 @@ public class DoubleBufferedControlAGLView : SKGLSurfaceView
                     this.offGr = Graphics.FromImage(offBmp);
 
                     FleuxApplication.Log($"DoubleBufferedControl: Created buffers {OffBmpWidth}x{OffBmpHeight}");
+                    
+                    // Clear any runtime effects that may hold invalid GL resources
+                    currentEffect = null;
+                    
+                    // Force redraw after buffer creation
+                    offUpdated = true;
+                    
                     CanvasSizeChanged?.Invoke(this, EventArgs.Empty);
                 }
                 catch (Exception ex)
@@ -450,6 +468,9 @@ public class DoubleBufferedControlAGLView : SKGLSurfaceView
                 OffBmpWidth = OffBmpHeight = 0;
                 this.offBmp = null;
                 this.offGr = null;
+                // Reset update flags for clean state
+                offUpdated = false;
+                offUpdateInProgress = false;
             }
         }
     }
