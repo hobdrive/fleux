@@ -44,6 +44,9 @@ public class DoubleBufferedControlAGLView : SKGLSurfaceView
     protected bool resizing;
     bool IsDisposed = false;
 
+    // Dedicated lock object for buffer synchronization (never lock on offBmp itself)
+    private readonly object bufferLock = new object();
+
     public static bool PerfData = false;
 
     /// Main Canvas scaledown resolution
@@ -79,18 +82,44 @@ public class DoubleBufferedControlAGLView : SKGLSurfaceView
 
     void OnCanvasViewPaintSurface(object? sender, SKPaintGLSurfaceEventArgs args)
     {
-        var t0 = System.Environment.TickCount;
+        if (IsDisposed)
+            return;
+
+        // Validate surface dimensions to avoid GL_INVALID_FRAMEBUFFER_OPERATION
         SKImageInfo info = args.Info;
+        if (info.Width <= 0 || info.Height <= 0)
+            return;
+
         SKSurface surface = args.Surface;
+        if (surface == null)
+            return;
+
         SKCanvas canvas = surface.Canvas;
+        if (canvas == null)
+            return;
+
+        var t0 = System.Environment.TickCount;
 
         var t1 = System.Environment.TickCount;
-        canvas.Clear(SKColors.Blue);
+        try
+        {
+            canvas.Clear(SKColors.Blue);
+        }
+        catch (Exception ex)
+        {
+            // Framebuffer not ready during orientation change
+            FleuxApplication.Log($"Canvas clear failed: {ex.Message}");
+            return;
+        }
         var tClear = System.Environment.TickCount - t1;
 
         var t2 = System.Environment.TickCount;
         CreateGraphicBuffers(info, args.Surface.Context);
         var tCreateBuffer = System.Environment.TickCount - t2;
+
+        // Check if buffers are ready after CreateGraphicBuffers
+        if (offBmp == null || offGr == null)
+            return;
 
         var ctime = System.Environment.TickCount;
         Fleux.UIElements.Canvas.drawtime = 0;
@@ -98,17 +127,20 @@ public class DoubleBufferedControlAGLView : SKGLSurfaceView
         var tDraw = 0;
         if (offUpdated)
         {
-            lock (offBmp)
+            lock (bufferLock)
             {
-                offUpdateInProgress = true;
-                var t3 = System.Environment.TickCount;
-                
-                Draw(new PaintEventArgs(offGr, new Rectangle(0, 0, offBmp.Width, offBmp.Height)));
-                offBmp.InvalidateSnapshot();
+                if (offBmp != null && offGr != null)
+                {
+                    offUpdateInProgress = true;
+                    var t3 = System.Environment.TickCount;
+                    
+                    Draw(new PaintEventArgs(offGr, new Rectangle(0, 0, offBmp.Width, offBmp.Height)));
+                    offBmp.InvalidateSnapshot();
 
-                tDraw = System.Environment.TickCount - t3;
-                offUpdateInProgress = false;
-                updcnt++;
+                    tDraw = System.Environment.TickCount - t3;
+                    offUpdateInProgress = false;
+                    updcnt++;
+                }
             }
         }
         offUpdated = false;
@@ -123,38 +155,52 @@ public class DoubleBufferedControlAGLView : SKGLSurfaceView
         }
 
         var tBitmapDraw = 0;
-        lock (offBmp)
+        lock (bufferLock)
         {
-            /*
-            TODO: handle mirroring here
-            if (Fleux.Core.FleuxApplication.HorizontalMirror)
+            if (offBmp != null)
             {
-                canvas.Save();
-                canvas.Scale(-1, 1);
-                canvas.Translate(-(float)Control.drect.Width(), 0);
-            }
-            else if (Fleux.Core.FleuxApplication.VerticalMirror)
-            {
-                canvas.Save();
-                canvas.Scale(1, -1);
-                canvas.Translate(0, -(float)Control.drect.Height());
-            }
-            offGr.Flush();
-            */
+                /*
+                TODO: handle mirroring here
+                if (Fleux.Core.FleuxApplication.HorizontalMirror)
+                {
+                    canvas.Save();
+                    canvas.Scale(-1, 1);
+                    canvas.Translate(-(float)Control.drect.Width(), 0);
+                }
+                else if (Fleux.Core.FleuxApplication.VerticalMirror)
+                {
+                    canvas.Save();
+                    canvas.Scale(1, -1);
+                    canvas.Translate(0, -(float)Control.drect.Height());
+                }
+                offGr.Flush();
+                */
 
-            var cPaint = currentEffect?.GetState() as SKPaint;
-            if (cPaint == null)
-            {
-                cPaint = CanvasPaint;
-            }
-            var t4 = System.Environment.TickCount;
-            
-            var skImage = offBmp.GetSkImage();
-            canvas.DrawImage(skImage,
-                new SKRect(0, 0, info.Width, info.Height), cPaint);
-            tBitmapDraw = System.Environment.TickCount - t4;
+                var cPaint = currentEffect?.GetState() as SKPaint;
+                if (cPaint == null)
+                {
+                    cPaint = CanvasPaint;
+                }
+                var t4 = System.Environment.TickCount;
+                
+                try
+                {
+                    var skImage = offBmp.GetSkImage();
+                    if (skImage != null)
+                    {
+                        canvas.DrawImage(skImage,
+                            new SKRect(0, 0, info.Width, info.Height), cPaint);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Framebuffer operation failed - likely during orientation change
+                    FleuxApplication.Log($"DrawImage failed: {ex.Message}");
+                }
+                tBitmapDraw = System.Environment.TickCount - t4;
 
-            updcntflush++;
+                updcntflush++;
+            }
         }
 
         if (PerfData)
@@ -303,23 +349,65 @@ public class DoubleBufferedControlAGLView : SKGLSurfaceView
 
     protected virtual void CreateGraphicBuffers(SKImageInfo info, GRRecordingContext grContext)
     {
-        if (offBmp != null && offBmp.GetSurface().Context != grContext)
+        if (IsDisposed || info.Width <= 0 || info.Height <= 0)
+            return;
+
+        lock (bufferLock)
         {
-            // Context changed - need to recreate
-            FleuxApplication.Log("DoubleBufferedControl: Graphics context changed - recreating buffers");
-            ReleaseGraphicBuffers();
-        }
+            int newWidth = (int)(info.Width / DownScale);
+            int newHeight = (int)(info.Height / DownScale);
 
-        if (info.Width > 0 && info.Height > 0 && !IsDisposed && offBmp == null)
-        {
-            OffBmpWidth = (int)(info.Width / DownScale);
-            OffBmpHeight = (int)(info.Height / DownScale);
+            // Check if we need to recreate buffers
+            bool needsRecreate = false;
+            
+            if (offBmp != null)
+            {
+                try
+                {
+                    // Check if context changed
+                    if (offBmp.GetSurface()?.Context != grContext)
+                    {
+                        FleuxApplication.Log("DoubleBufferedControl: Graphics context changed - recreating buffers");
+                        needsRecreate = true;
+                    }
+                    // Check if dimensions changed (orientation change)
+                    else if (OffBmpWidth != newWidth || OffBmpHeight != newHeight)
+                    {
+                        FleuxApplication.Log($"DoubleBufferedControl: Dimensions changed from {OffBmpWidth}x{OffBmpHeight} to {newWidth}x{newHeight} - recreating buffers");
+                        needsRecreate = true;
+                    }
+                }
+                catch (ObjectDisposedException)
+                {
+                    // Surface was already disposed, release and recreate
+                    needsRecreate = true;
+                }
 
-            this.offBmp = new Bitmap(grContext, OffBmpWidth, OffBmpHeight);
+                if (needsRecreate)
+                {
+                    ReleaseGraphicBuffersInternal();
+                }
+            }
 
-            this.offGr = Graphics.FromImage(offBmp);
+            if (offBmp == null)
+            {
+                try
+                {
+                    OffBmpWidth = newWidth;
+                    OffBmpHeight = newHeight;
 
-            CanvasSizeChanged?.Invoke(this, EventArgs.Empty);
+                    this.offBmp = new Bitmap(grContext, OffBmpWidth, OffBmpHeight);
+                    this.offGr = Graphics.FromImage(offBmp);
+
+                    FleuxApplication.Log($"DoubleBufferedControl: Created buffers {OffBmpWidth}x{OffBmpHeight}");
+                    CanvasSizeChanged?.Invoke(this, EventArgs.Empty);
+                }
+                catch (Exception ex)
+                {
+                    FleuxApplication.Log($"Error creating graphic buffers: {ex.Message}", ex);
+                    ReleaseGraphicBuffersInternal();
+                }
+            }
         }
     }
 
@@ -336,13 +424,29 @@ public class DoubleBufferedControlAGLView : SKGLSurfaceView
 
     public virtual void ReleaseGraphicBuffers()
     {
-        lock (this)
+        lock (bufferLock)
         {
-            if (this.offBmp != null)
+            ReleaseGraphicBuffersInternal();
+        }
+    }
+
+    private void ReleaseGraphicBuffersInternal()
+    {
+        // This method should only be called while holding bufferLock
+        if (this.offBmp != null)
+        {
+            try
             {
                 // Dispose resources
-                this.offGr.Dispose();
-                this.offBmp.Dispose();
+                this.offGr?.Dispose();
+                this.offBmp?.Dispose();
+            }
+            catch (Exception ex)
+            {
+                FleuxApplication.Log($"Error disposing graphic buffers: {ex.Message}", ex);
+            }
+            finally
+            {
                 OffBmpWidth = OffBmpHeight = 0;
                 this.offBmp = null;
                 this.offGr = null;

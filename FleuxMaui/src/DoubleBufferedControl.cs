@@ -299,6 +299,11 @@ public class DoubleBufferedControl : SKGLView
             FleuxApplication.Log("DoubleBufferedControl: Graphics context changed - recreating buffers");
             ReleaseGraphicBuffers();
         }
+        
+        if (info.Width != OffBmpWidth || info.Height != OffBmpHeight)
+        {
+            ReleaseGraphicBuffers();
+        }
 
         if (info.Width > 0 && info.Height > 0 && !IsDisposed && offBmp == null)
         {

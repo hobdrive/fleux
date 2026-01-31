@@ -65,6 +65,7 @@ namespace Fleux.UIElements
                 this.Size = new Size(Math.Max(element.Bounds.Right, this.Size.Width), Math.Max(element.Bounds.Bottom, this.Size.Height));
             element.Updated = this.Update;
             if (ContentChanged != null) ContentChanged();
+            changedChildren = true;
         }
 
         public virtual void RemoveElement(UIElement element)
@@ -182,6 +183,7 @@ namespace Fleux.UIElements
                 base.Size = new Size(Math.Max(element.Bounds.Right, base.Size.Width), Math.Max(element.Bounds.Bottom, base.Size.Height));
                 element.Updated = new Action(this.Update);
                 if (ContentChanged != null) ContentChanged();
+                changedChildren = true;
             }
         }
 
