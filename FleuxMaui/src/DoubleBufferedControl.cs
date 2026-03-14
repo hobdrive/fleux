@@ -73,7 +73,7 @@ public class DoubleBufferedControl : SKGLView
         SKCanvas canvas = surface.Canvas;
 
         var t1 = System.Environment.TickCount;
-        canvas.Clear(SKColors.Blue);
+        canvas.Clear(SKColors.Black);
         var tClear = System.Environment.TickCount - t1;
 
         var t2 = System.Environment.TickCount;

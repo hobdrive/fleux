@@ -107,7 +107,7 @@ public class DoubleBufferedControlAGLView : SKGLSurfaceView
         var t1 = System.Environment.TickCount;
         try
         {
-            canvas.Clear(SKColors.Blue);
+            canvas.Clear(SKColors.Black);
         }
         catch (Exception ex)
         {
