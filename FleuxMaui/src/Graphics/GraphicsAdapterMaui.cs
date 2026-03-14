@@ -224,7 +224,8 @@ public class Graphics : IDisposable
             skPaint.StrokeWidth = brush.StrokeWidth;
         }
 
-        var skLineSpacing = font.ToSKFont().GetFontMetrics(out var fontMetrics);
+        var skFont = font.ToSKFont(text);
+        var skLineSpacing = skFont.GetFontMetrics(out var fontMetrics);
 
         var lines = text.Split('\n', StringSplitOptions.RemoveEmptyEntries);
 
@@ -235,7 +236,7 @@ public class Graphics : IDisposable
             //y += (int)bounds.Height;
             y += (int)-fontMetrics.Ascent;
 
-            canvas.DrawText(line, x, y, SKTextAlign.Left, font.ToSKFont(), skPaint);
+            canvas.DrawText(line, x, y, SKTextAlign.Left, skFont, skPaint);
             y += (int)fontMetrics.Descent;
         }
     }
@@ -245,13 +246,14 @@ public class Graphics : IDisposable
         if (DebugIgnoreText)
             return;
 
-        var skLineSpacing = font.ToSKFont().GetFontMetrics(out var fontMetrics);
+        var skFont = font.ToSKFont(text);
+        var skLineSpacing = skFont.GetFontMetrics(out var fontMetrics);
 
         float lineHeight = fontMetrics.Descent - fontMetrics.Ascent;
         float y = rect.Top - fontMetrics.Ascent;
         float maxWidth = rect.Width;
 
-        var multiLine = new MultiLine((int)rect.Width, (t) => MeasureTextCRLF(t, font.ToSKFont()), text);
+        var multiLine = new MultiLine((int)rect.Width, (t) => MeasureTextCRLF(t, skFont), text);
         DrawString(multiLine.Text, font, brush, rect.X, rect.Y);
     }
 
@@ -261,7 +263,8 @@ public class Graphics : IDisposable
             return Size.Empty;
         skPaint.Style = SKPaintStyle.Fill;
 
-        var skLineSpacing = font.ToSKFont().GetFontMetrics(out var fontMetrics);
+        var skFont = font.ToSKFont(text);
+        var skLineSpacing = skFont.GetFontMetrics(out var fontMetrics);
 
         float lineHeight = fontMetrics.Descent - fontMetrics.Ascent;
 
@@ -269,11 +272,11 @@ public class Graphics : IDisposable
             return new Size(0, 0);
 
         // Shortcut for single line text
-        var simpleSize = MeasureTextCRLF(text, font.ToSKFont());
+        var simpleSize = MeasureTextCRLF(text, skFont);
         if (simpleSize.Width < width)
             return simpleSize;
 
-        var multiLine = new MultiLine(width, (t) => MeasureTextCRLF(t, font.ToSKFont()), text);
+        var multiLine = new MultiLine(width, (t) => MeasureTextCRLF(t, skFont), text);
 
         return multiLine.Size;
     }
@@ -300,10 +303,11 @@ public class Graphics : IDisposable
         if (DebugIgnoreText)
             return Size.Empty;
 
+        var skFont = font.ToSKFont(text);
         var bounds = new SKRect();
-        font.ToSKFont().MeasureText(text, out bounds, skPaint);
+        skFont.MeasureText(text, out bounds, skPaint);
 
-        var skLineSpacing = font.ToSKFont().GetFontMetrics(out var fontMetrics);
+        var skLineSpacing = skFont.GetFontMetrics(out var fontMetrics);
         float lineHeight = fontMetrics.Descent - fontMetrics.Ascent;
         var y = fontMetrics.Descent - fontMetrics.Ascent;
 

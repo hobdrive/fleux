@@ -333,16 +333,19 @@ namespace System.Drawing
                 return null;
         }
 
-        public SKTypeface GetSKTypeface()
+        public SKTypeface GetSKTypeface(string sampleText = null)
         {
-            return SKTypeface.FromFamilyName(Name, (Style == FontStyle.Bold) ? SKFontStyleWeight.Bold : SKFontStyleWeight.Normal,
+            return SkiaFontManager.GetTypeface(
+                Name, 
+                (Style == FontStyle.Bold) ? SKFontStyleWeight.Bold : SKFontStyleWeight.Normal,
                 SKFontStyleWidth.Normal,
-                (Style == FontStyle.Italic) ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright);
+                (Style == FontStyle.Italic) ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright,
+                sampleText);
         }
         
-        public SKFont ToSKFont()
+        public SKFont ToSKFont(string sampleText = null)
         {
-            return new SKFont(GetSKTypeface(), Size);
+            return new SKFont(GetSKTypeface(sampleText), Size);
         }
 
     }
