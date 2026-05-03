@@ -39,6 +39,11 @@ public class SkImageResourceProvider : IImageResourceProvider
             return new Bitmap(skImage);
         }
     }
+    
+    // Rasterize at higher resolution so the bitmap stays sharp when upscaled.
+    // The Bitmap is created with the original SVG logical size; ScaleFactor tells
+    // DrawImage to read the full physical pixels when blitting.
+    const int SvgRasterScale = 4;
 
     public IImageWrapper GetIImage(string imagePath)
     {
@@ -48,21 +53,22 @@ public class SkImageResourceProvider : IImageResourceProvider
             var svg = new Svg.Skia.SKSvg();
             svg.Load(imagePath);
 
-            // 2. Get bounds of the SVG
             var picture = svg.Picture;
             var bounds = picture.CullRect;
 
-            // Optional: scale the output to a specific size
-            int width = (int)bounds.Width;
-            int height = (int)bounds.Height;
+            int logicalWidth = (int)bounds.Width;
+            int logicalHeight = (int)bounds.Height;
+            int physWidth = logicalWidth * SvgRasterScale;
+            int physHeight = logicalHeight * SvgRasterScale;
 
-            var info = new SKImageInfo(width, height, SKColorType.Rgba8888, SKAlphaType.Premul);
+            var info = new SKImageInfo(physWidth, physHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
             using var surface = SKSurface.Create(info);
             surface.Canvas.Clear(SKColors.Transparent);
+            surface.Canvas.Scale(SvgRasterScale, SvgRasterScale);
             surface.Canvas.DrawPicture(picture);
             surface.Canvas.Flush();
             var image = surface.Snapshot();  // Immutable image
-            bmp = new Bitmap(image);  // Thread-safe, GPU-friendly
+            bmp = new Bitmap(image, logicalWidth, logicalHeight);  // logical size = SVG dims, physical = 4x
         }
         else
         {

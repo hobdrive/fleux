@@ -72,6 +72,10 @@ namespace System.Drawing
         public abstract int Width{get; protected set;}
         public abstract int Height{get; protected set;}
 
+        // Ratio of physical pixels to logical units. > 1 means high-res (e.g. SVG rasterized at 4x).
+        // DrawImage implementations must scale source rectangles by this value.
+        public virtual float ScaleFactor => 1.0f;
+
         public Size Size{ get{ return new Size(Width, Height); }}
 
         public SKSurface GetSurface()
@@ -160,12 +164,25 @@ namespace System.Drawing
 
     public class Bitmap : Image
     {
+        private float _scaleFactor = 1.0f;
+        public override float ScaleFactor => _scaleFactor;
+
         // Constructor for immutable resources
         public Bitmap(SKImage image)
         {
             skImage = image;
             Width = image.Width;
             Height = image.Height;
+        }
+
+        // Constructor for high-DPI images (e.g. SVG rasterized at higher scale).
+        // logicalWidth/Height are the display dimensions; the SKImage has more physical pixels.
+        public Bitmap(SKImage image, int logicalWidth, int logicalHeight)
+        {
+            skImage = image;
+            Width = logicalWidth;
+            Height = logicalHeight;
+            _scaleFactor = logicalWidth > 0 ? (float)image.Width / logicalWidth : 1.0f;
         }
 
         public Bitmap(GRRecordingContext grContext, int w, int h)

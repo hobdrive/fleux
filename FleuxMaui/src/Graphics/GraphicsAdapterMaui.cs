@@ -73,7 +73,8 @@ public class Graphics : IDisposable
         skPaint.Color = SKColors.White;
         skPaint.Style = SKPaintStyle.Fill;
 
-        var srcRect = new SKRect(source.X, source.Y, source.X + source.Width, source.Y + source.Height);
+        var sf = image.ScaleFactor;
+        var srcRect = new SKRect(source.X * sf, source.Y * sf, (source.X + source.Width) * sf, (source.Y + source.Height) * sf);
         var dstRect = new SKRect(target.X, target.Y, target.X + target.Width, target.Y + target.Height);
 
         var skImage = image.GetSkImage();  // Don't dispose - owned by image
@@ -87,8 +88,11 @@ public class Graphics : IDisposable
         skPaint.Color = SKColors.White;
         skPaint.Style = SKPaintStyle.Fill;
 
+        var sf = image.ScaleFactor;
         var skImage = image.GetSkImage();  // Don't dispose - owned by image
-        canvas.DrawImage(skImage, x, y, skPaint);
+        var srcRect = new SKRect(0, 0, image.Width * sf, image.Height * sf);
+        var dstRect = new SKRect(x, y, x + image.Width, y + image.Height);
+        canvas.DrawImage(skImage, srcRect, dstRect, skPaint);
     }
 
     public void DrawImage(Image image, int x, int y, Rectangle source, GraphicsUnit gu)
@@ -98,7 +102,8 @@ public class Graphics : IDisposable
         skPaint.Color = SKColors.White;
         skPaint.Style = SKPaintStyle.Fill;
 
-        var srcRect = new SKRect(source.X, source.Y, source.X + source.Width, source.Y + source.Height);
+        var sf = image.ScaleFactor;
+        var srcRect = new SKRect(source.X * sf, source.Y * sf, (source.X + source.Width) * sf, (source.Y + source.Height) * sf);
         var skImage = image.GetSkImage();  // Don't dispose - owned by image
         canvas.DrawImage(skImage, srcRect, new SKRect(x, y, x + source.Width, y + source.Height), skPaint);
     }
@@ -116,7 +121,8 @@ public class Graphics : IDisposable
             skPaint.Color = skPaint.Color.WithAlpha((byte)(255 * (transparency)));
         }
 
-        var srcRect = new SKRect(fromx, fromy, fromx + fromw, fromy + fromh);
+        var sf = image.ScaleFactor;
+        var srcRect = new SKRect(fromx * sf, fromy * sf, (fromx + fromw) * sf, (fromy + fromh) * sf);
         var dstRect = new SKRect(to.X, to.Y, to.X + to.Width, to.Y + to.Height);
 
 #if xDEBUG
