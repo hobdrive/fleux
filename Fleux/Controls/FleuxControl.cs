@@ -175,7 +175,7 @@
         public void AnimateEntrance()
         {
             var entranceSb = new StoryBoard();
-            foreach (var element in this.elements.Where(e => e.EntranceAnimation != null))
+            foreach (var element in this.elements.ToArray().Where(e => e.EntranceAnimation != null))
             {
                 element.EntranceAnimation.Duration = this.EntranceDuration;
                 entranceSb.AddAnimation(element.EntranceAnimation);
@@ -197,7 +197,7 @@
         public void AnimateExit()
         {
             var exitSb = new StoryBoard();
-            foreach (var element in this.elements.Where(e => e.ExitAnimation != null))
+            foreach (var element in this.elements.ToArray().Where(e => e.ExitAnimation != null))
             {
                 element.ExitAnimation.Duration = this.EntranceDuration;
                 exitSb.AddAnimation(element.ExitAnimation);
