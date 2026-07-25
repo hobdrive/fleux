@@ -225,6 +225,14 @@
 
         public abstract void Draw(IDrawingGraphics drawingGraphics);
 
+        public virtual void ReleaseGraphicsResources()
+        {
+            foreach (var child in this.Children.ToArray())
+            {
+                child.ReleaseGraphicsResources();
+            }
+        }
+
         public bool IsShowing(UIElement child)
         {
             if (this.Parent != null)

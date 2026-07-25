@@ -230,6 +230,11 @@
             active = false;
         }
 
+        public void ActivateWithoutAnimation()
+        {
+            active = true;
+        }
+
         protected override void Draw(PaintEventArgs e)
         {
             if (this.active)

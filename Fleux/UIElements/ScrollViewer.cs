@@ -209,6 +209,17 @@
             }
         }
 
+        public override void ReleaseGraphicsResources()
+        {
+            clipBitmap?.Dispose();
+            clipBitmap = null;
+            TopShadow?.Dispose();
+            TopShadow = null;
+            BottomShadow?.Dispose();
+            BottomShadow = null;
+            base.ReleaseGraphicsResources();
+        }
+
         public void DrawScrollBar(IDrawingGraphics drawingGr)
         {
             drawingGr.DrawAlphaImage("verticalscrollbar.png", new Rectangle(this.Size.Width - this.ScrollBarWidth, 0, this.ScrollBarWidth, this.Size.Height));

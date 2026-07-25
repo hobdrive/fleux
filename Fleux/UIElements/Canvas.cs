@@ -92,6 +92,14 @@ namespace Fleux.UIElements
         List<UIElement> visibleChildren = null;
         Rectangle lastVisibleRect;
         bool changedChildren = false;
+
+        public override void ReleaseGraphicsResources()
+        {
+            visibleChildren = null;
+            changedChildren = true;
+            base.ReleaseGraphicsResources();
+        }
+
         List<UIElement> GetVisibleCachedChindren(Rectangle visibleRect)
         {
             if (lastVisibleRect == visibleRect && visibleChildren != null && !changedChildren)
