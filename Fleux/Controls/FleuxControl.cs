@@ -40,6 +40,11 @@
         public int LastTapDuration = 0;
 
 #if __ANDROID__
+        public FleuxControl() : base(null)
+        {
+            throw new NotImplementedException("FleuxControl() constructor is not implemented for Android. Use FleuxControl(Android.App.Activity activity) instead.");
+        }
+
         public FleuxControl(Android.App.Activity activity) : base(activity)
 #else
         public FleuxControl()
