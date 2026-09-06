@@ -31,16 +31,19 @@ public static class SkiaFontManager
     {
         try
         {
-            // Try to load OpenSans-Regular.ttf which has Cyrillic support
-            var fallbackPath = GetFontPath("OpenSans-Regular.ttf");
+            // Segoe UI Semibold covers Cyrillic and modern currency glyphs
+            // (including ₽). Fall back to OpenSans when it is not bundled.
+            var fallbackPath = GetFontPath("SegoeUI-Semibold.ttf")
+                ?? GetFontPath("OpenSans-Regular.ttf");
             if (fallbackPath != null)
             {
                 _defaultFallback = SKTypeface.FromFile(fallbackPath);
                 _fallbackFonts["default"] = _defaultFallback;
             }
             
-            // Also load OpenSans-Semibold for bold fallback
-            var boldPath = GetFontPath("OpenSans-Semibold.ttf");
+            // Prefer the dedicated bold fallback when the app bundles one.
+            var boldPath = GetFontPath("SegoeUI-Semibold.ttf")
+                ?? GetFontPath("OpenSans-Semibold.ttf");
             if (boldPath != null)
             {
                 _fallbackFonts["bold"] = SKTypeface.FromFile(boldPath);
@@ -110,11 +113,21 @@ public static class SkiaFontManager
                     return path;
             }
 #elif IOS || MACCATALYST
-            // On iOS/Mac, check the app bundle
+            // MAUI currently copies these fonts to the bundle root on iOS,
+            // while older builds used a Fonts subdirectory. Support both so
+            // the shared fallback behaves consistently across platforms.
             var bundlePath = Foundation.NSBundle.MainBundle.BundlePath;
-            var fontPath = Path.Combine(bundlePath, "Fonts", fontFileName);
-            if (File.Exists(fontPath))
-                return fontPath;
+            var paths = new[]
+            {
+                Path.Combine(bundlePath, fontFileName),
+                Path.Combine(bundlePath, "Fonts", fontFileName),
+            };
+
+            foreach (var path in paths)
+            {
+                if (File.Exists(path))
+                    return path;
+            }
 #endif
         }
         catch (Exception ex)
@@ -134,14 +147,12 @@ public static class SkiaFontManager
             
         foreach (var c in text)
         {
-            // Check if character is in Cyrillic range (common issue)
-            if (c >= CYRILLIC_START && c <= CYRILLIC_END)
-            {
-                // Check if typeface has this glyph
-                var glyphId = typeface.GetGlyph(c);
-                if (glyphId == 0) // Glyph ID 0 means missing glyph
-                    return false;
-            }
+            if (char.IsControl(c) || char.IsWhiteSpace(c))
+                continue;
+
+            // Glyph ID 0 means the requested typeface cannot render it.
+            if (typeface.GetGlyph(c) == 0)
+                return false;
         }
         return true;
     }
@@ -169,78 +180,28 @@ public static class SkiaFontManager
     {
         lock (_lock)
         {
-            // Determine if we need fallback based on sample text
-            bool needsFallback = false;
-            
-            // If we have sample text and it contains Cyrillic, check for fallback need
-            if (!string.IsNullOrEmpty(sampleText) && ContainsCyrillic(sampleText))
+            var cacheKey = $"{fontFamily}_{weight}_{width}_{slant}";
+            if (!_cachedTypefaces.TryGetValue(cacheKey, out var typeface))
             {
-                // Use a cache key that includes the fallback indicator
-                var fallbackKey = $"{fontFamily}_{weight}_{width}_{slant}_fallback";
-                
-                if (_cachedTypefaces.TryGetValue(fallbackKey, out var cachedFallback))
-                    return cachedFallback;
-                
-                // Try to create the requested typeface
-                var typeface = SKTypeface.FromFamilyName(fontFamily, weight, width, slant);
-                
-                // Check if typeface supports the text
-                needsFallback = !ContainsGlyphs(typeface, sampleText);
-                
-                if (needsFallback)
-                {
-                    Console.WriteLine($"SkiaFontManager: Font '{fontFamily}' missing Cyrillic glyphs, using fallback");
-                    typeface?.Dispose();
-                    
-                    // Use fallback font
-                    if (weight == SKFontStyleWeight.Bold && _fallbackFonts.TryGetValue("bold", out var boldFallback))
-                    {
-                        typeface = boldFallback;
-                    }
-                    else if (_defaultFallback != null)
-                    {
-                        typeface = _defaultFallback;
-                    }
-                    else
-                    {
-                        // No fallback available, use system font anyway
-                        typeface = SKTypeface.FromFamilyName(fontFamily, weight, width, slant);
-                    }
-                }
-                
-                // Cache the result with fallback indicator
-                _cachedTypefaces[fallbackKey] = typeface;
-                return typeface;
-            }
-            else
-            {
-                // No special text requirements, use standard cache
-                var cacheKey = $"{fontFamily}_{weight}_{width}_{slant}";
-                
-                if (_cachedTypefaces.TryGetValue(cacheKey, out var cached))
-                    return cached;
-                
-                // Create standard typeface
-                var typeface = SKTypeface.FromFamilyName(fontFamily, weight, width, slant);
-                
-                // Still check if it has basic Cyrillic support for future use
-                var cyrillicSample = "АБВабв"; // Russian А, Б, В in upper and lower case
-                if (!ContainsGlyphs(typeface, cyrillicSample))
-                {
-                    // Pre-emptively cache the fallback version too
-                    var fallbackKey = $"{fontFamily}_{weight}_{width}_{slant}_fallback";
-                    if (!_cachedTypefaces.ContainsKey(fallbackKey))
-                    {
-                        var fallback = (weight == SKFontStyleWeight.Bold && _fallbackFonts.TryGetValue("bold", out var bf)) 
-                            ? bf 
-                            : _defaultFallback ?? typeface;
-                        _cachedTypefaces[fallbackKey] = fallback;
-                    }
-                }
-                
+                typeface = SKTypeface.FromFamilyName(fontFamily, weight, width, slant);
                 _cachedTypefaces[cacheKey] = typeface;
-                return typeface;
             }
+
+            // Use the bundled cross-platform font whenever the requested
+            // typeface cannot render the actual text (Cyrillic, ₽, etc.).
+            if (string.IsNullOrEmpty(sampleText) || ContainsGlyphs(typeface, sampleText))
+                return typeface;
+
+            var fallbackKey = $"{fontFamily}_{weight}_{width}_{slant}_fallback";
+            if (_cachedTypefaces.TryGetValue(fallbackKey, out var cachedFallback))
+                return cachedFallback;
+
+            Console.WriteLine($"SkiaFontManager: Font '{fontFamily}' is missing glyphs, using fallback");
+            var fallback = (weight == SKFontStyleWeight.Bold && _fallbackFonts.TryGetValue("bold", out var boldFallback))
+                ? boldFallback
+                : _defaultFallback ?? typeface;
+            _cachedTypefaces[fallbackKey] = fallback;
+            return fallback;
         }
     }
     
