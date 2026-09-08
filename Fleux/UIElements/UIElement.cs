@@ -235,9 +235,10 @@
 
         public bool IsShowing(UIElement child)
         {
-            if (this.Parent != null)
+            var parent = this.Parent;
+            if (parent != null)
             {
-                return child.Bounds.IntersectsWith(new Rectangle(0, 0, this.Size.Width, this.Size.Height)) && this.Parent.IsShowing(this);
+                return child.Bounds.IntersectsWith(new Rectangle(0, 0, this.Size.Width, this.Size.Height)) && parent.IsShowing(this);
             }
             else
             {
@@ -247,9 +248,12 @@
 
         public void Update()
         {
-            if (this.Updated != null && (this.Parent == null || this.Parent.IsShowing(this)))
+            // Animations can update while another thread detaches this element.
+            var updated = this.Updated;
+            var parent = this.Parent;
+            if (updated != null && (parent == null || parent.IsShowing(this)))
             {
-                this.Updated();
+                updated();
             }
         }
 
