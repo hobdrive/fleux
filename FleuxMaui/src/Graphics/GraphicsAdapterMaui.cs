@@ -296,7 +296,7 @@ public class Graphics : IDisposable
         foreach (var line in lines)
         {
             var bounds = new SKRect();
-            font.MeasureText(line, out bounds, skPaint);
+            font.MeasureText(line, out bounds);
             maxWidth = Math.Max(maxWidth, (int)bounds.Width);
             totalHeight += (int)bounds.Height;
         }
@@ -311,7 +311,10 @@ public class Graphics : IDisposable
 
         var skFont = font.ToSKFont(text);
         var bounds = new SKRect();
-        skFont.MeasureText(text, out bounds, skPaint);
+        // Layout measures filled glyphs. The shared paint may still contain the
+        // stroke from a button border or an outlined sensor value; including it
+        // makes measurements depend on drawing order (notably for descenders).
+        skFont.MeasureText(text, out bounds);
 
         var skLineSpacing = skFont.GetFontMetrics(out var fontMetrics);
         float lineHeight = fontMetrics.Descent - fontMetrics.Ascent;
