@@ -80,6 +80,38 @@
 
         public int EntranceDuration { get; set; }
 
+#if DEBUG
+        /// <summary>
+        /// Encodes the current Fleux back buffer without depending on a desktop
+        /// screen-recording permission or on GPU window compositing.
+        /// </summary>
+        public void CapturePng(System.IO.Stream destination)
+        {
+            if (destination == null)
+                throw new ArgumentNullException(nameof(destination));
+            lock (this)
+            {
+                var buffer = offBmp
+                    ?? throw new InvalidOperationException("Fleux drawing buffer is not ready");
+                lock (buffer)
+                {
+                    var surface = buffer.GetSurface()
+                        ?? throw new InvalidOperationException("Fleux drawing surface is not ready");
+                    surface.Canvas.Flush();
+                    using var pixels = new SkiaSharp.SKBitmap(new SkiaSharp.SKImageInfo(
+                        buffer.Width, buffer.Height,
+                        SkiaSharp.SKColorType.Bgra8888, SkiaSharp.SKAlphaType.Premul));
+                    if (!surface.ReadPixels(pixels.Info, pixels.GetPixels(), pixels.RowBytes, 0, 0))
+                        throw new InvalidOperationException("Unable to read the Fleux drawing surface");
+                    using var image = SkiaSharp.SKImage.FromBitmap(pixels);
+                    using var encoded = image.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100)
+                        ?? throw new InvalidOperationException("Unable to encode the Fleux drawing surface");
+                    encoded.SaveTo(destination);
+                }
+            }
+        }
+#endif
+
         public Func<Point, bool> TapHandler { get; set; }
 
         public Func<Point, bool> DoubleTapHandler { get; set; }
