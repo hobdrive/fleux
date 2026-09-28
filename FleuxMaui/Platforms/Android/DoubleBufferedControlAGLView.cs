@@ -163,23 +163,6 @@ public class DoubleBufferedControlAGLView : SKGLSurfaceView
         {
             if (offBmp != null)
             {
-                /*
-                TODO: handle mirroring here
-                if (Fleux.Core.FleuxApplication.HorizontalMirror)
-                {
-                    canvas.Save();
-                    canvas.Scale(-1, 1);
-                    canvas.Translate(-(float)Control.drect.Width(), 0);
-                }
-                else if (Fleux.Core.FleuxApplication.VerticalMirror)
-                {
-                    canvas.Save();
-                    canvas.Scale(1, -1);
-                    canvas.Translate(0, -(float)Control.drect.Height());
-                }
-                offGr.Flush();
-                */
-
                 var cPaint = currentEffect?.GetState() as SKPaint;
                 if (cPaint == null)
                 {
@@ -192,8 +175,8 @@ public class DoubleBufferedControlAGLView : SKGLSurfaceView
                     var skImage = offBmp.GetSkImage();
                     if (skImage != null)
                     {
-                        canvas.DrawImage(skImage,
-                            new SKRect(0, 0, info.Width, info.Height), cPaint);
+                        CanvasPresentation.DrawImage(canvas, skImage, info.Width, info.Height, cPaint,
+                            FleuxApplication.HorizontalMirror, FleuxApplication.VerticalMirror);
                     }
                 }
                 catch (Exception ex)

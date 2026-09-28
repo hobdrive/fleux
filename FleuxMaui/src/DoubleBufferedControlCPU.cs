@@ -117,8 +117,8 @@ public class DoubleBufferedControlCPU : SKCanvasView
             }
             var t4 = System.Environment.TickCount;
             var skImage = offBmp.GetSkImage();  // Don't dispose - owned by image
-            canvas.DrawImage(skImage,
-                    new SKRect(0, 0, info.Width, info.Height), cPaint);
+            CanvasPresentation.DrawImage(canvas, skImage, info.Width, info.Height, cPaint,
+                FleuxApplication.HorizontalMirror, FleuxApplication.VerticalMirror);
             tBitmapDraw = System.Environment.TickCount - t4;
 
             updcntflush++;

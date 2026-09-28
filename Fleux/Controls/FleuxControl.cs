@@ -104,7 +104,11 @@
                     if (!surface.ReadPixels(pixels.Info, pixels.GetPixels(), pixels.RowBytes, 0, 0))
                         throw new InvalidOperationException("Unable to read the Fleux drawing surface");
                     using var image = SkiaSharp.SKImage.FromBitmap(pixels);
-                    using var encoded = image.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100)
+                    using var presented = SkiaSharp.SKSurface.Create(pixels.Info);
+                    CanvasPresentation.DrawImage(presented.Canvas, image, buffer.Width, buffer.Height,
+                        null, FleuxApplication.HorizontalMirror, FleuxApplication.VerticalMirror);
+                    using var snapshot = presented.Snapshot();
+                    using var encoded = snapshot.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100)
                         ?? throw new InvalidOperationException("Unable to encode the Fleux drawing surface");
                     encoded.SaveTo(destination);
                 }
