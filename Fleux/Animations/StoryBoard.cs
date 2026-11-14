@@ -9,8 +9,9 @@
     {
         private readonly List<IAnimation> animations = new List<IAnimation>();
         private static StoryBoard sb;
+        private readonly object animationThreadLock = new object();
         private Thread animationThread;
-        private bool stopAnimation;
+        private volatile bool stopAnimation;
 
         public static void Play(IAnimation animation)
         {
@@ -72,16 +73,29 @@
 
         public void BeginAnimate(Action onAnimateCompleted)
         {
-            if (this.animationThread == null)
+            lock (this.animationThreadLock)
             {
+                if (this.animationThread != null)
+                    return;
+
+                this.stopAnimation = false;
                 var at = new Thread(() =>
                 {
-                    this.AnimateSync();
-                    onAnimateCompleted();
-                    this.animationThread = null;
+                    try
+                    {
+                        this.AnimateSync();
+                        onAnimateCompleted();
+                    }
+                    finally
+                    {
+                        lock (this.animationThreadLock)
+                            this.animationThread = null;
+                    }
                 });
-                this.animationThread = at;
+                // Mono's Join must not observe a thread while Start is still running.
+                // The worker also takes this lock before clearing the published thread.
                 at.Start();
+                this.animationThread = at;
             }
         }
 
@@ -113,25 +127,20 @@
 
         public void CancelAsyncAnimate()
         {
-            Thread at = this.animationThread;
-            if (at != null)
+            Thread at;
+            lock (this.animationThreadLock)
             {
+                at = this.animationThread;
+                if (at == null)
+                    return;
+
                 this.stopAnimation = true;
-                at.Join(1000);
-                if (this.stopAnimation)
-                {
-                    // If the animation thread takes longer
-                    // than 1 sec to stop, then we kill it
-                    try
-                    {
-                        at.Abort();
-                    }catch (Exception) {
-                        // Some platforms do not support this
-                    }
-                    this.stopAnimation = false;
-                }
-                this.animationThread = null;
             }
+
+            // Do not hold the lifecycle lock while waiting for the worker's finally.
+            // Keep the stop request and thread until it actually exits after a timeout.
+            if (at != Thread.CurrentThread)
+                at.Join(1000);
         }
 
         public void AddAnimations(params IAnimation[] newAnimations)
