@@ -33,12 +33,18 @@
 
         public Canvas Body { get; private set; }
 
+        public bool DrawOwnTitle { get; set; } = true;
         public bool AdaptFontSize = true;
         bool FontSizeAdapted = false;
         int NewFontSize;
 
         public override void Draw(IDrawingGraphics drawingGraphics)
         {
+            if (!DrawOwnTitle)
+            {
+                base.Draw(drawingGraphics);
+                return;
+            }
             drawingGraphics.Style(this.Style);
             if(AdaptFontSize)
             {
