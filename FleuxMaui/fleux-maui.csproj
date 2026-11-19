@@ -33,7 +33,7 @@
 	</ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../../../hobdrive-maui/winforms-maui-adapter/winforms-maui-adapter.csproj" />
+    <ProjectReference Include="../../winforms-maui-adapter/winforms-maui-adapter.csproj" />
   </ItemGroup>
 
   <ItemGroup>
